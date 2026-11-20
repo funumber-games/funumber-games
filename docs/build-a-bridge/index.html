@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#073b4c">
+    <meta name="description" content="Measure a creek with equal blocks, choose the matching plank, and help a rabbit cross.">
+    <title>Build a Bridge — FuNumber Games</title>
+    <link rel="stylesheet" href="../site.css">
+    <link rel="stylesheet" href="build-a-bridge.css">
+    <script src="build-a-bridge.js" defer></script>
+    <script src="../instructions.js" defer></script>
+</head>
+<body class="site-page bridge-page">
+<header class="global-header">
+    <a class="brand" href="../index.html" aria-label="FuNumber Games home">
+        <img class="nav-logo" src="../FuNumber-logo.jpg" alt="">
+        <span>FuNumber <strong>Games</strong><sup class="registered-mark" aria-label="registered">®</sup></span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+        <a href="../index.html">Home</a>
+        <button type="button" class="how-to-play-trigger" data-open-instructions>How to Play</button>
+    </nav>
+</header>
+
+<main class="bridge-main">
+    <header class="page-heading">
+        <p class="eyebrow">MEASURE • MATCH • CROSS</p>
+        <h1>Build a Bridge</h1>
+    </header>
+
+    <section class="mode-panel" id="modePanel" aria-labelledby="modeHeading">
+        <h2 id="modeHeading">Choose a mode</h2>
+        <div class="mode-options">
+            <label class="mode-option">
+                <input type="radio" name="mode" value="simple" checked>
+                <span class="mode-emoji" aria-hidden="true">🐰</span>
+                <span class="mode-copy"><strong>Simple Mode</strong><small>Ages 3–4 · Gaps of 3–5 blocks</small></span>
+            </label>
+            <label class="mode-option">
+                <input type="radio" name="mode" value="moderate">
+                <span class="mode-emoji" aria-hidden="true">📏</span>
+                <span class="mode-copy"><strong>Moderate Mode</strong><small>Ages 4–5 · Gaps of 4–7 blocks</small></span>
+            </label>
+            <label class="mode-option">
+                <input type="radio" name="mode" value="difficult">
+                <span class="mode-emoji" aria-hidden="true">🌉</span>
+                <span class="mode-copy"><strong>Difficult Mode</strong><small>Ages 5–7 · Gaps of 5–8 blocks</small></span>
+            </label>
+        </div>
+        <p class="mode-details">Measure with equal blocks, then choose the plank that fits the creek exactly.</p>
+        <button type="button" class="start-button" id="startButton">Let’s Go!</button>
+    </section>
+
+    <section class="game-panel hidden" id="gamePanel" aria-label="Build a Bridge game">
+        <div class="status-row" aria-live="polite">
+            <span class="status-pill">Crossing <strong id="roundStatus">1</strong></span>
+            <span class="status-pill">Mode <strong id="modeStatus">Simple</strong></span>
+            <span class="status-pill">Blocks placed <strong id="blockStatus">0</strong></span>
+        </div>
+
+        <section class="instruction-bar" aria-live="polite">
+            <div>
+                <strong id="instructionTitle">How many blocks wide is the creek?</strong>
+                <span id="instructionText">Tap the blocks to measure from one bank to the other.</span>
+            </div>
+            <button type="button" class="voice-button" id="voiceButton" aria-label="Replay the instruction">🔊 Hear again</button>
+        </section>
+
+        <div class="scene" id="scene" aria-label="A rabbit waiting beside a creek with measuring blocks and wooden planks">
+            <img class="scene-background layout-background" id="sceneBackground" src="build-a-bridge-layout-white-rabbit.png" alt="A white rabbit beside a creek between two grassy banks with a wooden work area below.">
+            <button type="button" class="next-button hidden" id="nextButton">Next Crossing →</button>
+
+            <div class="measure-track" id="measureTrack" aria-label="Creek measuring line">
+                <span class="end-mark start-mark" aria-hidden="true"></span>
+                <div class="guide-slots" id="guideSlots" aria-hidden="true"></div>
+                <div class="placed-blocks" id="placedBlocks"></div>
+                <span class="end-mark finish-mark" aria-hidden="true"></span>
+            </div>
+
+            <img class="rabbit-cover hidden" id="rabbitCover" src="build-a-bridge-crossing.png" alt="" aria-hidden="true">
+            <div class="bridge-plank hidden" id="bridgePlank" aria-hidden="true"></div>
+            <img class="crossing-rabbit hidden" id="crossingRabbit" src="build-a-bridge-rabbit-white.png" alt="White rabbit crossing the bridge">
+
+            <div class="workbench" id="workbench">
+                <section class="block-supply" aria-labelledby="blockSupplyTitle">
+                    <h2 id="blockSupplyTitle">Measuring blocks</h2>
+                    <div class="block-supply-row">
+                        <div class="block-pile" id="blockPile"></div>
+                        <div class="workbench-measure-actions">
+                            <button type="button" class="undo-button" id="undoButton" disabled>↶ Undo</button>
+                            <button type="button" class="done-button hidden" id="doneButton" disabled>Done Measuring</button>
+                        </div>
+                    </div>
+                </section>
+                <section class="plank-supply" aria-labelledby="plankSupplyTitle">
+                    <h2 id="plankSupplyTitle">Choose a plank</h2>
+                    <div class="plank-choices" id="plankChoices"></div>
+                </section>
+            </div>
+        </div>
+
+        <p class="feedback" id="feedback" aria-live="assertive">Place the blocks end to end across the measuring line.</p>
+
+        <div class="game-actions">
+            <button type="button" class="reset-button" id="resetButton">Start / Reset</button>
+            <button type="button" class="change-mode-button" id="changeModeButton">Change Mode</button>
+        </div>
+    </section>
+</main>
+
+<div class="instruction-overlay hidden" id="instructionsDialog" role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
+    <section class="instruction-card">
+        <button type="button" class="instruction-close" data-close-instructions aria-label="Close instructions">×</button>
+        <p class="eyebrow">BUILD A BRIDGE</p>
+        <h2 id="instructionsTitle">How to play</h2>
+        <ol class="instruction-steps">
+            <li><strong>Measure the creek</strong><span>Tap equal blocks and place them end to end across the line.</span></li>
+            <li><strong>Count the blocks</strong><span>Listen as every block lands, then finish the measurement.</span></li>
+            <li><strong>Choose a plank</strong><span>Tap the plank with the same length as the measured gap.</span></li>
+            <li><strong>Help the rabbit cross</strong><span>An exact plank makes a safe bridge. Short and long planks can be tried again.</span></li>
+        </ol>
+        <p class="instruction-tip">There is no timer or penalty. Use Undo whenever you want to change the measurement.</p>
+    </section>
+</div>
+
+<footer class="site-footer">© 2026 FuNumber Games</footer>
+</body>
+</html>

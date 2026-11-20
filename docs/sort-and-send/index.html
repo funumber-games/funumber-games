@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#073b4c">
+  <meta name="description" content="A cheerful sorting game for kids. Spin, sort two items, and send them through the right doors.">
+  <title>Sort &amp; Send — FuNumber Games</title>
+  <style>
+    :root{font-family:"Trebuchet MS","Segoe UI",sans-serif;color:#fff;background:#073b4c;font-synthesis:none;--navy:#073b4c;--gold:#ffd166;--coral:#ff7058;--cream:#fff9ed;--teal:#0cae9b;--wood:#a85c31}
+    *{box-sizing:border-box}body{min-height:100vh;min-height:100dvh;margin:0;display:flex;flex-direction:column;background:radial-gradient(ellipse at 85% 12%,rgba(0,190,183,.45),transparent 38%),linear-gradient(135deg,#073b4c,#087f89 58%,#0c6976)}button{font:inherit}
+    .global-header{position:sticky;top:0;z-index:20;display:flex;min-height:70px;align-items:center;justify-content:space-between;gap:12px;padding:8px clamp(14px,4vw,54px);border-bottom:1px solid rgba(255,255,255,.2);background:rgba(4,43,59,.96);box-shadow:0 6px 20px #001d2a55}.brand{color:#fff;font-size:clamp(18px,2.6vw,24px);font-weight:900;letter-spacing:-.04em;text-decoration:none}.brand strong,.brand sup{color:var(--gold)}.brand sup{font-size:.48em}.main-nav{display:flex;gap:8px}.main-nav a,.nav-button{padding:9px 15px;border:1px solid #ffffff55;border-radius:999px;background:#ffffff16;color:#fff;text-decoration:none;font-weight:900;cursor:pointer}
+    main{width:min(1320px,calc(100% - 28px));flex:1;margin:0 auto;padding:10px 0 14px}.page-title{margin:0 0 8px;text-align:center}.eyebrow{margin:0 0 3px;color:#ffe28a;font-size:10px;font-weight:1000;letter-spacing:.17em}h1{margin:0;font-size:clamp(24px,3.4vh,34px);letter-spacing:-.04em}.mode-panel,.game-panel{border:1px solid #ffffff55;border-radius:23px;background:linear-gradient(135deg,#073b4cdd,#104858e8);box-shadow:0 14px 35px #001c2866}.mode-panel{width:min(680px,100%);margin:14px auto;padding:clamp(18px,4vw,30px);text-align:center}.mode-panel h2{margin:0 0 16px;font-size:clamp(22px,4vw,30px)}.mode-options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mode-card{min-height:110px;padding:14px 9px;border:3px solid #fff9;border-radius:18px;background:linear-gradient(145deg,#fff8ee,#ffe2a5);color:#17394a;box-shadow:0 5px 0 #aa7e45;cursor:pointer;font-weight:900}.mode-card:nth-child(2){background:linear-gradient(145deg,#effff9,#b6f0df);box-shadow:0 5px 0 #187e75}.mode-card:nth-child(3){background:linear-gradient(145deg,#fbf5ff,#dac8ff);box-shadow:0 5px 0 #6847a6}.mode-card[aria-pressed=true]{outline:4px solid var(--gold);transform:translateY(-2px)}.mode-card strong,.mode-card span{display:block}.mode-card strong{font-size:18px}.mode-card span{margin-top:5px;font-size:13px}.primary-button,.secondary-button{min-height:48px;padding:10px 22px;border:2px solid #ffffffbb;border-radius:16px;color:#fff;font-size:16px;font-weight:1000;cursor:pointer;box-shadow:0 5px 0 #064c57}.primary-button{background:linear-gradient(135deg,#ff745a,#f34e67);box-shadow:0 5px 0 #a83b58}.secondary-button{background:linear-gradient(135deg,#13b6a3,#078ca8)}.mode-start{margin-top:19px}.hidden{display:none!important}
+    .game-panel{padding:11px 14px 14px}.status-row{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:0 0 9px}.pill{padding:7px 13px;border:1px solid #ffffff66;border-radius:999px;background:#052e3de6;font-weight:900}.pill b{margin-left:5px;color:var(--gold)}.play-layout{display:grid;grid-template-columns:minmax(270px,1fr) minmax(330px,1fr);gap:clamp(12px,2vw,24px);align-items:center}.zone h2{margin:0 0 8px;text-align:center;font-size:clamp(20px,3vh,27px)}
+    .roller-shell{position:relative;min-height:330px;padding:18px;border:10px solid #66381f;border-radius:24px;background:linear-gradient(145deg,#d69750,#9c552c);box-shadow:inset 0 0 0 4px #f6d28c,0 10px 0 #4e2b1b}.roller-shell:before{position:absolute;inset:10px;border:2px solid #ffe4a4aa;border-radius:13px;content:"";pointer-events:none}.roller-window{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:220px;align-items:center;padding:16px;border:8px solid #873d32;border-radius:24px;background:linear-gradient(180deg,#172c3b,#061c2b);box-shadow:inset 0 0 0 4px #ffd982,0 5px 0 #512718}.reel{min-width:0;display:grid;place-items:center;min-height:172px;padding:10px 5px;border:5px solid #ffe3a0;border-radius:18px;background:repeating-linear-gradient(180deg,#fff 0 16px,#fae5bb 16px 25px);box-shadow:0 5px 0 #644021;cursor:pointer;color:#15384b;transition:transform .2s,filter .2s,opacity .48s}.reel[aria-pressed=true]{outline:5px solid #ffce48;transform:translateY(-3px);filter:brightness(1.08)}.reel:disabled{cursor:default}.reel.fly{z-index:5;transform:translate(var(--fly-x),var(--fly-y)) scale(.22);opacity:0;transition:transform .48s cubic-bezier(.2,.7,.25,1),opacity .48s}.reel-emoji{display:block;font-size:clamp(42px,8vh,70px);line-height:1.1}.reel-name{display:block;margin-top:5px;font-size:clamp(14px,2vw,19px);font-weight:1000}.roller-window.spinning .reel{animation:reel-roll .16s linear infinite}.roller-caption{text-align:center;font-weight:800;color:#fff5db}.spin-button{display:block;min-width:140px;margin:14px auto 0}.hear-question{display:block;margin:10px auto 0;font-size:14px}.door{cursor:default}.door:hover{transform:none}.hear-question:disabled{opacity:.55;cursor:default}.sort-box{padding:14px;border:9px solid #60351e;border-radius:24px;background:linear-gradient(140deg,#d39a59,#9b562e);box-shadow:inset 0 0 0 4px #f9d18b,0 10px 0 #4e2b1b}.sort-box h3{margin:0 0 12px;text-align:center;font-size:20px}.doors{display:grid;grid-template-columns:1fr 1fr;gap:12px}.door{position:relative;min-height:200px;overflow:hidden;padding:12px 8px;border:6px solid #f4d08a;border-radius:18px;background:linear-gradient(90deg,#57361f 0 8%,#b6763b 8% 92%,#57361f 92%);color:#fff;cursor:pointer;box-shadow:0 5px 0 #60351e;transition:transform .15s}.door-label{position:relative;z-index:2;display:inline-block;max-width:100%;padding:7px 10px;border-radius:11px;background:#fff4d9;color:#183a4d;font-size:clamp(14px,2vw,19px);font-weight:1000}.door-frame{position:absolute;inset:52px 12px 12px;border:4px solid #efc979;border-radius:10px;background:repeating-linear-gradient(90deg,#0b2c39 0 22%,#344f59 23% 25%,#0b2c39 27% 48%);box-shadow:inset 0 0 12px #0008}.door:hover{transform:translateY(-2px)}.door.shake{animation:shake .35s}.door.open .door-frame{transform:perspective(400px) rotateY(-48deg);transform-origin:left;transition:transform .45s}.door-frame{transition:transform .45s}.feedback{min-height:48px;margin:12px 0 0;padding:10px;border:1px solid #ffffff55;border-radius:14px;background:#052e3dbb;text-align:center;font-size:17px;font-weight:900}.feedback.success{color:#c8ffb4}.feedback.retry{color:#ffe28a}.controls{display:flex;justify-content:center;gap:16px;margin-top:30px;padding-top:18px;border-top:1px solid #ffffff33}.site-footer{align-self:flex-end;margin:8px 12px;color:#ffffffd9;font-size:10px;text-shadow:0 1px 4px #0008}
+    .overlay{position:fixed;z-index:50;inset:0;display:grid;place-items:center;padding:18px;background:#031f2dd9;backdrop-filter:blur(6px)}.dialog{width:min(540px,100%);padding:25px;border:3px solid #fff;border-radius:27px;background:linear-gradient(145deg,#fff8e7,#d9fff4);color:#17394a;text-align:center;box-shadow:0 20px 65px #0008}.dialog h2{margin:0 0 9px;color:#bb4058;font-size:clamp(28px,6vw,42px)}.dialog p{font-size:17px;line-height:1.5}.dialog-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:18px}.dialog .secondary-button{color:white}
+    .mode-options{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-bottom:14px}.mode-option{position:relative;display:flex;min-width:185px;min-height:150px;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:18px 14px 14px;border:3px solid #ffffffd9;border-radius:24px;color:white;text-align:center;cursor:pointer;box-shadow:0 7px 0 #0004,0 12px 20px #0004;transition:transform 160ms ease,box-shadow 160ms ease,filter 160ms ease}.mode-option:nth-child(1){background:linear-gradient(145deg,#ff7b54,#ffbf69)}.mode-option:nth-child(2){background:linear-gradient(145deg,#00a896,#55d6be)}.mode-option:nth-child(3){background:linear-gradient(145deg,#7952cc,#e15aa8)}.mode-option:hover{transform:translateY(-5px) rotate(-1deg);filter:brightness(1.08)}.mode-option:has(input:checked){outline:4px solid #ffe264;outline-offset:3px;transform:translateY(-4px) scale(1.03)}.mode-option input{position:absolute;top:12px;left:12px;width:18px;height:18px;accent-color:#174390}.mode-emoji{font-size:38px;line-height:1;filter:drop-shadow(0 2px 1px #0003)}.mode-option strong{font-size:18px;text-shadow:0 1px 3px #0005}.mode-option small{font-weight:800;text-shadow:0 1px 3px #0005}.mode-details{margin:0 0 16px;color:#ffffffc9;font-size:13px;font-weight:700;line-height:1.45}
+    .roller-stack{display:flex;width:min(100%,300px);flex-direction:column;align-items:center;gap:9px;margin:0 auto 12px;perspective:800px}.roller-shell.reel{position:relative;display:block;width:min(100%,250px);height:116px;min-height:0;padding:8px;border:4px solid #e9b951;border-radius:18px;box-shadow:0 6px 0 #371a0b96,0 10px 15px #0004,inset 0 2px 4px #ffffffb8;cursor:pointer;color:#17384d;transition:transform .2s,filter .2s,opacity .48s}.roller-shell.reel:before{content:none}.roller-shell.roller-one{background:radial-gradient(circle at 8px 50%,#fff4b0 0 2px,transparent 3px),radial-gradient(circle at calc(100% - 8px) 50%,#fff4b0 0 2px,transparent 3px),repeating-linear-gradient(90deg,#df3850 0 13px,#fff4df 13px 25px)}.roller-shell.roller-two{background:radial-gradient(circle at 8px 50%,#fff4b0 0 2px,transparent 3px),radial-gradient(circle at calc(100% - 8px) 50%,#fff4b0 0 2px,transparent 3px),repeating-linear-gradient(90deg,#1679bd 0 13px,#ffe27a 13px 25px)}.roller-shell .roller-window{position:relative;display:grid;grid-template-columns:none;gap:0;min-height:0;height:100%;overflow:hidden;place-items:center;padding:0;border:2px solid #1c2a3f59;border-radius:8px;background:linear-gradient(90deg,#d8e4f1,#fff 25%,#fff 75%,#c8d6e7);box-shadow:inset 0 4px 10px #1327413b}.roller-shell .roller-window:before,.roller-shell .roller-window:after{position:absolute;z-index:2;right:0;left:0;height:10px;content:"";pointer-events:none}.roller-shell .roller-window:before{top:0;background:linear-gradient(#fff,transparent)}.roller-shell .roller-window:after{bottom:0;background:linear-gradient(transparent,#d4dfec)}.reel[aria-pressed=true]{outline:5px solid #ffce48;outline-offset:2px;transform:translateY(-2px);filter:brightness(1.08)}.reel:disabled{cursor:default}.reel.fly{z-index:5;transform:translate(var(--fly-x),var(--fly-y)) scale(.22);opacity:0;transition:transform .48s cubic-bezier(.2,.7,.25,1),opacity .48s}.reel-emoji{display:block;font-size:clamp(48px,8vh,68px);line-height:1}.reel-name{display:block;margin-top:2px;font-size:clamp(13px,2vw,17px);font-weight:1000}.roller-stack.spinning .roller-window>span{animation:roller-travel 1.05s cubic-bezier(.24,.72,.24,1) both}.roller-caption{text-align:center;font-weight:800;color:#fff5db}
+    @keyframes roller-travel{0%{transform:translateY(-135%);filter:blur(3px);opacity:.2}14%{transform:translateY(135%);filter:blur(3px);opacity:.4}28%{transform:translateY(-135%);filter:blur(3px);opacity:.4}42%{transform:translateY(135%);filter:blur(3px);opacity:.4}56%{transform:translateY(-135%);filter:blur(3px);opacity:.4}70%{transform:translateY(135%);filter:blur(3px);opacity:.5}84%{transform:translateY(-25%);filter:blur(1px);opacity:.8}93%{transform:translateY(10%);filter:blur(0);opacity:1}100%{transform:translateY(0);filter:blur(0);opacity:1}}@keyframes shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+    @media(max-width:760px){.play-layout{grid-template-columns:1fr}.roller-stack{width:min(100%,400px)}.roller-shell.reel{height:110px}.door{min-height:150px}.door-frame{inset:50px 8px 8px}.mode-options{gap:8px}.mode-option{min-width:145px;min-height:112px;padding:12px 8px}.mode-option strong{font-size:15px}.mode-option small{font-size:12px}.global-header{min-height:62px}.game-panel{padding:10px}}
+    @media(max-width:420px){main{width:calc(100% - 16px)}.brand{font-size:17px}.main-nav a,.nav-button{padding:8px 10px;font-size:13px}.roller-stack{width:min(100%,330px)}.roller-shell.reel{height:100px}.sort-box{padding:10px;border-width:7px}.door{min-height:140px;border-width:4px}.door-label{padding:6px 5px;font-size:13px}}
+
+    .door-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.door-column{display:grid;grid-template-rows:auto 1fr;gap:7px;min-width:0}.door-column .door-label{display:grid;min-height:42px;place-items:center;padding:7px 10px;border:2px solid #ffe2a5;border-radius:12px;background:#fff4d9;color:#183a4d;text-align:center;font-size:clamp(13px,1.8vw,18px);font-weight:1000;line-height:1.15}.door-column .door{min-height:170px}.door-frame{inset:10px}.roller-caption{margin-bottom:0}
+    @media(max-width:760px){.roller-stack{width:min(100%,400px)}.roller-shell.reel{height:110px}.door-column .door{min-height:140px}.controls{margin-top:24px;padding-top:14px}}
+    @media(max-width:420px){.roller-stack{width:min(100%,330px)}.roller-shell.reel{height:100px}.door-column .door{min-height:125px}.door-column .door-label{font-size:12px;padding:6px 4px}.controls{margin-top:22px;padding-top:12px;gap:10px}}
+
+    .roller-stack{width:100%;align-items:stretch}.roller-shell.reel{width:100%;height:clamp(132px,17vh,168px)}.roller-shell .roller-window>span{display:flex;align-items:center;justify-content:center;gap:clamp(12px,2.2vw,28px);width:100%;height:100%}.reel-emoji{font-size:clamp(58px,8vh,82px)}.reel-name{margin:0;font-size:clamp(22px,3vw,32px)}
+    @media(max-width:760px){.roller-stack{width:100%}.roller-shell.reel{height:clamp(116px,15vh,142px)}.reel-emoji{font-size:clamp(52px,9vw,68px)}.reel-name{font-size:clamp(20px,4.5vw,26px)}}
+    @media(max-width:420px){.roller-shell.reel{height:116px}.roller-emoji{font-size:54px}.reel-name{font-size:20px}}
+
+    .roller-shell .roller-window{width:min(82%,740px);margin-inline:auto;padding:clamp(6px,1vw,12px);border-width:3px;box-shadow:inset 0 5px 14px #1327413b,0 4px 0 #73889b}.roller-shell .roller-window>span{gap:clamp(14px,2.5vw,34px);padding:0 clamp(8px,2vw,20px)}.reel-emoji{flex:0 0 auto;font-size:clamp(60px,8.5vh,82px)}.reel-name{max-width:75%;font-size:clamp(22px,2.8vw,36px);line-height:1.08;text-align:left;text-wrap:balance;overflow-wrap:anywhere}
+    @media(max-width:760px){.roller-shell .roller-window{width:86%}.reel-emoji{font-size:clamp(54px,9vw,72px)}.reel-name{font-size:clamp(21px,4.8vw,30px)}}
+    @media(max-width:420px){.roller-shell .roller-window{width:90%;padding:5px}.roller-shell .roller-window>span{gap:10px;padding:0 5px}.reel-emoji{font-size:52px}.reel-name{font-size:20px;max-width:72%}}
+
+    .door.wrong{border-color:#ff8074;box-shadow:0 0 0 5px #ff705855,0 5px 0 #60351e;animation:wrong-door .52s ease}.door.wrong .door-frame{filter:brightness(.75) sepia(.7) saturate(3) hue-rotate(315deg)}.reel.wrong-item{animation:wrong-item .48s ease}.door.correct{border-color:#baff96;box-shadow:0 0 0 5px #9cff765c,0 0 26px #a8ff73aa,0 5px 0 #60351e}.door.correct .door-frame{filter:brightness(1.22);box-shadow:inset 0 0 16px #d8ffa0,0 0 22px #adff8a}.door.correct:after{position:absolute;z-index:4;top:50%;left:50%;content:"✨";font-size:clamp(34px,5vw,58px);pointer-events:none;transform:translate(-50%,-50%);animation:star-pop .58s ease-out both}.feedback.success{border-color:#baff96;background:#0c5b4b;animation:success-pop .52s cubic-bezier(.2,.8,.3,1)}.feedback.retry{border-color:#ffb29f;background:#713d35;animation:retry-pop .42s ease}
+    @keyframes wrong-door{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}@keyframes wrong-item{0%,100%{transform:translateX(0)}30%{transform:translateX(-6px)}60%{transform:translateX(6px)}}@keyframes star-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.15) rotate(-25deg)}55%{opacity:1;transform:translate(-50%,-70%) scale(1.2) rotate(12deg)}100%{opacity:0;transform:translate(-50%,-110%) scale(.8) rotate(25deg)}}@keyframes success-pop{0%{transform:scale(.96)}55%{transform:scale(1.035)}100%{transform:scale(1)}}@keyframes retry-pop{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+  </style>
+</head>
+<body>
+  <header class="global-header">
+    <a class="brand" href="../index.html">FuNumber <strong>Games</strong><sup>®</sup></a>
+    <nav class="main-nav" aria-label="Main navigation"><a href="../index.html">Home</a><button class="nav-button" id="howButton" type="button">How to Play</button></nav>
+  </header>
+  <main>
+    <header class="page-title"><p class="eyebrow">SPIN • SORT • LEARN</p><h1>Sort &amp; Send</h1></header>
+    <section class="mode-panel" id="modePanel" aria-labelledby="modeTitle">
+      <h2 id="modeTitle">Choose a mode</h2>
+      <div class="mode-options">
+        <label class="mode-option"><input type="radio" name="mode" value="simple" checked><span class="mode-emoji" aria-hidden="true">🐣</span><strong>Simple Mode</strong><small>Ages 3–4 · 6 rounds</small></label>
+        <label class="mode-option"><input type="radio" name="mode" value="moderate"><span class="mode-emoji" aria-hidden="true">🧩</span><strong>Moderate Mode</strong><small>Ages 4–5 · 10 rounds</small></label>
+        <label class="mode-option"><input type="radio" name="mode" value="difficult"><span class="mode-emoji" aria-hidden="true">🚀</span><strong>Difficult Mode</strong><small>Ages 5–7 · 15 rounds</small></label>
+      </div>
+      <p class="mode-details">Sort each pair into its matching category doors. Choose carefully: doors change every round!</p>
+      <button class="primary-button mode-start" id="startButton" type="button">Let’s Go!</button>
+    </section>
+    <section class="game-panel hidden" id="gamePanel" aria-label="Sort and Send game">
+      <div class="status-row"><div class="pill">Round <b id="roundCount">0 / 0</b></div><div class="pill">Sorted <b id="scoreCount">0</b></div><div class="pill">Mode <b id="modeName">Simple</b></div></div>
+      <div class="play-layout">
+        <section class="zone" aria-labelledby="rollerTitle"><h2 id="rollerTitle">1. Spin the roller</h2>
+          <div class="roller-stack" id="rollerWindow" aria-label="Two item rollers" aria-live="polite">
+            <button class="roller-shell roller-one reel" id="item0" type="button" aria-label="First item" aria-pressed="false" disabled><span class="roller-window"><span><span class="reel-emoji">❔</span><span class="reel-name">Ready?</span></span></span></button>
+            <button class="roller-shell roller-two reel" id="item1" type="button" aria-label="Second item" aria-pressed="false" disabled><span class="roller-window"><span><span class="reel-emoji">❔</span><span class="reel-name">Ready?</span></span></span></button>
+          </div><p class="roller-caption">Listen to the question, then tap the matching item.</p><button class="primary-button spin-button" id="spinButton" type="button" disabled>Spin</button><button class="nav-button hear-question" id="hearQuestionButton" type="button" disabled>🔊 Hear the question again</button>
+        </section>
+        <section class="zone" aria-labelledby="boxTitle"><h2 id="boxTitle">2. Listen and choose</h2><div class="sort-box"><h3>Sorting Box</h3><div class="door-columns">
+          <div class="door-column"><div class="door-label" id="doorLabel0">Door 1</div><button class="door" id="door0" type="button" disabled aria-label="Door 1"><span class="door-frame" aria-hidden="true"></span></button></div>
+          <div class="door-column"><div class="door-label" id="doorLabel1">Door 2</div><button class="door" id="door1" type="button" disabled aria-label="Door 2"><span class="door-frame" aria-hidden="true"></span></button></div>
+        </div></div><div class="feedback" id="feedback" role="status" aria-live="polite">Choose a mode, then spin to meet two items.</div></section>
+      </div>
+      <div class="controls"><button class="secondary-button" id="resetButton" type="button">Start / Reset</button><button class="primary-button" id="changeModeButton" type="button">Change Mode</button></div>
+    </section>
+  </main>
+  <footer class="site-footer">© 2026 FuNumber Games</footer>
+  <div class="overlay hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="dialog"><h2 id="modalTitle">How to Play</h2><p id="modalText">Spin to hear the door labels, the two roller items, and a sorting question. Tap the item that answers the question. It will slide through its matching door, and the other item will follow automatically. The next question starts after that.</p><div class="dialog-actions"><button class="secondary-button" id="closeModal" type="button">Close</button></div></div></div>
+  <script>
+    const CONTENT = {
+      simple: [
+        {a:"Heavy",b:"Light",items:[["🐘","Elephant",0],["🪶","Feather",1]]},
+        {a:"Long",b:"Short",items:[["🚂","Long train",0],["✏️","Short crayon",1]]},
+        {a:"Tall",b:"Short",items:[["🦒","Giraffe",0],["🐇","Rabbit",1]]},
+        {a:"Living",b:"Non-living",items:[["🌻","Sunflower",0],["🚗","Toy car",1]]},
+        {a:"Big",b:"Small",items:[["🐋","Whale",0],["🐜","Ant",1]]},
+        {a:"Hot",b:"Cold",items:[["☕","Hot cocoa",0],["🧊","Ice cube",1]]},
+        {a:"Hard",b:"Soft",items:[["🪨","Rock",0],["🧸","Teddy bear",1]]},
+        {a:"Wet",b:"Dry",items:[["💧","Wet sponge",0],["🧽","Dry sponge",1]]}
+      ],
+      moderate: [
+        {a:"Healthy food",b:"Treat food",items:[["🍎","Apple",0],["🍟","French fries",1]]},
+        {a:"Fast",b:"Slow",items:[["🐆","Cheetah",0],["🐌","Snail",1]]},
+        {a:"Loud",b:"Quiet",items:[["🥁","Drum",0],["🤫","Whisper",1]]},
+        {a:"Shiny",b:"Dull",items:[["🪞","Mirror",0],["🪵","Unpolished wood",1]]},
+        {a:"Floats",b:"Sinks",items:[["🪵","Cork",0],["🪨","Stone",1]]},
+        {a:"Smooth",b:"Rough",items:[["🔮","Glass marble",0],["🌰","Pine cone",1]]},
+        {a:"Sweet",b:"Sour",items:[["🍭","Lollipop",0],["🍋","Lemon",1]]},
+        {a:"Straight",b:"Curved",items:[["📏","Ruler",0],["🍌","Banana",1]]},
+        {a:"Day-active",b:"Night-active",items:[["🐓","Rooster",0],["🦉","Owl",1]]},
+        {a:"Waterproof",b:"Absorbent",items:[["☂️","Raincoat",0],["🧻","Paper towel",1]]},
+        {a:"Recyclable",b:"Not recyclable",items:[["🥫","Tin can",0],["🍌","Banana peel",1]]},
+        {a:"Clean",b:"Dirty",items:[["✨","Clean plate",0],["🧤","Muddy glove",1]]}
+      ],
+      difficult: [
+        {a:"Solid",b:"Liquid",items:[["🧱","Brick",0],["💧","Water",1]]},
+        {a:"Carnivore",b:"Herbivore",items:[["🦁","Lion",0],["🦌","Deer",1]]},
+        {a:"Renewable",b:"Non-renewable",items:[["☀️","Sunlight",0],["🛢️","Petroleum",1]]},
+        {a:"Mammal",b:"Reptile",items:[["🐬","Dolphin",0],["🦎","Lizard",1]]},
+        {a:"Transparent",b:"Opaque",items:[["🪟","Clear glass",0],["🪵","Wooden board",1]]},
+        {a:"Tool",b:"Toy",items:[["🔨","Hammer",0],["🧸","Teddy bear",1]]},
+        {a:"Natural",b:"Man-made",items:[["🍃","Leaf",0],["🪑","Chair",1]]},
+        {a:"Land habitat",b:"Water habitat",items:[["🐪","Camel",0],["🐠","Clownfish",1]]},
+        {a:"Magnetic",b:"Non-magnetic",items:[["🧲","Iron nail",0],["🪵","Wooden spoon",1]]},
+        {a:"Conductor",b:"Insulator",items:[["🔌","Copper wire",0],["🧤","Rubber glove",1]]},
+        {a:"Water-absorbent",b:"Water-resistant",items:[["🧽","Sponge",0],["🧥","Rain jacket",1]]},
+        {a:"Biodegradable",b:"Non-biodegradable",items:[["🍂","Dry leaf",0],["🥤","Plastic cup",1]]},
+        {a:"Plant part",b:"Animal part",items:[["🌱","Root",0],["🪶","Feather",1]]},
+        {a:"Needs electricity",b:"No electricity needed",items:[["📱","Phone",0],["📖","Book",1]]},
+        {a:"Can melt",b:"Does not melt easily",items:[["🧈","Butter",0],["🪨","Stone",1]]},
+        {a:"Push",b:"Pull",items:[["🛒","Shopping cart",0],["🧳","Wagon handle",1]]},
+        {a:"Edible",b:"Not edible",items:[["🥕","Carrot",0],["🧼","Soap",1]]},
+        {a:"Bendable",b:"Rigid",items:[["🧶","Rubber band",0],["📐","Metal ruler",1]]}
+      ]
+    };
+    const ITEM_VARIANTS={
+      simple:[
+        [[ ["🦛","Hippo",0],["🎈","Balloon",1] ],[ ["🐘","Elephant",0],["🍃","Leaf",1] ],[ ["🐘","Elephant",0],["🐜","Ant",1] ]],
+        [[ ["🐍","Snake",0],["📎","Paper clip",1] ],[ ["🧵","Long thread",0],["📏","Short ruler",1] ]],
+        [[ ["🌲","Pine tree",0],["🍄","Mushroom",1] ],[ ["🏢","Tall building",0],["🐁","Mouse",1] ]],
+        [[ ["🌳","Oak tree",0],["🚲","Bicycle",1] ],[ ["🐈","Kitten",0],["🪁","Kite",1] ]],
+        [[ ["🦕","Dinosaur",0],["🐞","Ladybug",1] ],[ ["🏔️","Mountain",0],["🐝","Bee",1] ]],
+        [[ ["🔥","Campfire",0],["⛄","Snowman",1] ],[ ["🍲","Hot soup",0],["🧊","Ice cube",1] ]],
+        [[ ["🧱","Brick",0],["☁️","Cotton ball",1] ],[ ["🥥","Coconut shell",0],["🛏️","Pillow",1] ]],
+        [[ ["🌧️","Rain cloud",0],["🧻","Dry paper towel",1] ],[ ["🫧","Wet washcloth",0],["🏜️","Dry sand",1] ]]
+      ],
+      moderate:[
+        [[ ["🥦","Broccoli",0],["🍩","Donut",1] ],[ ["🥕","Carrot",0],["🍰","Cake",1] ]],
+        [[ ["🏎️","Racing car",0],["🐢","Tortoise",1] ],[ ["🦅","Falcon",0],["🐌","Snail",1] ]],
+        [[ ["📯","Trumpet",0],["🐈","Quiet resting cat",1] ],[ ["🔔","Loud bell",0],["🤫","Quiet whisper",1] ]],
+        [[ ["🪙","Polished coin",0],["🧱","Chalk",1] ],[ ["✨","Shiny trophy",0],["🪵","Dull wood",1] ]],
+        [[ ["🦆","Rubber duck",0],["⚓","Anchor",1] ],[ ["🛟","Life ring",0],["🔩","Metal bolt",1] ]],
+        [[ ["🧣","Silk scarf",0],["🌳","Tree bark",1] ],[ ["🪨","Smooth pebble",0],["🧽","Scrubbing pad",1] ]],
+        [[ ["🍯","Honey",0],["🍈","Lime",1] ],[ ["🍬","Candy",0],["🍊","Grapefruit",1] ]],
+        [[ ["➡️","Straight arrow",0],["🪝","Curved hook",1] ],[ ["🪡","Straight needle",0],["🌀","Curly ribbon",1] ]],
+        [[ ["🦋","Butterfly",0],["🦇","Bat",1] ],[ ["🐝","Bee",0],["🦉","Owl",1] ]],
+        [[ ["🧥","Raincoat",0],["🧽","Sponge",1] ],[ ["🥾","Rubber boot",0],["🧻","Paper towel",1] ]],
+        [[ ["🍾","Glass bottle",0],["🥡","Foam food box",1] ],[ ["📦","Cardboard box",0],["🛍️","Plastic bag",1] ]],
+        [[ ["👕","Freshly washed shirt",0],["🥾","Muddy boot",1] ],[ ["🍽️","Clean dish",0],["🧦","Dirty sock",1] ]]
+      ],
+      difficult:[
+        [[ ["🧊","Ice block",0],["🥛","Milk",1] ],[ ["🧈","Butter",0],["🧃","Juice",1] ]],
+        [[ ["🐅","Tiger",0],["🐄","Cow",1] ],[ ["🦈","Shark",0],["🐑","Sheep",1] ]],
+        [[ ["🌬️","Wind power",0],["🪨","Coal",1] ],[ ["💧","Hydropower",0],["🛢️","Oil",1] ]],
+        [[ ["🐳","Blue whale",0],["🐢","Turtle",1] ],[ ["🦇","Bat",0],["🐍","Snake",1] ]],
+        [[ ["🪟","Window glass",0],["🧱","Brick",1] ],[ ["🔍","Clear lens",0],["📕","Closed book",1] ]],
+        [[ ["🪛","Screwdriver",0],["⚽","Ball",1] ],[ ["✂️","Scissors",0],["🪀","Yo-yo",1] ]],
+        [[ ["🐚","Seashell",0],["🧴","Plastic bottle",1] ],[ ["🪨","River stone",0],["🪑","Plastic chair",1] ]],
+        [[ ["🐪","Camel",0],["🐬","Dolphin",1] ],[ ["🦊","Fox",0],["🐙","Octopus",1] ]],
+        [[ ["📎","Steel paper clip",0],["🪮","Plastic comb",1] ],[ ["🧲","Iron nail",0],["🥄","Wooden spoon",1] ]],
+        [[ ["🪙","Aluminum foil",0],["🧤","Wool mitten",1] ],[ ["🔌","Copper wire",0],["🧶","Yarn",1] ]],
+        [[ ["🧻","Cotton towel",0],["🧥","Waxed jacket",1] ],[ ["🧽","Kitchen sponge",0],["☂️","Umbrella",1] ]],
+        [[ ["🍊","Orange peel",0],["🍾","Glass bottle",1] ],[ ["🍂","Fallen leaf",0],["🥤","Plastic cup",1] ]],
+        [[ ["🌸","Flower petal",0],["🐚","Seashell",1] ],[ ["🌿","Plant stem",0],["🪶","Bird feather",1] ]],
+        [[ ["📺","Television",0],["📖","Paperback book",1] ],[ ["🧺","Electric washing machine",0],["✏️","Pencil",1] ]],
+        [[ ["🍫","Chocolate",0],["🪨","Stone",1] ],[ ["🕯️","Candle wax",0],["🧱","Brick",1] ]],
+        [[ ["🛒","Shopping trolley to push",0],["🛷","Sled to pull",1] ],[ ["🧹","Broom to push",0],["🧳","Wheeled suitcase to pull",1] ]],
+        [[ ["🍄","Edible mushroom",0],["🧼","Soap",1] ],[ ["🥜","Peanut",0],["🧴","Shampoo",1] ]],
+        [[ ["🧹","Flexible pipe cleaner",0],["📐","Wooden ruler",1] ],[ ["🪢","Bendable wire",0],["🪵","Rigid plank",1] ]]
+      ]
+    };
+    const MODES={simple:{name:"Simple",rounds:6},moderate:{name:"Moderate",rounds:10},difficult:{name:"Difficult",rounds:15}};
+    const $=id=>document.getElementById(id);
+    const state={mode:"simple",round:0,score:0,deck:[],pair:null,selected:null,targetSide:0,phase:"choose",busy:false,runId:0};
+    const modePanel=$("modePanel"),gamePanel=$("gamePanel"),roller=$("rollerWindow"),spinButton=$("spinButton"),feedback=$("feedback");
+    document.querySelectorAll('input[name="mode"]').forEach(input=>input.addEventListener("change",()=>{state.mode=input.value;}));
+    $("startButton").addEventListener("click",()=>beginGame(state.mode));
+    $("resetButton").addEventListener("click",()=>beginGame(state.mode));
+    $("changeModeButton").addEventListener("click",()=>{state.runId++;if("speechSynthesis" in window)window.speechSynthesis.cancel();clearRound();gamePanel.classList.add("hidden");modePanel.classList.remove("hidden");state.phase="choose";});
+    $("howButton").addEventListener("click",()=>showModal("How to Play","Spin to hear the door labels, the two roller items, and a sorting question. Tap the item that answers the question. It will slide through its matching door, and the other item will follow automatically. The next question starts after that."));
+    $("closeModal").addEventListener("click",()=>$("modal").classList.add("hidden"));
+    $("modal").addEventListener("click",event=>{if(event.target===$("modal"))$("modal").classList.add("hidden");});
+    [0,1].forEach(index=>$("item"+index).addEventListener("click",()=>selectItem(index)));
+    $("hearQuestionButton").addEventListener("click",speakCurrentQuestion);
+    function showModal(title,message,win=false){$("modalTitle").textContent=title;$("modalText").textContent=message;$("modal").classList.remove("hidden");const actions=$("modal").querySelector(".dialog-actions");actions.innerHTML=win?'<button class="primary-button" id="replayButton" type="button">Play Again</button><button class="secondary-button" id="modalModeButton" type="button">Change Mode</button>':'<button class="secondary-button" id="closeModal" type="button">Close</button>';if(win){$("replayButton").addEventListener("click",()=>{ $("modal").classList.add("hidden");beginGame(state.mode);});$("modalModeButton").addEventListener("click",()=>{$("modal").classList.add("hidden");$("changeModeButton").click();});}else $("closeModal").addEventListener("click",()=>$("modal").classList.add("hidden"));}
+    let narratorVoice=null;
+    function refreshNarratorVoice(){
+      const voices=window.speechSynthesis.getVoices();
+      narratorVoice=voices.find(voice=>voice.name==="Rishi"&&voice.lang.toLowerCase()==="en-in")
+        ||voices.find(voice=>voice.name==="Rishi")
+        ||voices.find(voice=>voice.lang.toLowerCase()==="en-in")
+        ||null;
+    }
+    function speak(text){
+      if(!("speechSynthesis" in window)||!("SpeechSynthesisUtterance" in window))return Promise.resolve();
+      window.speechSynthesis.cancel();
+      return new Promise(resolve=>{
+        const utterance=new SpeechSynthesisUtterance(text);
+        if(!narratorVoice)refreshNarratorVoice();
+        if(narratorVoice)utterance.voice=narratorVoice;
+        utterance.lang="en-IN";utterance.rate=1;utterance.pitch=1;
+        utterance.onend=resolve;utterance.onerror=resolve;
+        window.speechSynthesis.speak(utterance);
+      });
+    }
+    if("speechSynthesis" in window){
+      refreshNarratorVoice();
+      window.speechSynthesis.addEventListener("voiceschanged",refreshNarratorVoice);
+    }
+    function currentQuestionText(){
+      if(!state.pair)return "Spin to hear the next sorting question.";
+      const label=state.targetSide===0?state.pair.a:state.pair.b;
+      const firstName=state.pair.items[0][1];const secondName=state.pair.items[1][1];
+      return `Door choices: ${state.pair.a} and ${state.pair.b}. Roller choices: ${firstName} and ${secondName}. Which one belongs in ${label}?`;
+    }
+    function speakCurrentQuestion(){if(state.pair&&state.phase==="select")speak(currentQuestionText());}
+    function clearRound(){state.pair=null;state.selected=null;state.busy=false;roller.classList.remove("spinning");document.querySelectorAll(".door").forEach(door=>door.classList.remove("open","shake","correct","wrong"));}
+    function beginGame(mode){if(!mode)return;if("speechSynthesis" in window)window.speechSynthesis.cancel();clearRound();state.mode=mode;state.runId++;state.round=0;state.score=0;state.deck=shuffle(CONTENT[mode].slice());state.phase="ready";modePanel.classList.add("hidden");gamePanel.classList.remove("hidden");$("modeName").textContent=MODES[mode].name;setItem(0,null);setItem(1,null);setDoors("Door 1","Door 2");updateStatus();feedback.textContent="Spin to hear your first sorting question!";feedback.className="feedback";spinButton.textContent="Spin";spinButton.disabled=false;$("hearQuestionButton").disabled=true;}
+    function shuffle(items){for(let i=items.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[items[i],items[j]]=[items[j],items[i]];}return items;}
+    function updateStatus(){$("roundCount").textContent=`${Math.min(state.round+1,MODES[state.mode].rounds)} / ${MODES[state.mode].rounds}`;$("scoreCount").textContent=state.score;}
+    function setDoors(a,b){[$("doorLabel0"),$("doorLabel1")].forEach((label,index)=>{label.textContent=index===0?a:b;$("door"+index).setAttribute("aria-label",`${index===0?a:b} door`);});}
+    function setItem(index,item){const button=$("item"+index);button.classList.remove("fly","wrong-item");button.style.removeProperty("--fly-x");button.style.removeProperty("--fly-y");button.dataset.side=item?item[2]:"";button.querySelector(".reel-emoji").textContent=item?item[0]:"❔";button.querySelector(".reel-name").textContent=item?item[1]:"Ready?";button.disabled=!item;button.setAttribute("aria-label",item?`${item[1]}, ${index===0?"first":"second"} item`:"No item yet");button.setAttribute("aria-pressed","false");}
+    function spin(){if(state.busy||state.phase==="sorting"||state.phase==="over")return;if("speechSynthesis" in window)window.speechSynthesis.cancel();clearRound();const runId=state.runId;state.busy=true;state.phase="spinning";spinButton.textContent="Spinning...";spinButton.disabled=true;$("hearQuestionButton").disabled=true;roller.classList.add("spinning");feedback.className="feedback";feedback.textContent="The roller is spinning!";const category=state.deck[state.round%state.deck.length];const categoryIndex=CONTENT[state.mode].indexOf(category);const examplePairs=[category.items,...ITEM_VARIANTS[state.mode][categoryIndex]];const chosenItems=examplePairs[Math.floor(Math.random()*examplePairs.length)];const pair={...category,items:chosenItems};window.setTimeout(()=>{if(runId!==state.runId)return;const swapDoors=Math.random()<0.5;state.pair=swapDoors?{a:pair.b,b:pair.a,items:pair.items.map(([emoji,name,door])=>[emoji,name,1-door])}:pair;state.targetSide=Math.random()<0.5?0:1;roller.classList.remove("spinning");setItem(0,state.pair.items[0]);setItem(1,state.pair.items[1]);setDoors(state.pair.a,state.pair.b);document.querySelectorAll(".door").forEach(door=>door.disabled=true);state.busy=false;state.phase="select";spinButton.textContent="Listen & choose";feedback.textContent=currentQuestionText();$("hearQuestionButton").disabled=false;speak(currentQuestionText());},1050);}
+    function sendItem(itemIndex,doorIndex){const itemRect=$("item"+itemIndex).getBoundingClientRect();const doorRect=$("door"+doorIndex).getBoundingClientRect();const button=$("item"+itemIndex);button.style.setProperty("--fly-x",`${doorRect.left+doorRect.width/2-itemRect.left-itemRect.width/2}px`);button.style.setProperty("--fly-y",`${doorRect.top+doorRect.height/2-itemRect.top-itemRect.height/2}px`);button.classList.add("fly");}
+    function selectItem(index){
+      if(state.phase!=="select"||state.busy)return;
+      const item=state.pair.items[index];
+      if(item[2]!==state.targetSide){
+        const button=$("item"+index);button.classList.remove("wrong-item");void button.offsetWidth;button.classList.add("wrong-item");
+        feedback.className="feedback retry";feedback.textContent=`Not that one. Listen again: ${currentQuestionText()}`;
+        speak(`Not quite. Try again. ${currentQuestionText()}`);window.setTimeout(()=>button.classList.remove("wrong-item"),560);return;
+      }
+      const runId=state.runId;state.selected=index;state.busy=true;state.phase="sorting";spinButton.textContent="Next question...";spinButton.disabled=true;$("hearQuestionButton").disabled=true;
+      const targetDoor=item[2];const door=$("door"+targetDoor);door.classList.add("open","correct");sendItem(index,targetDoor);
+      feedback.className="feedback success";feedback.textContent=`Yes! ${item[1]} belongs in ${targetDoor===0?state.pair.a:state.pair.b}.`;
+      speak(`Correct! ${item[1]} belongs in the ${targetDoor===0?state.pair.a:state.pair.b} door. The other item, ${state.pair.items[1-index][1]}, goes through the ${state.pair.items[1-index][2]===0?state.pair.a:state.pair.b} door.`);
+      window.setTimeout(()=>{
+        if(runId!==state.runId)return;
+        setItem(index,null);const remaining=1-index;const other=state.pair.items[remaining];const otherDoor=other[2];const autoDoor=$("door"+otherDoor);
+        autoDoor.classList.add("open","correct");sendItem(remaining,otherDoor);
+        feedback.textContent=`${other[1]} goes through the ${otherDoor===0?state.pair.a:state.pair.b} door.`;
+        window.setTimeout(()=>{
+          if(runId!==state.runId)return;
+          setItem(remaining,null);document.querySelectorAll(".door").forEach(d=>d.classList.remove("open","correct","wrong","shake"));
+          state.score+=2;state.round++;state.selected=null;updateStatus();
+          if(state.round>=MODES[state.mode].rounds){state.phase="over";feedback.className="feedback success";feedback.textContent="Every item found its home! You did it!";speak("Wonderful sorting! You answered every question!");showModal("Wonderful sorting!",`You sorted all ${MODES[state.mode].rounds} rounds and sent ${state.score} items to the right doors!`,true);return;}
+          state.phase="ready";state.busy=false;spinButton.textContent="Next Question";spinButton.disabled=false;feedback.className="feedback";feedback.textContent="Press Next Question when you are ready.";
+        },520);
+      },480);
+    }
+    spinButton.addEventListener("click",spin);
+  </script>
+</body>
+</html>

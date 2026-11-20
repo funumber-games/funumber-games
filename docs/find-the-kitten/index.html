@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#073b4c">
+    <meta name="description" content="Explore colorful scenes, follow spatial clues, find digits, and reveal a playful kitten.">
+    <title>Find the Kitten — FuNumber Games</title>
+    <style>
+        :root { color-scheme:light; font-family:"Trebuchet MS","Segoe UI",sans-serif; --navy:#073b4c; --deep:#042f40; --gold:#ffd166; --coral:#ff7058; --teal:#16b8aa; --violet:#9a5bd0; }
+        * { box-sizing:border-box; }
+        html { min-height:100%; }
+        body { display:flex; min-height:100vh; min-height:100dvh; flex-direction:column; margin:0; color:#fff; background:radial-gradient(circle at 82% 5%,rgba(26,214,196,.72),transparent 38%),linear-gradient(145deg,#0b5368,#087c86 58%,#6c9277); }
+        button,input { font:inherit; }
+        button { touch-action:manipulation; }
+        .global-header { position:sticky; top:0; z-index:40; display:flex; min-height:70px; align-items:center; justify-content:space-between; gap:12px; padding:7px clamp(14px,4vw,58px); border-bottom:1px solid rgba(255,255,255,.2); background:rgba(4,43,59,.94); box-shadow:0 8px 24px rgba(0,0,0,.18); backdrop-filter:blur(12px); }
+        .brand { display:inline-flex; align-items:center; gap:10px; color:#fff; font-size:clamp(17px,2vw,23px); font-weight:1000; letter-spacing:-.04em; text-decoration:none; white-space:nowrap; }
+        .brand img { width:68px; height:48px; object-fit:cover; border-radius:48%; filter:drop-shadow(0 3px 6px rgba(0,0,0,.3)); }
+        .brand strong,.brand sup { color:var(--gold); }
+        .brand sup { font-size:.45em; vertical-align:top; }
+        .main-nav { display:flex; align-items:center; gap:8px; }
+        .nav-button { min-height:42px; padding:8px 15px; border:1px solid rgba(255,255,255,.35); border-radius:999px; background:rgba(255,255,255,.11); color:#fff; cursor:pointer; font-weight:900; text-decoration:none; }
+        .nav-button:hover { background:rgba(255,255,255,.22); }
+        main { width:min(1420px,calc(100% - 24px)); flex:1; margin:0 auto; padding:9px 0 14px; }
+        .page-title { margin:0 0 8px; text-align:center; }
+        .eyebrow { margin:0 0 2px; color:#ffe28a; font-size:10px; font-weight:1000; letter-spacing:.16em; }
+        h1 { margin:0; font-size:clamp(25px,3vw,36px); letter-spacing:-.045em; text-shadow:0 3px 10px rgba(0,0,0,.22); }
+        .setup-panel,.game-panel { border:1px solid rgba(255,255,255,.35); border-radius:22px; background:rgba(5,46,62,.82); box-shadow:0 16px 38px rgba(0,0,0,.23); backdrop-filter:blur(10px); }
+        .setup-panel { padding:clamp(14px,2.2vw,24px); }
+        .setup-panel h2 { margin:0 0 10px; text-align:center; font-size:20px; }
+        .theme-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+        .theme-card { position:relative; display:grid; min-width:0; grid-template-columns:68px minmax(0,1fr); align-items:center; gap:9px; padding:7px; border:2px solid rgba(255,255,255,.62); border-radius:15px; background:rgba(255,255,255,.09); color:#fff; cursor:pointer; font-weight:900; text-align:left; transition:transform .15s ease,background .15s ease,border-color .15s ease; }
+        .theme-card:hover { transform:translateY(-2px); background:rgba(255,255,255,.16); }
+        .theme-card:has(input:checked) { border-color:var(--gold); background:rgba(255,209,102,.2); box-shadow:0 0 0 3px rgba(255,209,102,.2); }
+        .theme-card input { position:absolute; opacity:0; }
+        .theme-card img { display:block; width:68px; aspect-ratio:1.51; object-fit:cover; border-radius:9px; box-shadow:0 3px 8px rgba(0,0,0,.25); }
+        .theme-card span { overflow-wrap:anywhere; font-size:13px; line-height:1.15; }
+        .mode-heading { margin-top:16px!important; }
+        .mode-options { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; }
+        .mode-card { position:relative; display:grid; min-width:180px; grid-template-columns:42px 1fr; align-items:center; gap:8px; padding:11px 13px; border:3px solid rgba(255,255,255,.78); border-radius:18px; color:#fff; cursor:pointer; text-align:left; box-shadow:0 5px 0 rgba(0,0,0,.23); transition:transform .15s ease,filter .15s ease; }
+        .mode-card:nth-child(1) { background:linear-gradient(145deg,#ff795a,#ffb867); }
+        .mode-card:nth-child(2) { background:linear-gradient(145deg,#07a790,#55d6be); }
+        .mode-card:nth-child(3) { background:linear-gradient(145deg,#7857cc,#dc5ca8); }
+        .mode-card:has(input:checked) { outline:4px solid #ffe264; outline-offset:2px; transform:translateY(-2px); }
+        .mode-card input { position:absolute; opacity:0; }
+        .mode-emoji { font-size:31px; text-align:center; }
+        .mode-copy strong,.mode-copy small { display:block; }
+        .mode-copy strong { font-size:16px; }
+        .mode-copy small { margin-top:2px; font-size:11px; font-weight:800; line-height:1.2; }
+        .setup-action { margin-top:15px; text-align:center; }
+        .action-button { min-height:44px; padding:9px 20px; border:2px solid rgba(255,255,255,.8); border-radius:14px; background:linear-gradient(135deg,#ff745a,#f34e67); box-shadow:0 5px 0 #a83b58,0 9px 16px rgba(0,0,0,.2); color:#fff; cursor:pointer; font-weight:1000; transition:transform .15s ease,filter .15s ease; }
+        .action-button:hover { transform:translateY(-2px); filter:brightness(1.07); }
+        .secondary { background:linear-gradient(135deg,#13b8a6,#0787a5); box-shadow:0 5px 0 #086775,0 9px 16px rgba(0,0,0,.2); }
+        .violet { background:linear-gradient(135deg,#8060d5,#b659ad); box-shadow:0 5px 0 #62418e,0 9px 16px rgba(0,0,0,.2); }
+        .game-panel { padding:8px; }
+        .game-topline { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:7px; margin-bottom:7px; }
+        .counter { display:inline-flex; min-height:32px; align-items:center; gap:6px; padding:4px 12px; border:1px solid rgba(255,255,255,.36); border-radius:999px; background:rgba(3,30,46,.68); font-size:12px; font-weight:900; }
+        .counter strong { color:var(--gold); font-size:15px; }
+        .game-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(220px,260px); align-items:center; gap:10px; }
+        .scene-column { min-width:0; }
+        .scene-shell { position:relative; width:min(100%,calc((100dvh - 240px)*1.513)); aspect-ratio:752/497; justify-self:center; overflow:hidden; margin:auto; border:7px solid #ffe09a; border-radius:20px; background:#17384d; box-shadow:0 8px 0 #6b5420,0 14px 28px rgba(0,0,0,.3); }
+        .scene-image { display:block; width:100%; height:100%; object-fit:fill; user-select:none; -webkit-user-drag:none; }
+        .hotspot-layer { position:absolute; inset:0; }
+        .hotspot { position:absolute; display:block; min-width:42px; min-height:42px; padding:0; transform:translate(-50%,-50%); border:0; border-radius:18px; background:transparent; cursor:pointer; }
+        .hotspot::before { position:absolute; inset:4px; border:3px solid transparent; border-radius:inherit; content:""; transition:background .15s ease,border-color .15s ease,box-shadow .15s ease; }
+        .hotspot:focus-visible { outline:0; }
+        .hotspot:hover .prop-response,.hotspot:focus-visible .prop-response { box-shadow:0 0 0 4px rgba(255,255,255,.9),0 0 0 8px rgba(7,59,76,.35); }
+        .hotspot.hint::before { border-color:var(--gold); background:rgba(255,209,102,.2); animation:hint-pulse .95s ease-in-out infinite alternate; }
+        .hotspot.correct::before { border-color:#8affc5; background:rgba(80,255,180,.24); }
+        .hotspot.wrong::before { border-color:#ff8776; background:rgba(255,80,70,.24); }
+        .hotspot.step-complete::after { position:absolute; z-index:4; top:50%; left:50%; display:grid; width:28px; aspect-ratio:1; place-items:center; transform:translate(-50%,-50%); border:2px solid white; border-radius:50%; background:#16b88a; box-shadow:0 3px 8px rgba(0,0,0,.3); color:white; content:"✓"; font-size:17px; font-weight:1000; pointer-events:none; }
+        .hotspot.reveal-answer::after { position:absolute; z-index:5; top:50%; left:50%; max-width:150px; padding:5px 8px; transform:translate(-50%,-50%); border:2px solid white; border-radius:999px; background:#ffd166; box-shadow:0 4px 10px rgba(0,0,0,.35); color:#12384a; content:attr(data-label); font-size:12px; font-weight:1000; line-height:1.1; pointer-events:none; white-space:nowrap; }
+        .hotspot.edge-right.reveal-answer::after { right:0; left:auto; transform:translateY(-50%); }
+        .hotspot.edge-left.reveal-answer::after { left:0; transform:translateY(-50%); }
+        .prop-response { position:absolute; z-index:1; top:50%; left:50%; width:25px; height:25px; transform:translate(-50%,-50%); border-radius:50%; pointer-events:none; }
+        .scene-digit { position:absolute; z-index:6; top:50%; left:50%; display:grid; width:clamp(24px,2.7vw,34px); aspect-ratio:1; place-items:center; transform:translate(-50%,-50%) scale(.15); border:3px solid white; border-radius:50%; background:linear-gradient(145deg,#fff7b8,#ffbd4a); box-shadow:0 3px 0 #9b6324,0 5px 10px rgba(0,0,0,.35); color:#12384a; font-size:clamp(14px,1.6vw,19px); font-weight:1000; opacity:0; pointer-events:none; }
+        .scene-digit.found { transform:translate(-50%,-50%) scale(1); opacity:1; }
+        .hotspot.revealing::before { border-color:#fff2a0; background:rgba(255,225,112,.25); animation:object-shift .72s ease; }
+        .hotspot.revealing .prop-response { width:68%; height:68%; background:rgba(255,255,255,.14); box-shadow:0 0 0 4px rgba(255,255,255,.7),0 8px 18px rgba(0,0,0,.22); animation:object-lift .72s ease; }
+        .hotspot.revealing .scene-digit { animation:digit-pop .58s .24s cubic-bezier(.2,1.5,.35,1) both; }
+        .hotspot.animate-wobble .prop-response { animation:wobble .42s ease; background:rgba(255,255,255,.08); }
+        .hotspot.animate-rock .prop-response { animation:rock .42s ease; background:rgba(255,255,255,.08); }
+        .hotspot.animate-lift .prop-response { animation:lift .42s ease; background:rgba(255,255,255,.08); }
+        .hotspot.animate-roll .prop-response { animation:roll .48s ease; background:rgba(255,255,255,.08); }
+        .hotspot.animate-tip .prop-response { animation:tip .42s ease; background:rgba(255,255,255,.08); }
+        .hotspot.animate-peek .prop-response { animation:peek .45s ease; background:rgba(255,255,255,.08); }
+        .kitten-peek { position:absolute; z-index:12; right:4%; bottom:-4%; display:grid; justify-items:center; transform:translateY(105%); transition:transform .7s cubic-bezier(.2,1.45,.3,1); pointer-events:none; }
+        .kitten-peek.show { transform:translateY(0); }
+        .kitten-face { font-size:clamp(70px,12vw,150px); filter:drop-shadow(0 9px 7px rgba(0,0,0,.4)); }
+        .kitten-sign { margin-top:-18px; padding:6px 12px; border:3px solid white; border-radius:14px; background:var(--coral); font-size:clamp(14px,2vw,22px); font-weight:1000; box-shadow:0 5px 0 #a83b58; }
+        .confetti { position:absolute; z-index:11; inset:0; overflow:hidden; pointer-events:none; }
+        .confetti i { position:absolute; top:-12%; width:10px; height:18px; border-radius:3px; animation:confetti 1.7s linear forwards; }
+        .found-strip { display:flex; min-height:38px; align-items:center; justify-content:center; gap:9px; margin:8px auto 0; padding:5px 10px; border:1px solid rgba(255,255,255,.3); border-radius:14px; background:rgba(3,31,46,.76); }
+        .found-label { color:#ffe28a; font-size:11px; font-weight:1000; letter-spacing:.04em; text-transform:uppercase; white-space:nowrap; }
+        .found-numbers { display:flex; min-width:30px; align-items:center; justify-content:center; flex-wrap:wrap; gap:5px; }
+        .found-number { display:grid; width:27px; aspect-ratio:1; place-items:center; border:2px solid white; border-radius:50%; background:linear-gradient(145deg,#d4ffec,#55d6a8); box-shadow:0 2px 0 #18785e; color:#12384a; font-size:15px; font-weight:1000; }
+        .found-empty { color:rgba(255,255,255,.72); font-size:11px; font-weight:800; }
+        .clue-panel { display:grid; align-content:center; gap:6px; min-width:0; padding:10px; border:1px solid rgba(255,255,255,.28); border-radius:18px; background:rgba(3,31,46,.68); text-align:center; }
+        .scene-name { margin:0; color:#ffe28a; font-size:12px; font-weight:1000; letter-spacing:.08em; text-transform:uppercase; }
+        .target-badge { display:grid; width:60px; aspect-ratio:1; place-items:center; margin:auto; border:4px solid white; border-radius:50%; background:linear-gradient(145deg,#fff38d,#ffb43b 55%,#ff7058); box-shadow:0 5px 0 #a83b58,0 9px 16px rgba(0,0,0,.28); color:#12384a; font-size:31px; font-weight:1000; }
+        .target-badge.question { color:#fff; background:linear-gradient(145deg,#7257ca,#dd5ca7); }
+        .clue-caption { display:grid; min-height:54px; place-items:center; margin:0; padding:8px; border:2px solid rgba(255,255,255,.32); border-radius:13px; background:rgba(255,255,255,.1); font-size:clamp(14px,1.35vw,17px); font-weight:1000; line-height:1.24; }
+        .clue-actions { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+        .speaker-button,.reveal-button { display:inline-flex; min-height:39px; align-items:center; justify-content:center; gap:5px; padding:6px 8px; border:2px solid white; border-radius:12px; background:linear-gradient(145deg,#ffd166,#ff9e43); box-shadow:0 3px 0 #9a6224; color:#12384a; cursor:pointer; font-size:12px; font-weight:1000; }
+        .reveal-button { background:linear-gradient(145deg,#8fe8da,#37b6c5); box-shadow:0 3px 0 #087287; }
+        .speaker-button span { font-size:22px; }
+        .step-dots { display:flex; justify-content:center; gap:7px; min-height:12px; }
+        .step-dots i { width:11px; aspect-ratio:1; border:2px solid rgba(255,255,255,.7); border-radius:50%; background:transparent; }
+        .step-dots i.active { background:var(--gold); }
+        .status { min-height:28px; margin:0; color:rgba(255,255,255,.86); font-size:11px; font-weight:800; line-height:1.25; }
+        .game-controls { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:9px; }
+        .site-footer { align-self:flex-end; margin:3px 12px 7px; color:rgba(255,255,255,.82); font-size:10px; text-shadow:0 1px 4px #000; }
+        .overlay { position:fixed; z-index:80; inset:0; display:grid; place-items:center; overflow-y:auto; padding:16px; background:rgba(2,26,39,.79); backdrop-filter:blur(7px); }
+        .overlay[hidden] { display:none; }
+        .dialog { width:min(620px,100%); padding:clamp(20px,4vw,34px); border:3px solid white; border-radius:26px; background:linear-gradient(145deg,#fffaf0,#dffaf2); box-shadow:0 24px 70px rgba(0,0,0,.48); color:#17384d; text-align:center; }
+        .dialog .big-cat { font-size:74px; }
+        .dialog h2 { margin:5px 0 10px; color:#0b5968; font-size:clamp(28px,5vw,42px); }
+        .dialog p { line-height:1.5; }
+        .dialog-actions { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:18px; }
+        .instructions { text-align:left; }
+        .instructions h2 { text-align:center; }
+        .instructions li { margin:8px 0; line-height:1.45; }
+        .close-button { float:right; width:39px; aspect-ratio:1; border:0; border-radius:50%; background:var(--coral); color:#fff; cursor:pointer; font-size:24px; font-weight:1000; }
+        .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+        @keyframes hint-pulse { to { box-shadow:0 0 0 6px rgba(255,209,102,.35); } }
+        @keyframes wobble { 25%{transform:translate(-50%,-50%) rotate(-4deg)} 70%{transform:translate(-50%,-50%) rotate(4deg)} }
+        @keyframes rock { 35%{transform:translate(-50%,calc(-50% - 4px)) rotate(-3deg)} 75%{transform:translate(-50%,-50%) rotate(3deg)} }
+        @keyframes lift { 50%{transform:translate(-50%,calc(-50% - 7px))} }
+        @keyframes roll { 50%{transform:translate(calc(-50% + 7px),-50%) rotate(18deg)} }
+        @keyframes tip { 50%{transform:translate(-50%,calc(-50% - 3px)) rotate(8deg)} }
+        @keyframes peek { 50%{transform:translate(-50%,calc(-50% - 4px)) scale(1.08)} }
+        @keyframes object-shift { 0%,100%{transform:translateY(0)} 38%{transform:translateY(-7px) rotate(-2deg)} 68%{transform:translateY(2px) rotate(1deg)} }
+        @keyframes object-lift { 0%,100%{transform:translate(-50%,-50%) scale(.35); opacity:0} 36%{transform:translate(-50%,calc(-50% - 10px)) scale(1); opacity:1} 72%{transform:translate(-50%,-50%) scale(.85); opacity:.5} }
+        @keyframes digit-pop { 0%{transform:translate(-50%,-30%) scale(.15); opacity:0} 70%{transform:translate(-50%,-58%) scale(1.18); opacity:1} 100%{transform:translate(-50%,-50%) scale(1); opacity:1} }
+        @keyframes confetti { to { transform:translateY(125vh) rotate(620deg); } }
+        @media (max-width:900px) {
+            .global-header { position:relative; }
+            .theme-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+            .game-layout { grid-template-columns:minmax(0,1fr) 235px; }
+            .scene-shell { width:100%; }
+            .clue-panel { padding:9px; }
+            .target-badge { width:56px; font-size:29px; }
+            .clue-caption { min-height:52px; font-size:14px; }
+        }
+        @media (max-width:650px) {
+            .global-header { min-height:64px; padding:7px 10px; }
+            .brand img { width:52px; height:38px; }
+            .brand { font-size:15px; }
+            .nav-button { min-height:38px; padding:7px 10px; font-size:12px; }
+            main { width:calc(100% - 14px); padding-top:6px; }
+            .page-title { margin-bottom:5px; }
+            .setup-panel { padding:10px; }
+            .theme-grid { gap:6px; }
+            .theme-card { grid-template-columns:52px 1fr; padding:5px; }
+            .theme-card img { width:52px; }
+            .theme-card span { font-size:11px; }
+            .mode-card { min-width:145px; padding:8px; }
+            .game-layout { grid-template-columns:1fr; }
+            .scene-shell { order:1; }
+            .clue-panel { grid-template-columns:auto 1fr; align-items:center; order:0; text-align:left; }
+            .scene-name,.step-dots,.status { display:none; }
+            .target-badge { width:52px; font-size:27px; }
+            .clue-caption { min-height:52px; padding:7px; font-size:13px; }
+            .clue-actions { grid-column:1/-1; }
+            .speaker-button span { font-size:22px; }
+            .hotspot { min-width:38px; min-height:38px; }
+        }
+        @media (orientation:landscape) and (max-height:720px) and (min-width:700px) {
+            .global-header { min-height:58px; }
+            .brand img { width:54px; height:38px; }
+            .page-title { display:none; }
+            main { padding-top:5px; }
+            .scene-shell { width:min(100%,calc((100dvh - 170px)*1.513)); }
+            .game-topline { margin-bottom:4px; }
+            .game-controls { margin-top:5px; }
+            .action-button { min-height:38px; padding:6px 15px; }
+        }
+        @media (prefers-reduced-motion:reduce) {
+            *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
+        }
+    </style>
+</head>
+<body>
+<header class="global-header">
+    <a class="brand" href="../index.html" aria-label="FuNumber Games home"><img src="../FuNumber-logo.jpg" alt=""><span>FuNumber <strong>Games</strong><sup>®</sup></span></a>
+    <nav class="main-nav" aria-label="Main navigation"><a class="nav-button" href="../index.html">Home</a><button class="nav-button" id="openInstructions" type="button">How to Play</button></nav>
+</header>
+
+<main>
+    <header class="page-title"><p class="eyebrow">LOOK • LISTEN • DISCOVER</p><h1>Find the Kitten</h1></header>
+
+    <section class="setup-panel" id="setupPanel" aria-labelledby="themeHeading">
+        <h2 id="themeHeading">Choose a scene</h2>
+        <div class="theme-grid" id="themeGrid"></div>
+        <h2 class="mode-heading">Choose a mode</h2>
+        <div class="mode-options">
+            <label class="mode-card"><input type="radio" name="mode" value="simple" checked><span class="mode-emoji" aria-hidden="true">🐣</span><span class="mode-copy"><strong>Simple</strong><small>Find hidden digits 1–5</small></span></label>
+            <label class="mode-card"><input type="radio" name="mode" value="moderate"><span class="mode-emoji" aria-hidden="true">🧩</span><span class="mode-copy"><strong>Moderate</strong><small>One clue, digits 1–9</small></span></label>
+            <label class="mode-card"><input type="radio" name="mode" value="difficult"><span class="mode-emoji" aria-hidden="true">🚀</span><span class="mode-copy"><strong>Difficult</strong><small>Two clues in order</small></span></label>
+        </div>
+        <div class="setup-action"><button class="action-button" id="startButton" type="button">Let’s Go!</button></div>
+    </section>
+
+    <section class="game-panel" id="gamePanel" hidden aria-label="Find the Kitten game">
+        <div class="game-topline" aria-live="polite"><span class="counter">Scene <strong id="sceneCounter">—</strong></span><span class="counter">Mode <strong id="modeCounter">—</strong></span><span class="counter">Found <strong id="progressCounter">0 / 0</strong></span></div>
+        <div class="game-layout">
+            <section class="scene-column" aria-label="Illustrated search scene">
+                <div class="scene-shell" id="sceneShell">
+                    <img class="scene-image" id="sceneImage" alt="">
+                    <div class="hotspot-layer" id="hotspotLayer"></div>
+                    <div class="confetti" id="confetti" aria-hidden="true"></div>
+                    <div class="kitten-peek" id="kittenPeek" aria-hidden="true"><div class="kitten-face">🐱</div><div class="kitten-sign">You found me!</div></div>
+                </div>
+                <div class="found-strip" aria-live="polite"><span class="found-label">Numbers found</span><div class="found-numbers" id="foundNumbers"><span class="found-empty">None yet</span></div></div>
+            </section>
+            <aside class="clue-panel" aria-label="Current clue">
+                <p class="scene-name" id="sceneName"></p>
+                <div class="target-badge" id="targetBadge" aria-label="Target digit">0</div>
+                <p class="clue-caption" id="clueCaption" aria-live="polite"></p>
+                <div class="clue-actions"><button class="speaker-button" id="replayButton" type="button" aria-label="Replay the current clue"><span aria-hidden="true">🔊</span> Replay</button><button class="reveal-button" id="revealButton" type="button" aria-label="Reveal the answer"><span aria-hidden="true">👀</span> Reveal</button></div>
+                <div class="step-dots" id="stepDots" aria-label="Instruction steps"></div>
+                <p class="status" id="statusText" role="status" aria-live="polite"></p>
+            </aside>
+        </div>
+        <div class="game-controls"><button class="action-button secondary" id="resetButton" type="button">Start / Reset</button><button class="action-button violet" id="changeButton" type="button">Change Scene / Mode</button></div>
+    </section>
+</main>
+
+<footer class="site-footer">© 2026 FuNumber Games</footer>
+
+<div class="overlay" id="instructionsDialog" hidden role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
+    <section class="dialog instructions"><button class="close-button" type="button" data-close aria-label="Close">×</button><div class="big-cat" aria-hidden="true">🐱</div><h2 id="instructionsTitle">How to Play</h2><ol><li>Choose a scene and a mode.</li><li>Listen to the clue or press Replay to hear it again.</li><li>Tap the place described by the clue. In Difficult mode, find two different places in order before the digit is revealed.</li><li>Found digits are added to the list below the picture. If a clue is difficult to locate, press Reveal.</li><li>Find every digit to make the kitten peek out.</li></ol><button class="action-button secondary" type="button" data-close>Got it!</button></section>
+</div>
+
+<div class="overlay" id="endDialog" hidden role="dialog" aria-modal="true" aria-labelledby="endTitle">
+    <section class="dialog"><div class="big-cat" aria-hidden="true">🐱🎉</div><h2 id="endTitle">You found the kitten!</h2><p>You followed every clue and discovered all the digits in <strong id="endScene"></strong>.</p><div class="dialog-actions"><button class="action-button secondary" id="playAgainButton" type="button">Play Again</button><button class="action-button violet" id="chooseAgainButton" type="button">Choose Another Scene</button></div></section>
+</div>
+
+<script src="game-logic.js"></script>
+<script>
+(() => {
+    const rules = window.FindKittenRules;
+    const setupPanel = document.getElementById("setupPanel");
+    const gamePanel = document.getElementById("gamePanel");
+    const themeGrid = document.getElementById("themeGrid");
+    const sceneImage = document.getElementById("sceneImage");
+    const hotspotLayer = document.getElementById("hotspotLayer");
+    const sceneCounter = document.getElementById("sceneCounter");
+    const modeCounter = document.getElementById("modeCounter");
+    const progressCounter = document.getElementById("progressCounter");
+    const sceneName = document.getElementById("sceneName");
+    const targetBadge = document.getElementById("targetBadge");
+    const clueCaption = document.getElementById("clueCaption");
+    const stepDots = document.getElementById("stepDots");
+    const statusText = document.getElementById("statusText");
+    const foundNumbers = document.getElementById("foundNumbers");
+    const kittenPeek = document.getElementById("kittenPeek");
+    const confetti = document.getElementById("confetti");
+    const endDialog = document.getElementById("endDialog");
+    let state = null;
+    let advanceTimer = 0;
+
+    Object.entries(rules.SCENES).forEach(([id, scene], index) => {
+        const label = document.createElement("label");
+        label.className = "theme-card";
+        label.innerHTML = `<input type="radio" name="theme" value="${id}" ${index === 0 ? "checked" : ""}><img src="${scene.image}" alt=""><span>${scene.emoji} ${scene.name}</span>`;
+        themeGrid.append(label);
+    });
+
+    function selectedValue(name) { return document.querySelector(`input[name="${name}"]:checked`)?.value; }
+
+    function speak(text) {
+        if (!("speechSynthesis" in window) || !text) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        const voices = window.speechSynthesis.getVoices();
+        utterance.voice = voices.find(voice => voice.name.includes("Rishi")) || voices.find(voice => voice.lang === "en-IN") || voices.find(voice => voice.lang.startsWith("en")) || null;
+        utterance.lang = utterance.voice?.lang || "en-IN";
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function renderScene() {
+        const scene = rules.SCENES[state.theme];
+        sceneImage.src = scene.image;
+        sceneImage.alt = `${scene.name}, a colorful illustrated search scene`;
+        sceneCounter.textContent = scene.name;
+        sceneName.textContent = `${scene.emoji} ${scene.name}`;
+        modeCounter.textContent = rules.MODES[state.mode].label;
+        hotspotLayer.replaceChildren();
+        scene.locations.forEach((location, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "hotspot";
+            button.dataset.index = index;
+            button.dataset.label = location.name;
+            if (location.x > 80) button.classList.add("edge-right");
+            if (location.x < 20) button.classList.add("edge-left");
+            button.setAttribute("aria-label", location.name);
+            button.style.left = `${location.x}%`;
+            button.style.top = `${location.y}%`;
+            button.style.width = `${location.width}%`;
+            button.style.height = `${location.height}%`;
+            const response = document.createElement("span");
+            response.className = "prop-response";
+            const marker = document.createElement("span");
+            marker.className = "scene-digit";
+            marker.textContent = index;
+            marker.setAttribute("aria-hidden", "true");
+            button.append(response, marker);
+            button.addEventListener("click", event => { event.stopPropagation(); handleTap(index, button); });
+            hotspotLayer.append(button);
+        });
+        document.getElementById("sceneShell").addEventListener("click", handleSceneMiss, { once:false });
+    }
+
+    function animateLocation(button, location, resultClass) {
+        const animationClass = `animate-${location.motion || "wobble"}`;
+        button.classList.remove("wrong", "correct", animationClass);
+        void button.offsetWidth;
+        button.classList.add(resultClass, animationClass);
+        window.setTimeout(() => button.classList.remove(resultClass, animationClass), 650);
+    }
+
+    function updateStepDots() {
+        stepDots.replaceChildren();
+        state.turn.expected.forEach((_, index) => {
+            const dot = document.createElement("i");
+            dot.className = index <= state.step ? "active" : "";
+            stepDots.append(dot);
+        });
+    }
+
+    function updateFoundNumbers() {
+        foundNumbers.replaceChildren();
+        const digits = [...state.found].sort((a, b) => a - b);
+        if (!digits.length) {
+            const empty = document.createElement("span");
+            empty.className = "found-empty";
+            empty.textContent = "None yet";
+            foundNumbers.append(empty);
+            return;
+        }
+        digits.forEach(digit => {
+            const chip = document.createElement("span");
+            chip.className = "found-number";
+            chip.textContent = digit;
+            chip.setAttribute("aria-label", `Found ${digit}`);
+            foundNumbers.append(chip);
+        });
+    }
+
+    function revealNumberAtTarget() {
+        const button = hotspotLayer.querySelector(`[data-index="${state.turn.targetIndex}"]`);
+        const marker = button?.querySelector(".scene-digit");
+        if (!button || !marker) return;
+        marker.textContent = state.turn.digit;
+        marker.classList.add("found");
+        button.classList.remove("revealing", "step-complete", "reveal-answer", "hint");
+        void button.offsetWidth;
+        button.classList.add("revealing");
+        window.setTimeout(() => button.classList.remove("revealing"), 900);
+    }
+
+    function beginTurn() {
+        const digit = state.round[state.turnIndex];
+        state.turn = rules.createTurn(state.theme, state.mode, digit);
+        state.step = 0;
+        state.locked = false;
+        hotspotLayer.querySelectorAll(".hotspot").forEach(button => button.classList.remove("hint", "correct", "wrong", "step-complete", "reveal-answer"));
+        targetBadge.textContent = state.mode === "simple" || digit === 0 ? digit : "?";
+        targetBadge.classList.toggle("question", state.mode !== "simple" && digit !== 0);
+        clueCaption.textContent = state.turn.clues[0];
+        statusText.textContent = digit === 0 ? "Welcome round: discover what zero means." : "Tap the place described by the clue.";
+        progressCounter.textContent = `${[...state.found].filter(value => value > 0).length} / ${state.round.length - 1}`;
+        updateFoundNumbers();
+        updateStepDots();
+        window.setTimeout(() => speak(state.turn.clues[0]), 220);
+    }
+
+    function completeTurn({ revealed = false } = {}) {
+        state.locked = true;
+        revealNumberAtTarget();
+        targetBadge.textContent = state.turn.digit;
+        targetBadge.classList.remove("question");
+        clueCaption.textContent = state.turn.digit === 0 ? "Zero — this place is empty!" : `You found ${state.turn.digit}!`;
+        statusText.textContent = revealed ? "Answer revealed. Let’s continue!" : "Wonderful listening!";
+        state.found.add(state.turn.digit);
+        updateFoundNumbers();
+        progressCounter.textContent = `${[...state.found].filter(value => value > 0).length} / ${state.round.length - 1}`;
+        speak(state.turn.announcement);
+        clearTimeout(advanceTimer);
+        advanceTimer = window.setTimeout(() => {
+            state.turnIndex += 1;
+            if (state.turnIndex >= state.round.length) finishGame(); else beginTurn();
+        }, revealed ? 1350 : state.turn.digit === 0 ? 1450 : 950);
+    }
+
+    function handleTap(index, button) {
+        if (!state || state.locked) return;
+        const result = rules.checkTap(state.turn, state.step, index);
+        const location = rules.SCENES[state.theme].locations[index];
+        animateLocation(button, location, result.correct ? "correct" : "wrong");
+        if (!result.correct) {
+            statusText.textContent = "Almost! Listen once more and try again.";
+            window.setTimeout(() => { clueCaption.textContent = state.turn.clues[state.step]; speak(state.turn.clues[state.step]); }, 520);
+            return;
+        }
+        if (!result.complete) {
+            button.classList.add("step-complete");
+            state.step = result.nextStep;
+            clueCaption.textContent = state.turn.clues[state.step];
+            statusText.textContent = "Great first step! Now follow the next clue.";
+            updateStepDots();
+            window.setTimeout(() => speak(state.turn.clues[state.step]), 300);
+            return;
+        }
+        completeTurn();
+    }
+
+    function revealAnswer() {
+        if (!state || state.locked) return;
+        state.locked = true;
+        const remaining = rules.getRevealSequence(state.turn, state.step);
+        remaining.slice(0, -1).forEach(index => hotspotLayer.querySelector(`[data-index="${index}"]`)?.classList.add("step-complete"));
+        const targetLocation = rules.SCENES[state.theme].locations[state.turn.targetIndex];
+        const targetButton = hotspotLayer.querySelector(`[data-index="${state.turn.targetIndex}"]`);
+        targetButton?.classList.add("hint", "reveal-answer");
+        animateLocation(targetButton, targetLocation, "correct");
+        clueCaption.textContent = `Answer: ${targetLocation.clue}.`;
+        statusText.textContent = "The answer is highlighted. Moving to the next digit.";
+        speak(`The answer is ${targetLocation.name}. The digit is ${state.turn.digit}.`);
+        clearTimeout(advanceTimer);
+        advanceTimer = window.setTimeout(() => completeTurn({ revealed:true }), 1100);
+    }
+
+    function handleSceneMiss(event) {
+        if (!state || state.locked || event.target.closest(".hotspot")) return;
+        statusText.textContent = "That place is not hiding the digit. Try the clue again.";
+        speak(state.turn.clues[state.step]);
+    }
+
+    function makeConfetti() {
+        confetti.replaceChildren();
+        const colors = ["#ff7058","#ffd166","#16b8aa","#9a5bd0","#55aef2"];
+        for (let i = 0; i < 34; i++) {
+            const piece = document.createElement("i");
+            piece.style.left = `${Math.random() * 100}%`;
+            piece.style.background = colors[i % colors.length];
+            piece.style.animationDelay = `${Math.random() * .55}s`;
+            confetti.append(piece);
+        }
+    }
+
+    function finishGame() {
+        state.locked = true;
+        progressCounter.textContent = `${state.round.length - 1} / ${state.round.length - 1}`;
+        clueCaption.textContent = "The kitten is peeking out!";
+        statusText.textContent = "You followed every clue.";
+        kittenPeek.classList.add("show");
+        makeConfetti();
+        speak("You found the kitten! Wonderful listening!");
+        window.setTimeout(() => {
+            document.getElementById("endScene").textContent = rules.SCENES[state.theme].name;
+            endDialog.hidden = false;
+        }, 1700);
+    }
+
+    function startGame() {
+        clearTimeout(advanceTimer);
+        window.speechSynthesis?.cancel();
+        const theme = state?.theme || selectedValue("theme");
+        const mode = state?.mode || selectedValue("mode");
+        state = { theme, mode, round:rules.createRound(theme, mode), turnIndex:0, step:0, turn:null, found:new Set(), locked:false };
+        setupPanel.hidden = true;
+        gamePanel.hidden = false;
+        kittenPeek.classList.remove("show");
+        confetti.replaceChildren();
+        renderScene();
+        beginTurn();
+    }
+
+    function showSetup() {
+        clearTimeout(advanceTimer);
+        window.speechSynthesis?.cancel();
+        state = null;
+        gamePanel.hidden = true;
+        endDialog.hidden = true;
+        setupPanel.hidden = false;
+        window.scrollTo({ top:0, behavior:"smooth" });
+    }
+
+    document.getElementById("startButton").addEventListener("click", startGame);
+    document.getElementById("resetButton").addEventListener("click", startGame);
+    document.getElementById("changeButton").addEventListener("click", showSetup);
+    document.getElementById("replayButton").addEventListener("click", () => state && speak(state.turn.clues[state.step]));
+    document.getElementById("revealButton").addEventListener("click", revealAnswer);
+    document.getElementById("playAgainButton").addEventListener("click", () => { endDialog.hidden = true; startGame(); });
+    document.getElementById("chooseAgainButton").addEventListener("click", showSetup);
+    const instructions = document.getElementById("instructionsDialog");
+    document.getElementById("openInstructions").addEventListener("click", () => { instructions.hidden = false; });
+    instructions.querySelectorAll("[data-close]").forEach(button => button.addEventListener("click", () => { instructions.hidden = true; }));
+    instructions.addEventListener("click", event => { if (event.target === instructions) instructions.hidden = true; });
+    endDialog.addEventListener("click", event => { if (event.target === endDialog) endDialog.hidden = true; });
+    window.speechSynthesis?.getVoices();
+})();
+</script>
+</body>
+</html>

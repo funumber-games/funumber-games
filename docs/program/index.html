@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#073b4c">
+    <title>Number Match — FuNumber Games</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../site.css">
+    <script src="../game-logic.js" defer></script>
+    <script src="../game.js" defer></script>
+</head>
+<body class="site-page program-page">
+<header class="global-header">
+    <a class="brand" href="../index.html" aria-label="FuNumber Games home">
+        <img class="nav-logo" src="../FuNumber-logo.jpg" alt="">
+        <span>FuNumber <strong>Games</strong><sup class="registered-mark" aria-label="registered">®</sup></span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+        <a href="../index.html">Home</a>
+        <button type="button" class="how-to-play-trigger" data-open-instructions>How to Play</button>
+    </nav>
+</header>
+
+<main class="program-main">
+    <h1 class="visually-hidden">FuNumber Games number matching game</h1>
+    <section class="mode-panel" id="modePanel" aria-labelledby="modeHeading">
+        <h2 id="modeHeading">Choose a mode</h2>
+        <div class="mode-options">
+            <label class="mode-option">
+                <input type="radio" name="mode" value="simple" checked>
+                <span class="mode-emoji" aria-hidden="true">🐠</span>
+                <span class="mode-copy"><strong>Simple Mode</strong><small>Ages 3–4</small></span>
+            </label>
+            <label class="mode-option">
+                <input type="radio" name="mode" value="moderate">
+                <span class="mode-emoji" aria-hidden="true">🏄</span>
+                <span class="mode-copy"><strong>Moderate Mode</strong><small>Ages 4–5</small></span>
+            </label>
+            <label class="mode-option">
+                <input type="radio" name="mode" value="difficult">
+                <span class="mode-emoji" aria-hidden="true">🚀</span>
+                <span class="mode-copy"><strong>Difficult Mode</strong><small>Ages 5–7</small></span>
+            </label>
+        </div>
+    </section>
+
+    <section class="game hidden" id="game" aria-label="Number game board">
+        <div class="wheel-area">
+            <div class="arrow" aria-hidden="true"></div>
+            <div class="wheel" id="wheel" aria-label="Number wheel"></div>
+            <button class="spin-button" id="spinButton" aria-label="Spin">Spin</button>
+        </div>
+        <p class="spin-count" id="spinsUsed" aria-live="polite">Spins used: 0/0</p>
+        <table id="grid" aria-label="Number grid"></table>
+        <div id="gameOver" class="game-over hidden" role="dialog" aria-modal="true">
+            <div class="popup" id="gameOverCard">
+                <h2 id="gameOverTitle" aria-live="assertive"></h2>
+                <button id="restartButton">Restart</button>
+            </div>
+        </div>
+    </section>
+    <div class="action-row">
+        <button type="button" class="blue-box cta-button" id="startButton">Lets Go!!</button>
+        <button type="button" class="change-mode-button hidden" id="changeModeButton">Change Mode</button>
+    </div>
+</main>
+<div class="instruction-overlay hidden" id="instructionsDialog" role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
+    <section class="instruction-card">
+        <button type="button" class="instruction-close" data-close-instructions aria-label="Close instructions">×</button>
+        <p class="eyebrow">NUMBER MATCH</p>
+        <h2 id="instructionsTitle">How to play</h2>
+        <ol class="instruction-steps">
+            <li><strong>Choose a mode</strong><span>Pick Simple, Moderate, or Difficult for the player’s age and challenge level.</span></li>
+            <li><strong>Spin for a number</strong><span>The arrow shows the number for your move. You can spin again when you need another number.</span></li>
+            <li><strong>Choose a matching space</strong><span>Click an empty space next to the same number in its 3 × 3 block.</span></li>
+            <li><strong>Watch the group clear</strong><span>The game fills connected empty spaces to complete the group. When enough matching numbers connect, they disappear.</span></li>
+            <li><strong>Keep going</strong><span>Clear a group to reset the spin counter. Leave one number to win!</span></li>
+        </ol>
+        <p class="instruction-tip">Use <strong>Start / Reset</strong> anytime to begin a fresh board.</p>
+    </section>
+</div>
+<footer class="site-footer">© 2026 FuNumber Games</footer>
+<script src="../instructions.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "funumber-games",
+  "private": true,
+  "scripts": { "test:unit": "vitest run" },
+  "devDependencies": { "vitest": "^5.0.5" },
+  "engines": { "node": ">=22.12.0" }
+}

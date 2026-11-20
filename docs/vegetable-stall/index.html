@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#073b4c">
+    <meta name="description" content="Listen, count vegetables into a basket, and match the final quantity to its numeral.">
+    <title>Vegetable Stall — FuNumber Games</title>
+    <link rel="stylesheet" href="../site.css">
+    <link rel="stylesheet" href="vegetable-stall.css">
+    <script src="game-logic.js" defer></script>
+    <script src="vegetable-stall.js" defer></script>
+    <script src="../instructions.js" defer></script>
+</head>
+<body class="site-page vegetable-page">
+<header class="global-header">
+    <a class="brand" href="../index.html" aria-label="FuNumber Games home">
+        <img class="nav-logo" src="../FuNumber-logo.jpg" alt="">
+        <span>FuNumber <strong>Games</strong><sup class="registered-mark" aria-label="registered">®</sup></span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+        <a href="../index.html">Home</a>
+        <button type="button" class="how-to-play-trigger" data-open-instructions>How to Play</button>
+    </nav>
+</header>
+
+<main class="vegetable-main">
+    <header class="page-heading">
+        <p class="eyebrow">LISTEN • COUNT • MATCH</p>
+        <h1>Vegetable Stall</h1>
+    </header>
+
+    <section class="mode-panel" id="modePanel" aria-labelledby="modeHeading">
+        <h2 id="modeHeading">Choose a mode</h2>
+        <div class="mode-options">
+            <label class="mode-option"><input type="radio" name="mode" value="simple" checked><span class="mode-emoji" aria-hidden="true">🥕</span><span class="mode-copy"><strong>Simple Mode</strong><small>Ages 3–4 · Count 1–5</small></span></label>
+            <label class="mode-option"><input type="radio" name="mode" value="moderate"><span class="mode-emoji" aria-hidden="true">🍅</span><span class="mode-copy"><strong>Moderate Mode</strong><small>Ages 4–5 · Count 1–9</small></span></label>
+            <label class="mode-option"><input type="radio" name="mode" value="difficult"><span class="mode-emoji" aria-hidden="true">🧺</span><span class="mode-copy"><strong>Difficult Mode</strong><small>Ages 5–7 · Two-part orders</small></span></label>
+        </div>
+        <p class="mode-details">Listen to the order, pack each vegetable once, then choose the matching numeral.</p>
+        <button type="button" class="start-button" id="startButton">Let’s Go!</button>
+    </section>
+
+    <section class="game-panel hidden" id="gamePanel" aria-label="Vegetable Stall counting game">
+        <div class="status-row" aria-live="polite">
+            <span class="status-pill">Order <strong id="roundNumber">1</strong></span>
+            <span class="status-pill">Mode <strong id="modeName">Simple</strong></span>
+            <span class="status-pill">Packed <strong id="packedCount">0 / 1</strong></span>
+        </div>
+
+        <div class="stall-scene" id="stallScene">
+            <img src="vegetable-stall-background.png" alt="A bright vegetable stall with two empty wicker baskets and a smiling customer">
+            <section class="order-card" aria-live="polite">
+                <p id="orderCaption">One carrot, please!</p>
+                <button type="button" class="speaker-button" id="speakerButton" aria-label="Hear the order again">🔊 Hear again</button>
+            </section>
+
+            <div class="stock-layer" id="stockLayer" aria-label="Vegetables available to pack"></div>
+            <div class="basket-layer" id="basketLayer" aria-label="Packed vegetables"></div>
+            <div class="hop-layer" id="hopLayer" aria-hidden="true"></div>
+
+            <section class="answer-panel hidden" id="answerPanel" aria-labelledby="answerQuestion">
+                <p id="answerQuestion">How many vegetables did you pack?</p>
+                <div class="number-cards" id="numberCards"></div>
+                <div class="answer-actions">
+                    <button type="button" class="recount-button" id="recountButton">🔢 Count again</button>
+                    <button type="button" class="next-order-button" id="nextOrderButton" disabled>Next Order →</button>
+                </div>
+            </section>
+
+            <div class="feedback-bubble" id="feedbackBubble" aria-live="polite">Tap a vegetable to pack it.</div>
+        </div>
+
+        <div class="game-actions">
+            <button type="button" class="reset-button" id="resetButton">Start / Reset</button>
+            <button type="button" class="change-mode-button" id="changeModeButton">Change Mode</button>
+        </div>
+    </section>
+</main>
+
+<div class="instruction-overlay hidden" id="instructionsDialog" role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
+    <section class="instruction-card">
+        <button type="button" class="instruction-close" data-close-instructions aria-label="Close instructions">×</button>
+        <p class="eyebrow">VEGETABLE STALL</p>
+        <h2 id="instructionsTitle">How to play</h2>
+        <ol class="instruction-steps">
+            <li><strong>Listen to the order</strong><span>Use Hear again whenever you want the customer to repeat it.</span></li>
+            <li><strong>Pack one at a time</strong><span>Tap the requested vegetable. Listen to each number as it lands.</span></li>
+            <li><strong>Choose the numeral</strong><span>When the basket is full, tap the number that matches how many you packed.</span></li>
+            <li><strong>Count again</strong><span>If you need help, replay the count and watch every packed vegetable light up.</span></li>
+        </ol>
+        <p class="instruction-tip">There is no timer or penalty. Take your time and try every order again.</p>
+    </section>
+</div>
+
+<footer class="site-footer">© 2026 FuNumber Games</footer>
+</body>
+</html>

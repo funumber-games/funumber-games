@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#073b4c">
+    <meta name="description" content="Spin the letter rollers and find hidden words before time runs out in Word Wheels.">
+    <title>Word Wheels — FuNumber Games</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../site.css">
+    <link rel="stylesheet" href="word-wheels.css">
+    <script src="game-logic.js" defer></script>
+    <script src="word-wheels.js" defer></script>
+    <script src="../instructions.js" defer></script>
+</head>
+<body class="site-page word-wheels-page">
+<header class="global-header">
+    <a class="brand" href="../index.html" aria-label="FuNumber Games home">
+        <img class="nav-logo" src="../FuNumber-logo.jpg" alt="">
+        <span>FuNumber <strong>Games</strong><sup class="registered-mark" aria-label="registered">®</sup></span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+        <a href="../index.html">Home</a>
+        <button type="button" class="how-to-play-trigger" data-open-instructions>How to Play</button>
+    </nav>
+</header>
+
+<main class="word-main">
+    <section class="word-intro" aria-labelledby="wordTitle">
+        <p class="eyebrow">SPIN • SEARCH • SCORE</p>
+        <h1 id="wordTitle">Word Wheels</h1>
+    </section>
+
+    <section class="mode-panel word-mode-panel" id="modePanel" aria-labelledby="modeHeading">
+        <h2 id="modeHeading">Choose a mode</h2>
+        <div class="mode-options">
+            <label class="mode-option">
+                <input type="radio" name="mode" value="simple" checked>
+                <span class="mode-emoji" aria-hidden="true">🐠</span>
+                <span class="mode-copy"><strong>Simple Mode</strong><small>Ages 3–4</small></span>
+            </label>
+            <label class="mode-option">
+                <input type="radio" name="mode" value="moderate">
+                <span class="mode-emoji" aria-hidden="true">🏄</span>
+                <span class="mode-copy"><strong>Moderate Mode</strong><small>Ages 4–5</small></span>
+            </label>
+            <label class="mode-option">
+                <input type="radio" name="mode" value="difficult">
+                <span class="mode-emoji" aria-hidden="true">🚀</span>
+                <span class="mode-copy"><strong>Difficult Mode</strong><small>Ages 5–7</small></span>
+            </label>
+        </div>
+        <p class="mode-details">Simple: 6 × 6 · 60 seconds · hints &nbsp;|&nbsp; Moderate: 8 × 8 · 60 seconds &nbsp;|&nbsp; Difficult: 9 × 9 · 30 seconds</p>
+        <button type="button" class="word-start-button" id="startGameButton">Lets Go!!</button>
+    </section>
+
+    <section class="word-game-panel hidden" id="gamePanel" aria-label="Word Wheels round">
+        <div class="game-topline" aria-live="polite">
+            <span class="round-counter">Round <strong id="roundNumber">1</strong> of 10</span>
+            <span class="timer-counter" id="timerCounter">Time <strong id="timeLeft">60</strong>s</span>
+            <span class="game-total-counter">Game total <strong id="gameTotal">0</strong></span>
+        </div>
+
+        <div class="word-game-layout foosball-assembly">
+            <section class="rollers-column circus-console" aria-labelledby="rollersHeading">
+                <h2 id="rollersHeading">Spin the letters</h2>
+                <div class="roller-stack" id="rollerRow" aria-label="Three alphabet rollers">
+                    <div class="roller-shell roller-one" role="img" aria-label="First alphabet roller"><div class="roller-window"><div class="roller-belt" data-roller="0"></div></div></div>
+                    <div class="roller-shell roller-two" role="img" aria-label="Second alphabet roller"><div class="roller-window"><div class="roller-belt" data-roller="1"></div></div></div>
+                    <div class="roller-shell roller-three" role="img" aria-label="Third alphabet roller"><div class="roller-window"><div class="roller-belt" data-roller="2"></div></div></div>
+                </div>
+                <button type="button" class="word-spin-button" id="spinWordButton" disabled>Spin</button>
+                <p class="spin-ready-note">Take a moment to get comfortable. Spin when you’re ready to start.</p>
+                <p class="word-status" role="status" aria-live="polite" id="wordStatus">Start the game, then spin the rollers.</p>
+            </section>
+
+            <section class="letter-board-section" aria-labelledby="letterBoardTitle">
+                <div class="board-heading">
+                    <div class="board-title-group">
+                        <h2 id="letterBoardTitle">Find all four</h2>
+                        <p class="target-caption" id="targetCaption">Spin to reveal your word</p>
+                        <p class="target-letters" id="targetWord" aria-live="polite">? ? ?</p>
+                    </div>
+                    <p class="round-progress" aria-live="polite">Found <strong id="wordsFound">0/4</strong></p>
+                </div>
+                <div class="foosball-pitch">
+                    <div class="letter-board" id="letterBoard" role="grid" aria-label="Letter search board"></div>
+                </div>
+            </section>
+
+            <aside class="round-scores" aria-labelledby="roundScoresHeading">
+                <h2 id="roundScoresHeading">Round scores</h2>
+                <div class="score-current">
+                    <span id="roundTotalLabel">Current round</span>
+                    <strong id="roundTotal">0</strong>
+                </div>
+                <ol class="round-score-list" id="roundScoreList" aria-live="polite"></ol>
+                <p class="scores-empty" id="scoresEmpty">Round scores will appear here.</p>
+            </aside>
+        </div>
+
+        <div class="game-actions">
+            <button type="button" class="word-reset-button" id="resetWordButton">Start / Reset</button>
+            <button type="button" class="word-mode-button" id="changeModeButton">Change Mode</button>
+        </div>
+    </section>
+</main>
+
+<div class="word-end-overlay hidden" id="wordEndOverlay" role="dialog" aria-modal="true" aria-labelledby="wordEndTitle">
+    <div class="word-end-content">
+        <div class="word-end-card" id="wordEndCard">
+            <h2 id="wordEndTitle" aria-live="assertive"></h2>
+            <button type="button" class="word-end-button" id="wordEndButton">Play again</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction-overlay hidden" id="instructionsDialog" role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
+    <section class="instruction-card">
+        <button type="button" class="instruction-close" data-close-instructions aria-label="Close instructions">×</button>
+        <p class="eyebrow">WORD WHEELS</p>
+        <h2 id="instructionsTitle">How to play</h2>
+        <ol class="instruction-steps">
+            <li><strong>Choose a mode</strong><span>Simple uses a 6 × 6 board with hints. Moderate uses an 8 × 8 board. Difficult uses a 9 × 9 board and a shorter timer.</span></li>
+            <li><strong>Spin the three rollers</strong><span>When they stop, your word appears and the timer starts. Numbers under the letters begin at 10 and drop every three seconds.</span></li>
+            <li><strong>Find the word</strong><span>Click the three letters in order, or click and drag across them in a straight line. Find at least two of the four words before time runs out to continue.</span></li>
+            <li><strong>Score and keep going</strong><span>The revealed numbers add to each round total. Your round scores appear beside the board, and the game total builds across all 10 rounds.</span></li>
+        </ol>
+    </section>
+</div>
+<footer class="site-footer">© 2026 FuNumber Games</footer>
+</body>
+</html>

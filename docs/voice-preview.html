@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#073b4c">
+  <title>Voice Preview — FuNumber Games</title>
+  <style>
+    :root {
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: #17394a;
+      --navy: #073b4c;
+      --gold: #ffd166;
+      --coral: #ff7058;
+      --teal: #0cae9b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      background: radial-gradient(circle at 85% 10%, #1ec9bd88, transparent 34%),
+        linear-gradient(145deg, #073b4c, #087f89 62%, #29a89d);
+      color: #fff;
+    }
+    .topbar {
+      display: flex;
+      min-height: 72px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 10px clamp(16px, 5vw, 64px);
+      background: #062f40ee;
+      box-shadow: 0 8px 25px #001b2770;
+    }
+    .brand { color: #fff; font-size: clamp(19px, 3vw, 26px); font-weight: 1000; text-decoration: none; }
+    .brand strong { color: var(--gold); }
+    .back-link {
+      padding: 9px 16px;
+      border: 1px solid #ffffff70;
+      border-radius: 999px;
+      background: #ffffff16;
+      color: #fff;
+      font-weight: 900;
+      text-decoration: none;
+    }
+    main { width: min(840px, calc(100% - 28px)); margin: 24px auto; }
+    .intro { margin-bottom: 15px; text-align: center; }
+    .eyebrow { margin: 0 0 5px; color: #ffe28a; font-size: 11px; font-weight: 1000; letter-spacing: .16em; }
+    h1 { margin: 0; font-size: clamp(30px, 6vw, 48px); letter-spacing: -.045em; }
+    .intro p:last-child { max-width: 660px; margin: 10px auto 0; color: #ffffffdd; line-height: 1.5; }
+    .preview-card {
+      padding: clamp(18px, 4vw, 32px);
+      border: 2px solid #ffffffb8;
+      border-radius: 26px;
+      background: linear-gradient(145deg, #fffaf0, #dcfff5);
+      box-shadow: 0 20px 50px #00192370;
+      color: #17394a;
+    }
+    .field { display: grid; gap: 7px; margin-bottom: 18px; }
+    label, legend { font-size: 15px; font-weight: 1000; }
+    select, textarea {
+      width: 100%;
+      border: 2px solid #a9c7ca;
+      border-radius: 13px;
+      background: #fff;
+      color: #17394a;
+      font: inherit;
+    }
+    select { min-height: 48px; padding: 8px 12px; }
+    textarea { min-height: 92px; resize: vertical; padding: 12px; line-height: 1.45; }
+    .sliders { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .range-heading { display: flex; justify-content: space-between; gap: 10px; }
+    output { color: #975038; font-weight: 1000; }
+    input[type="range"] { width: 100%; accent-color: var(--teal); }
+    .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 22px; }
+    button {
+      min-height: 48px;
+      padding: 10px 20px;
+      border: 2px solid #ffffffd0;
+      border-radius: 15px;
+      color: #fff;
+      cursor: pointer;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 1000;
+      box-shadow: 0 5px 0 #24536a;
+    }
+    .listen { background: linear-gradient(135deg, #ff745a, #f34e67); box-shadow: 0 5px 0 #a83b58; }
+    .stop { background: linear-gradient(135deg, #13b6a3, #078ca8); }
+    .copy { background: linear-gradient(135deg, #8056cc, #b257b8); box-shadow: 0 5px 0 #593a8d; }
+    button:active { transform: translateY(3px); box-shadow: 0 2px 0 #24536a; }
+    .selection {
+      margin: 22px 0 0;
+      padding: 13px 15px;
+      border: 1px solid #76aaa5;
+      border-radius: 14px;
+      background: #e9fff8;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+    .selection strong { display: block; margin-bottom: 4px; }
+    .status { min-height: 22px; margin: 10px 0 0; color: #27685f; text-align: center; font-weight: 900; }
+    .tip { margin: 17px 0 0; color: #4e6570; font-size: 13px; line-height: 1.45; }
+    @media (max-width: 560px) {
+      .sliders { grid-template-columns: 1fr; gap: 6px; }
+      .actions { display: grid; grid-template-columns: 1fr; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">FuNumber <strong>Games</strong></a>
+    <a class="back-link" href="sort-and-send/index.html">Back to game</a>
+  </header>
+
+  <main>
+    <header class="intro">
+      <p class="eyebrow">LISTEN • COMPARE • CHOOSE</p>
+      <h1>Voice Preview</h1>
+      <p>Try the voices available on this device. When one sounds right, copy its settings and share them with me.</p>
+    </header>
+
+    <section class="preview-card" aria-labelledby="preview-title">
+      <div class="field">
+        <label for="voiceSelect" id="preview-title">Voice</label>
+        <select id="voiceSelect" aria-describedby="voiceHelp">
+          <option>Loading voices…</option>
+        </select>
+        <small id="voiceHelp">English voices are shown first. The list can differ between computers and phones.</small>
+      </div>
+
+      <div class="sliders">
+        <div class="field">
+          <div class="range-heading"><label for="rate">Speed</label><output id="rateValue">0.92</output></div>
+          <input id="rate" type="range" min="0.65" max="1.20" value="0.92" step="0.01">
+        </div>
+        <div class="field">
+          <div class="range-heading"><label for="pitch">Pitch</label><output id="pitchValue">1.00</output></div>
+          <input id="pitch" type="range" min="0.60" max="1.30" value="1.00" step="0.01">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="sampleText">Sample question</label>
+        <textarea id="sampleText">Door choices: Heavy and Light. Roller choices: Elephant and Ant. Which animal is heavy?</textarea>
+      </div>
+
+      <div class="actions">
+        <button class="listen" id="listenButton" type="button">🔊 Listen</button>
+        <button class="stop" id="stopButton" type="button">■ Stop</button>
+        <button class="copy" id="copyButton" type="button">Copy chosen settings</button>
+      </div>
+
+      <div class="selection" aria-live="polite">
+        <strong>Your current selection</strong>
+        <span id="selectionText">Waiting for the voice list…</span>
+      </div>
+      <p class="status" id="status" role="status"></p>
+      <p class="tip">Tip: try several voices at pitch 1.00 first. Choose the voice itself before changing pitch, because the voice has the greatest effect on how the narration sounds.</p>
+    </section>
+  </main>
+
+  <script>
+    const voiceSelect = document.getElementById("voiceSelect");
+    const rate = document.getElementById("rate");
+    const pitch = document.getElementById("pitch");
+    const sampleText = document.getElementById("sampleText");
+    const selectionText = document.getElementById("selectionText");
+    const status = document.getElementById("status");
+    let voices = [];
+
+    function selectedVoice() {
+      return voices[Number(voiceSelect.value)] || null;
+    }
+
+    function settingsText() {
+      const voice = selectedVoice();
+      return `Voice: ${voice ? voice.name : "Browser default"} | Language: ${voice ? voice.lang : "automatic"} | Speed: ${Number(rate.value).toFixed(2)} | Pitch: ${Number(pitch.value).toFixed(2)}`;
+    }
+
+    function updateDisplay() {
+      document.getElementById("rateValue").value = Number(rate.value).toFixed(2);
+      document.getElementById("pitchValue").value = Number(pitch.value).toFixed(2);
+      selectionText.textContent = settingsText();
+    }
+
+    function loadVoices() {
+      const available = window.speechSynthesis.getVoices();
+      if (!available.length) return;
+      const previousName = selectedVoice()?.name;
+      voices = available.slice().sort((a, b) => {
+        const aEnglish = a.lang.toLowerCase().startsWith("en") ? 0 : 1;
+        const bEnglish = b.lang.toLowerCase().startsWith("en") ? 0 : 1;
+        return aEnglish - bEnglish || a.lang.localeCompare(b.lang) || a.name.localeCompare(b.name);
+      });
+      voiceSelect.innerHTML = "";
+      voices.forEach((voice, index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = `${voice.name} — ${voice.lang}${voice.default ? " (default)" : ""}`;
+        voiceSelect.appendChild(option);
+      });
+      const preferred = voices.findIndex(voice => voice.name === previousName);
+      const naturalEnglish = voices.findIndex(voice => /^en(-|_)/i.test(voice.lang) && /Samantha|Ava|Serena|Daniel|Google|Microsoft/i.test(voice.name));
+      const defaultEnglish = voices.findIndex(voice => voice.default && /^en(-|_)/i.test(voice.lang));
+      voiceSelect.value = String(preferred >= 0 ? preferred : naturalEnglish >= 0 ? naturalEnglish : defaultEnglish >= 0 ? defaultEnglish : 0);
+      updateDisplay();
+    }
+
+    function listen() {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(sampleText.value.trim());
+      const voice = selectedVoice();
+      if (voice) {
+        utterance.voice = voice;
+        utterance.lang = voice.lang;
+      }
+      utterance.rate = Number(rate.value);
+      utterance.pitch = Number(pitch.value);
+      utterance.onstart = () => { status.textContent = "Playing preview…"; };
+      utterance.onend = () => { status.textContent = "Preview finished."; };
+      utterance.onerror = () => { status.textContent = "This voice could not play. Please try another one."; };
+      window.speechSynthesis.speak(utterance);
+    }
+
+    async function copySettings() {
+      const text = settingsText();
+      try {
+        await navigator.clipboard.writeText(text);
+        status.textContent = "Settings copied. Paste them into our chat.";
+      } catch {
+        selectionText.textContent = text;
+        status.textContent = "Copy was blocked. Select the settings above and copy them manually.";
+      }
+    }
+
+    voiceSelect.addEventListener("change", updateDisplay);
+    rate.addEventListener("input", updateDisplay);
+    pitch.addEventListener("input", updateDisplay);
+    document.getElementById("listenButton").addEventListener("click", listen);
+    document.getElementById("stopButton").addEventListener("click", () => {
+      window.speechSynthesis.cancel();
+      status.textContent = "Preview stopped.";
+    });
+    document.getElementById("copyButton").addEventListener("click", copySettings);
+    window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+    loadVoices();
+    window.setTimeout(loadVoices, 250);
+  </script>
+</body>
+</html>
