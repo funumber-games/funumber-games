@@ -99,6 +99,16 @@ describe("two-wheel math game rules", () => {
     expect(rules.calculateOperationResult("/", 7, 2)).toBeNull();
   });
 
+  it("preserves the raw result and explains each digit-reduction step", () => {
+    expect(rules.calculateRawOperationResult("+", 8, 9)).toBe(17);
+    expect(rules.getDigitReductionSteps(17)).toEqual([{ value:17, digits:[1,7], result:8 }]);
+    expect(rules.getDigitReductionSteps(56)).toEqual([
+      { value:56, digits:[5,6], result:11 },
+      { value:11, digits:[1,1], result:2 }
+    ]);
+    expect(rules.calculateOperationResult("*", 7, 8)).toBe(2);
+  });
+
   it("treats zero as an unplaceable result until a matching zero neighbor exists", () => {
     const board = [[1, null, null], [null, 2, null], [null, null, 3]];
     expect(rules.canPlaceNumber(board, 1, 0, 0)).toBe(false);

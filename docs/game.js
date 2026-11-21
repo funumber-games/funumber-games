@@ -23,6 +23,8 @@ const spinsUsedDisplay = document.getElementById("spinsUsed");
 const gameOverPopup = document.getElementById("gameOver");
 const gameOverTitle = document.getElementById("gameOverTitle");
 const gameOverCard = document.getElementById("gameOverCard");
+const voiceInstruction = document.getElementById("voiceInstruction");
+const replayVoiceButton = document.getElementById("replayVoiceButton");
 
 let currentMode = null;
 let rotation = 0;
@@ -30,6 +32,20 @@ let rotationsWithoutClick = 0;
 let clearMatchesTimeout = null;
 let isClearingMatches = false;
 let isSpinning = false;
+let currentVoiceInstruction = "";
+
+function speakInstruction(message, speak = true) {
+    currentVoiceInstruction = message;
+    voiceInstruction.textContent = message;
+    if (!speak || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.rate = 0.86;
+    utterance.pitch = 1.08;
+    window.speechSynthesis.speak(utterance);
+}
+
+replayVoiceButton.addEventListener("click", () => speakInstruction(currentVoiceInstruction));
 
 startButton.addEventListener("click", () => {
     const selected = document.querySelector('input[name="mode"]:checked');
@@ -59,6 +75,7 @@ function returnToModeSelection() {
     modePanel.classList.remove("hidden");
     changeModeButton.classList.add("hidden");
     startButton.textContent = "Lets Go!!";
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
 }
 
 function startGame(modeKey) {
@@ -84,6 +101,7 @@ function startGame(modeKey) {
 
     startButton.textContent = "Start / Reset";
     changeModeButton.classList.remove("hidden");
+    requestAnimationFrame(() => speakInstruction("Press Spin. Listen for the number, then tap an empty square beside the same number in its three by three block."));
 }
 
 function buildTable(config) {
@@ -184,6 +202,13 @@ wheel.addEventListener("transitionend", event => {
         label.style.setProperty("--counter-rotation", `${-finalAngle}deg`);
     });
     updateWheelSelection();
+    const selectedNumber = GameRules.getWheelNumber(rotation, modes[currentMode].wheelNumbers);
+    const numberStillAvailable=[...table.querySelectorAll("td")].some(cell=>Number(cell.textContent)===selectedNumber);
+    const remainingSpins=Math.max(0,modes[currentMode].rotationLimit-rotationsWithoutClick);
+    const remainingMessage=`You have ${remainingSpins} spin${remainingSpins===1?"":"s"} remaining.`;
+    speakInstruction(numberStillAvailable
+        ? `The number is ${selectedNumber}. Tap an empty square beside the same number. ${remainingMessage}`
+        : `Oh oh! This number has already disappeared. Try again. ${remainingMessage}`);
 });
 
 table.addEventListener("click", event => {
@@ -196,7 +221,10 @@ table.addEventListener("click", event => {
     const startRow = cell.parentElement.rowIndex;
     const startCol = cell.cellIndex;
     const board = [...table.rows].map(row => [...row.cells].map(td => td.textContent.trim() || null));
-    if (!GameRules.canPlaceNumber(board, startRow, startCol, number)) return;
+    if (!GameRules.canPlaceNumber(board, startRow, startCol, number)) {
+        speakInstruction(`Choose an empty square beside another ${number}.`);
+        return;
+    }
     cell.textContent = number;
     board[startRow][startCol] = number;
     const autoFillCells = GameRules.getAutoFillCells(board, startRow, startCol, number);
@@ -217,9 +245,11 @@ table.addEventListener("click", event => {
             spinsUsedDisplay.textContent = `Spins used: 0/${config.rotationLimit}`;
             isClearingMatches = false;
             checkForLastNumber();
+            if (gameOverPopup.classList.contains("hidden")) speakInstruction("Great match! The group cleared. Spin again.");
         }, 500);
     } else {
         checkForLastNumber();
+        if (gameOverPopup.classList.contains("hidden")) speakInstruction(`Good placement. You can place another ${number}, or spin again.`);
     }
 });
 
@@ -237,4 +267,5 @@ function endGame(message, outcome) {
     gameOverCard.classList.toggle("loss-banner", outcome === "loss");
     gameOverPopup.classList.remove("hidden");
     spinButton.disabled = true;
+    speakInstruction(outcome === "win" ? "Congratulations! You completed Number Match." : "Try again. Start a new game when you are ready.");
 }

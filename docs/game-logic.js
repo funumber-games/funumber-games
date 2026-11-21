@@ -81,7 +81,7 @@
         return result;
     }
 
-    function calculateOperationResult(operator, first, second) {
+    function calculateRawOperationResult(operator, first, second) {
         const a = Number(first);
         const b = Number(second);
         if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
@@ -99,7 +99,25 @@
                 break;
             default: return null;
         }
-        return reduceToSingleDigit(result);
+        return result;
+    }
+
+    function getDigitReductionSteps(value) {
+        let current = Math.abs(Number(value));
+        if (!Number.isFinite(current)) return [];
+        const steps = [];
+        while (current >= 10) {
+            const digits = String(current).split("").map(Number);
+            const result = digits.reduce((sum, digit) => sum + digit, 0);
+            steps.push({ value: current, digits, result });
+            current = result;
+        }
+        return steps;
+    }
+
+    function calculateOperationResult(operator, first, second) {
+        const rawResult = calculateRawOperationResult(operator, first, second);
+        return rawResult === null ? null : reduceToSingleDigit(rawResult);
     }
 
     function getOppositeSectorIndices(rotation, count = 10) {
@@ -152,6 +170,8 @@
         hasReachedSpinLimit: (spins, limit) => spins >= limit,
         getNextSpinStreak: (streak, numbersCleared) => numbersCleared ? 0 : streak,
         reduceToSingleDigit,
+        calculateRawOperationResult,
+        getDigitReductionSteps,
         calculateOperationResult,
         getOppositeSectorIndices,
         createNumberWheelValues,

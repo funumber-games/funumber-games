@@ -6,7 +6,7 @@
   const P = (id, kind, path, rotation = 0, name = kind) => ({ id, kind, path, rotation, name });
   const digits = {
     0: [P('oval', 'oval', 'M50 14 C27 14 22 34 22 50 C22 72 31 86 50 86 C69 86 78 72 78 50 C78 28 69 14 50 14 Z', 0, 'big oval')],
-    1: [P('stand', 'line', 'M50 18 L50 84', 90, 'standing line')],
+    1: [P('topSlant', 'line', 'M35 30 L50 18', 140, 'small slanting line'), P('stand', 'line', 'M50 18 L50 84', 90, 'standing line')],
     2: [P('topCurve', 'curve', 'M25 32 C28 12 72 10 76 32 C78 45 64 52 51 61', 0, 'upper curve'), P('slant', 'line', 'M51 61 L27 82', 135, 'slanting line'), P('base', 'line', 'M27 82 L76 82', 0, 'sleeping line')],
     3: [P('upper', 'curve', 'M28 25 C40 10 74 16 72 35 C71 47 59 49 49 50', 0, 'upper curve'), P('lower', 'curve', 'M49 50 C63 50 75 56 72 72 C68 91 38 91 26 77', 0, 'lower curve')],
     4: [P('slant', 'line', 'M58 16 L25 61', 125, 'slanting line'), P('cross', 'line', 'M25 61 L76 61', 0, 'sleeping line'), P('right', 'line', 'M61 17 L61 84', 90, 'standing line')],

@@ -8,7 +8,7 @@
 .solution-button { min-height: 40px; padding: 8px 18px; border: 2px solid rgba(255,255,255,.8); border-radius: 12px; background: linear-gradient(135deg,#ffe37b,#ffb83f); color: #17354b; font-size: 14px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 0 #b87922,0 7px 13px rgba(0,0,0,.25); }
 .solution-button:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.06); }
 .solution-button:disabled { cursor: not-allowed; filter: grayscale(.55); opacity: .72; }
-.equation-result { min-height: 38px; margin: 0; color: #fff6c7; font-size: clamp(17px, 2vw, 23px); font-weight: 900; text-shadow: 0 2px 5px rgba(0,0,0,.4); }
+.equation-result { min-height: 38px; max-width:260px; margin: 0; color: #fff6c7; font-size: clamp(14px, 1.6vw, 20px); font-weight: 900; line-height:1.35; text-shadow: 0 2px 5px rgba(0,0,0,.4); }
 .equation-wheels { display: flex; width: max-content; max-width: 100%; flex-direction: column; align-items: center; margin-inline: auto; }
 .wheel-caption { margin: 0 0 6px; color: rgba(255,255,255,.88); font-size: 13px; font-weight: 800; text-align: center; }
 .wheel-caption span { padding-inline: 5px; color: var(--gold); }

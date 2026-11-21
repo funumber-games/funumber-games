@@ -23,8 +23,13 @@ describe('Build a Number game logic', () => {
     expect(logic.isComplete(parts,[parts[0].id])).toBe(false);
     expect(logic.isComplete(parts,parts.map(p=>p.id))).toBe(true);
   });
+  it('builds number one with a small slant and a standing line', () => {
+    const parts=logic.partsFor(1);
+    expect(parts.map(part=>part.id)).toEqual(['topSlant','stand']);
+    expect(parts.map(part=>part.name)).toEqual(['small slanting line','standing line']);
+  });
   it('accepts matching shapes only in the correct orientation', () => {
-    const target=logic.partsFor(1)[0];
+    const target=logic.partsFor(1).find(part=>part.id==='stand');
     expect(logic.accepts({...target},target)).toBe(true);
     expect(logic.accepts({...target,rotation:0},target)).toBe(false);
     expect(logic.accepts({...target,kind:'curve'},target)).toBe(false);

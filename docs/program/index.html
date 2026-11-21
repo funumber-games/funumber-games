@@ -51,7 +51,11 @@
             <div class="wheel" id="wheel" aria-label="Number wheel"></div>
             <button class="spin-button" id="spinButton" aria-label="Spin">Spin</button>
         </div>
-        <p class="spin-count" id="spinsUsed" aria-live="polite">Spins used: 0/0</p>
+        <div class="middle-game-controls">
+            <p class="spin-count" id="spinsUsed" aria-live="polite">Spins used: 0/0</p>
+            <button type="button" class="voice-replay-button" id="replayVoiceButton" aria-label="Replay the spoken instruction">🔊 Hear Again</button>
+            <p id="voiceInstruction" class="visually-hidden" aria-live="polite">Spin the wheel to choose a number.</p>
+        </div>
         <table id="grid" aria-label="Number grid"></table>
         <div id="gameOver" class="game-over hidden" role="dialog" aria-modal="true">
             <div class="popup" id="gameOverCard">

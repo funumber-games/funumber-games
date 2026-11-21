@@ -24,6 +24,8 @@
     const scoresEmpty = document.getElementById("scoresEmpty");
     const status = document.getElementById("wordStatus");
     const letterBoard = document.getElementById("letterBoard");
+    const voiceInstruction = document.getElementById("voiceInstruction");
+    const replayVoiceButton = document.getElementById("replayVoiceButton");
 
     let difficulty = "simple";
     let boardSize = DIFFICULTIES[difficulty].size;
@@ -47,6 +49,23 @@
     let pointerFoundWord = false;
     let pointerStartX = 0;
     let pointerStartY = 0;
+    let currentVoiceInstruction = "";
+    let guidanceRoundsShown = 0;
+
+    function speakInstruction(message) {
+        currentVoiceInstruction = message;
+        voiceInstruction.textContent = message;
+        if (!("speechSynthesis" in window)) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.rate = .84;
+        utterance.pitch = 1.08;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function stopSpeech() {
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    }
 
     function buildBelt(belt) {
         belt.replaceChildren();
@@ -165,6 +184,7 @@
             phase = "ending-delay";
             setSpinLabel("Game complete", true);
             setStatus("All ten rounds are complete! Your results are ready.");
+            speakInstruction("All ten rounds are complete. Your results are ready.");
             endDelayTimeout = window.setTimeout(() => {
                 endDelayTimeout = null;
                 showEndBanner("win");
@@ -173,6 +193,7 @@
         }
         setSpinLabel("Spin next round", false);
         setStatus(`Round ${round} complete! Spin when you are ready for round ${round + 1}.`);
+        speakInstruction(`Round ${round} complete. Spin when you are ready for round ${round + 1}.`);
     }
 
     function handleTimeout() {
@@ -182,6 +203,7 @@
         updateCountdownValues(DIFFICULTIES[difficulty].seconds);
         if (!rules.shouldContinueAfterTimeout(foundKeys.size)) {
             phase = "ended";
+            speakInstruction("Time is up. Find at least two words to continue. Try again.");
             showEndBanner("loss");
             return;
         }
@@ -211,6 +233,7 @@
         endCard.classList.toggle("loss", outcome === "loss");
         endTitle.textContent = outcome === "win" ? "Congratulations!" : "Try again!";
         endOverlay.classList.remove("hidden");
+        speakInstruction(outcome === "win" ? "Congratulations! You completed Word Wheels." : "Try again. Start a new game when you are ready.");
         endButton.focus();
     }
 
@@ -220,6 +243,7 @@
         if (endDelayTimeout !== null) window.clearTimeout(endDelayTimeout);
         spinTimeout = null;
         endDelayTimeout = null;
+        stopSpeech();
     }
 
     function startClock() {
@@ -292,6 +316,12 @@
             spinTimeout = null;
             setSpinLabel("Searching…", true);
             startClock();
+            const spelled=currentWord.split("").join(", ");
+            const fullGuidance=guidanceRoundsShown<2;
+            guidanceRoundsShown++;
+            speakInstruction(fullGuidance
+                ? `Your word is ${spelled}. Find it four times. Click the three letters in order, or drag across them in a straight line.`
+                : `Find ${spelled} four times.`);
         }, reducedMotion ? 0 : 1050);
     }
 
@@ -332,6 +362,7 @@
             completeRound();
         } else {
             setStatus(`Nice find! Find ${REQUIRED_MATCHES - foundKeys.size} more.`);
+            speakInstruction(`Great! You found ${currentWord}. Find ${REQUIRED_MATCHES - foundKeys.size} more.`);
         }
         return true;
     }
@@ -492,6 +523,7 @@
         setStatus(method === "click"
             ? "Not quite. Click another matching word, one letter at a time."
             : "Not quite. Try dragging across another matching word.");
+        speakInstruction("Not quite. Find the three letters in order, in one straight line.");
     }
 
     function startGame() {
@@ -503,6 +535,7 @@
         pointerFoundWord = false;
         letterBoard.classList.remove("is-dragging");
         phase = "selection";
+        guidanceRoundsShown = 0;
         difficulty = selectedDifficulty();
         boardSize = DIFFICULTIES[difficulty].size;
         round = 1;
@@ -532,6 +565,7 @@
         document.body.classList.add("word-game-active");
         setSpinLabel("Spin", false);
         setStatus("Take a moment to get comfortable. Your first spin starts the round.");
+        requestAnimationFrame(()=>speakInstruction("Press Spin to make a three letter word. Then find the word four times on the board."));
     }
 
     function backToDifficulty() {
@@ -590,6 +624,7 @@
     resetButton.addEventListener("click", handleReset);
     changeModeButton.addEventListener("click", handleModeChange);
     endButton.addEventListener("click", handleReset);
+    replayVoiceButton.addEventListener("click",()=>speakInstruction(currentVoiceInstruction));
     document.querySelectorAll('input[name="mode"]').forEach(input => {
         input.addEventListener("change", () => {
             const next = DIFFICULTIES[input.value];

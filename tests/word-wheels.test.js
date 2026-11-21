@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
 
 const require = createRequire(import.meta.url);
 const rules = require("../docs/word-wheels/game-logic.js");
@@ -105,5 +106,18 @@ describe("Word Wheels round progression", () => {
 
   it("uses a five-second success delay", () => {
     expect(rules.WIN_BANNER_DELAY_MS).toBe(5000);
+  });
+});
+
+describe("Word Wheels voice guidance",()=>{
+  const html=readFileSync(new URL("../docs/word-wheels/index.html",import.meta.url),"utf8");
+  const script=readFileSync(new URL("../docs/word-wheels/word-wheels.js",import.meta.url),"utf8");
+
+  it("offers replayable local speech without external services",()=>{
+    expect(html).toContain('id="replayVoiceButton"');
+    expect(html).toContain('id="voiceInstruction"');
+    expect(script).toContain("SpeechSynthesisUtterance");
+    expect(script).toContain("speakInstruction");
+    expect(html).not.toMatch(/https?:\/\//);
   });
 });

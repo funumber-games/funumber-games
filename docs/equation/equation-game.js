@@ -28,12 +28,16 @@ const equationHint = document.getElementById("equationHint");
 const gameOverPopup = document.getElementById("gameOver");
 const gameOverTitle = document.getElementById("gameOverTitle");
 const gameOverCard = document.getElementById("gameOverCard");
+const voiceInstruction = document.getElementById("voiceInstruction");
+const replayVoiceButton = document.getElementById("replayVoiceButton");
 
 let currentMode = null;
 let currentOperations = [];
 let currentOperator = null;
 let currentOperands = null;
 let answer = null;
+let rawAnswer = null;
+let digitReductionSteps = [];
 let numberWheelValues = [];
 let operatorRotation = 0;
 let numberRotation = 0;
@@ -46,6 +50,59 @@ let operatorAnimating = false;
 let numbersAnimating = false;
 let clearingMatches = false;
 let clearMatchesTimeout = null;
+let currentVoiceInstruction = "";
+let answerReminderTimeout = null;
+let guidancePromptsShown = 0;
+
+const spokenOperators = { "+":"plus", "-":"minus", "<":"smaller than", ">":"greater than", "*":"times", "/":"divided by" };
+
+function speakInstruction(message, speak = true) {
+    currentVoiceInstruction = message;
+    voiceInstruction.textContent = message;
+    if (!speak || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.rate = 0.84;
+    utterance.pitch = 1.08;
+    window.speechSynthesis.speak(utterance);
+}
+
+function equationPrompt(operator, first, second) {
+    if (operator === "<") return `Choose the smaller number from ${first} and ${second}.`;
+    if (operator === ">") return `Choose the greater number from ${first} and ${second}.`;
+    return `${first} ${spokenOperators[operator]} ${second}.`;
+}
+
+function reductionWorking(first, second, includeFinalResult=true) {
+    const fragments=[`${first} ${symbolNames[currentOperator]} ${second} = ${Math.abs(rawAnswer)}`];
+    digitReductionSteps.forEach((step,index)=>{
+        const isLast=index===digitReductionSteps.length-1;
+        fragments.push(`${step.digits.join(" + ")} = ${isLast&&!includeFinalResult?"":step.result}`.trimEnd());
+    });
+    return fragments.join(" → ");
+}
+
+function reductionSpeech() {
+    return digitReductionSteps.length ? " If the answer is double digits, add those digits until you get a single digit." : "";
+}
+
+function clearAnswerReminder() {
+    clearTimeout(answerReminderTimeout);
+    answerReminderTimeout = null;
+}
+
+function scheduleAnswerReminder() {
+    clearAnswerReminder();
+    answerReminderTimeout=setTimeout(()=>{
+        if (!pairComplete || operatorAnimating || numbersAnimating || clearingMatches || !gameOverPopup.classList.contains("hidden")) return;
+        speakInstruction("Work out the answer, or use Show Solution. Then tap an empty square beside the same answer.");
+    },5000);
+}
+
+replayVoiceButton.addEventListener("click", () => {
+    clearAnswerReminder();
+    speakInstruction(currentVoiceInstruction);
+});
 
 startButton.addEventListener("click", () => {
     const selected = document.querySelector('input[name="mode"]:checked');
@@ -59,14 +116,20 @@ document.getElementById("restartButton").addEventListener("click", () => {
 
 solutionButton.addEventListener("click", () => {
     if (solutionButton.disabled) return;
+    clearAnswerReminder();
     const reveal = equationResult.classList.contains("hidden");
     equationResult.classList.toggle("hidden", !reveal);
     solutionButton.textContent = reveal ? "Hide Solution" : "Show Solution";
     solutionButton.setAttribute("aria-expanded", String(reveal));
+    if (reveal && answer !== null) {
+        const working=digitReductionSteps.length?` ${reductionWorking(...currentOperands)}.`:"";
+        speakInstruction(`The answer is ${answer}.${working} Tap an empty square beside the same answer.`);
+    }
 });
 
 function returnToModeSelection() {
     clearTimeout(clearMatchesTimeout);
+    clearAnswerReminder();
     currentMode = null;
     resetRoundState();
     document.body.classList.remove("playing");
@@ -78,14 +141,18 @@ function returnToModeSelection() {
     modePanel.classList.remove("hidden");
     changeModeButton.classList.add("hidden");
     startButton.textContent = "Lets Go!!";
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
 }
 
 function resetRoundState() {
+    clearAnswerReminder();
     roundsWithoutClear = 0;
     currentOperations = [];
     currentOperator = null;
     currentOperands = null;
     answer = null;
+    rawAnswer = null;
+    digitReductionSteps = [];
     numberWheelValues = [];
     operatorRotation = 0;
     numberRotation = 0;
@@ -102,6 +169,7 @@ function resetRoundState() {
 function startGame(modeKey) {
     clearTimeout(clearMatchesTimeout);
     currentMode = modeKey;
+    guidancePromptsShown = 0;
     resetRoundState();
     document.body.classList.add("playing");
     const config = modes[currentMode];
@@ -123,6 +191,7 @@ function startGame(modeKey) {
     buildWheel(numberWheel, Array(10).fill("?"), false, numberRotation);
     startButton.textContent = "Start / Reset";
     changeModeButton.classList.remove("hidden");
+    requestAnimationFrame(() => speakInstruction("Press Spin. The sign wheel spins first, then the number wheel. Work out the answer and place it beside the same answer on the board."));
 }
 
 function spinButtonReset() {
@@ -199,6 +268,8 @@ function beginNextRound() {
     currentOperator = null;
     currentOperands = null;
     answer = null;
+    rawAnswer = null;
+    digitReductionSteps = [];
     numberWheelValues = [];
     equationResult.replaceChildren();
     equationResult.classList.add("hidden");
@@ -218,6 +289,7 @@ operatorSpinButton.addEventListener("click", () => {
         if (!beginNextRound()) return;
     }
     if (operatorSpun) return;
+    clearAnswerReminder();
     operatorAnimating = true;
     operatorSpinButton.disabled = true;
     operatorRotation += 360 * 5 + Math.random() * 360;
@@ -251,6 +323,7 @@ operatorWheel.addEventListener("transitionend", event => {
         label.style.setProperty("--counter-rotation", `${-(((operatorRotation % 360) + 360) % 360)}deg`);
     });
     equationHint.textContent = `${symbolNames[currentOperator]} selected. The number wheel is spinning now.`;
+    speakInstruction(`${spokenOperators[currentOperator]} selected. Now spinning two numbers.`);
     spinNumberWheel();
 });
 
@@ -265,6 +338,8 @@ numberWheel.addEventListener("transitionend", event => {
     const first = numberWheelValues[firstIndex];
     const second = numberWheelValues[secondIndex];
     currentOperands = [first, second];
+    rawAnswer = GameRules.calculateRawOperationResult(currentOperator, first, second);
+    digitReductionSteps = GameRules.getDigitReductionSteps(rawAnswer);
     answer = GameRules.calculateOperationResult(currentOperator, first, second);
     numberWheel.querySelectorAll(".wheel-number").forEach(label => {
         const index = Number(label.dataset.index);
@@ -274,7 +349,7 @@ numberWheel.addEventListener("transitionend", event => {
     const limit = modes[currentMode].rotationLimit;
     roundStatus.textContent = `Spins used: ${roundsWithoutClear}/${limit}`;
     operatorSpinButton.disabled = false;
-    equationResult.replaceChildren(document.createTextNode(`${first} ${symbolNames[currentOperator]} ${second} = `));
+    equationResult.replaceChildren(document.createTextNode(digitReductionSteps.length?`${reductionWorking(first,second,false)} `:`${first} ${symbolNames[currentOperator]} ${second} = `));
     const answerBadge = document.createElement("strong");
     answerBadge.textContent = String(answer);
     equationResult.appendChild(answerBadge);
@@ -287,9 +362,20 @@ numberWheel.addEventListener("transitionend", event => {
     equationHint.textContent = hasPlaceableCell
         ? "Click a matching empty cell. The game will fill connected spaces to complete the match."
         : "No matching empty cell yet. Spin a new pair to try another answer.";
+    const remainingSpins=Math.max(0,limit-roundsWithoutClear);
+    const remainingMessage=`You have ${remainingSpins} spin${remainingSpins===1?"":"s"} remaining.`;
+    if (hasPlaceableCell) {
+        const initialGuidance=guidancePromptsShown<2;
+        if(initialGuidance) guidancePromptsShown++;
+        speakInstruction(`${equationPrompt(currentOperator, first, second)}${reductionSpeech()}${initialGuidance?" Work out the answer, or use Show Solution. Then tap an empty square beside the same answer.":""} ${remainingMessage}`);
+        if(!initialGuidance) scheduleAnswerReminder();
+    } else {
+        speakInstruction(`${equationPrompt(currentOperator, first, second)}${reductionSpeech()} Oh oh! This number has already disappeared. Try again. ${remainingMessage}`);
+    }
 });
 
 table.addEventListener("click", event => {
+    clearAnswerReminder();
     const cell = event.target.closest("td");
     if (!cell || !currentMode || !GameRules.canPlaceFromCurrentSpin(
         pairComplete, operatorAnimating || numbersAnimating, clearingMatches,
@@ -299,7 +385,10 @@ table.addEventListener("click", event => {
     const row = cell.parentElement.rowIndex;
     const column = cell.cellIndex;
     const board = getBoard();
-    if (!GameRules.canPlaceNumber(board, row, column, answer)) return;
+    if (!GameRules.canPlaceNumber(board, row, column, answer)) {
+        speakInstruction(`Choose an empty square beside another ${answer}.`);
+        return;
+    }
 
     cell.textContent = String(answer);
     board[row][column] = answer;
@@ -323,9 +412,10 @@ table.addEventListener("click", event => {
             roundStatus.textContent = `Spins used: ${roundsWithoutClear}/${limit}`;
             clearingMatches = false;
             checkForLastNumber();
+            if (gameOverPopup.classList.contains("hidden")) speakInstruction("Great match! The group cleared. Spin again.");
             if (gameOverPopup.classList.contains("hidden")) operatorSpinButton.disabled = false;
         }, 500);
-    }
+    } else speakInstruction(`Good placement. You can use ${answer} again, or spin for a new equation.`);
 });
 
 function getBoard() {
@@ -340,9 +430,11 @@ function checkForLastNumber() {
 }
 
 function endGame(message, outcome) {
+    clearAnswerReminder();
     gameOverTitle.textContent = message;
     gameOverCard.classList.toggle("win-banner", outcome === "win");
     gameOverCard.classList.toggle("loss-banner", outcome === "loss");
     gameOverPopup.classList.remove("hidden");
     operatorSpinButton.disabled = true;
+    speakInstruction(outcome === "win" ? "Congratulations! You completed Maths Spin." : "Try again. Start a new game when you are ready.");
 }
