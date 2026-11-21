@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Build a Number | FuNumber Games</title>
+  <link rel="stylesheet" href="../site.css">
+  <link rel="stylesheet" href="build-a-number.css">
+</head>
+<body>
+  <header class="global-header">
+    <a class="brand" href="../index.html" aria-label="FuNumber Games home">
+      <img class="nav-logo" src="../FuNumber-logo.jpg" alt="">
+      <span>FuNumber <strong>Games</strong><sup class="registered-mark" aria-label="registered">®</sup></span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="../index.html">Home</a>
+      <button id="helpBtn" type="button">How to Play</button>
+    </nav>
+  </header>
+
+  <main class="game-shell" id="gameShell">
+    <header class="page-heading">
+      <p>CHOOSE • TURN • BUILD</p>
+      <h1>Build a Number</h1>
+    </header>
+    <section class="toolbar" aria-label="Game controls">
+      <span class="mode-status">Mode <strong id="modeStatus">Simple</strong></span>
+      <button id="hearBtn" type="button">🔊 Hear Again</button>
+      <p id="caption" role="status" aria-live="polite">Build the number.</p>
+      <button id="nextBtn" type="button">Next Number →</button>
+    </section>
+
+    <section class="scene" aria-label="Build a Number circus game">
+      <img src="build-a-number-background.png" alt="A rabbit ringmaster beside a blank construction board and five empty shape trays">
+      <div id="targetNumber" class="target-number" aria-label="Target number"></div>
+      <svg id="board" class="board" viewBox="0 0 100 100" role="group" aria-label="Number building board"></svg>
+      <div id="tray" class="tray" aria-label="Shape pieces"></div>
+      <div id="celebration" class="celebration" role="status" aria-live="assertive" hidden>
+        <span>Fantastic!</span><small id="celebrationText"></small>
+      </div>
+    </section>
+
+    <section class="actions" aria-label="Building controls">
+      <button id="turnBtn" type="button">↻ Turn Piece</button>
+      <button id="hintBtn" type="button">💡 Hint</button>
+      <button id="checkBtn" type="button">✓ Check</button>
+      <button id="undoBtn" type="button">↶ Undo</button>
+      <button id="resetBtn" class="reset-button" type="button">Start / Reset</button>
+      <button id="changeModeBtn" class="change-mode-button" type="button">Change Mode</button>
+    </section>
+  </main>
+
+  <div id="modeOverlay" class="mode-overlay" role="dialog" aria-modal="true" aria-labelledby="modeTitle">
+    <section class="mode-card">
+      <p>BUILD A NUMBER</p>
+      <h2 id="modeTitle">Choose a mode</h2>
+      <div class="mode-options">
+        <button type="button" data-mode="simple"><span>⭐</span><strong>Simple Mode</strong><small>Guided pieces, ready to place</small></button>
+        <button type="button" data-mode="moderate"><span>🎪</span><strong>Moderate Mode</strong><small>Turn the pieces to make them fit</small></button>
+        <button type="button" data-mode="difficult"><span>🏆</span><strong>Difficult Mode</strong><small>Extra pieces and no starting outline</small></button>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="helpDialog">
+    <h2>How to Play</h2>
+    <p>Choose a shape, then tap its matching dotted place on the board. You can also drag a shape into place.</p>
+    <p>Use <strong>Turn Piece</strong> when a shape faces the wrong way. Finish every part to build the number.</p>
+    <button id="closeHelp" type="button">Let’s Build!</button>
+  </dialog>
+  <script src="game-logic.js"></script>
+  <script src="build-a-number.js"></script>
+</body>
+</html>
