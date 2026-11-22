@@ -32,11 +32,16 @@ button:disabled { cursor:not-allowed; filter:grayscale(.6); opacity:.56; }
 .order-card { position:absolute; z-index:8; top:21%; left:37.5%; display:flex; width:35%; min-height:15%; align-items:center; justify-content:center; gap:10px; padding:9px 12px; border:3px solid rgba(255,255,255,.9); border-radius:18px; background:rgba(255,248,221,.93); color:#6e2c18; box-shadow:0 7px 0 rgba(157,78,27,.5); text-align:center; }
 .order-card p { margin:0; font-size:clamp(13px,2vw,25px); font-weight:1000; line-height:1.15; }
 .speaker-button { flex:0 0 auto; min-height:38px; padding:6px 10px; border:0; border-radius:12px; background:#1aa59c; color:#fff; cursor:pointer; font:inherit; font-size:clamp(10px,1.1vw,14px); font-weight:1000; box-shadow:0 4px 0 #126c70; }
+.order-card { top:22%; left:51%; width:auto; min-height:0; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; transform:translateX(-50%); }
+.order-card .visually-hidden { position:absolute!important; width:1px!important; height:1px!important; margin:-1px!important; padding:0!important; overflow:hidden!important; clip:rect(0 0 0 0)!important; clip-path:inset(50%)!important; white-space:nowrap!important; border:0!important; }
+.speaker-button { min-height:44px; padding:8px 15px; border:2px solid rgba(255,255,255,.88); border-radius:14px; font-size:clamp(11px,1.25vw,16px); }
 
 .stock-layer,.basket-layer,.hop-layer { position:absolute; z-index:6; }
 .stock-layer { top:49%; left:6%; display:grid; width:34%; height:16%; grid-template-columns:repeat(var(--pile-count,3),minmax(0,1fr)); align-items:end; justify-items:center; gap:1%; }
 .basket-layer { top:50.5%; left:56%; display:grid; width:37%; height:11.5%; grid-template-columns:repeat(10,minmax(0,1fr)); grid-template-rows:repeat(2,minmax(0,1fr)); align-items:center; align-content:center; justify-items:center; }
 .hop-layer { inset:0; pointer-events:none; }
+.basket-front-overlay { position:absolute; z-index:7; inset:0; display:block; width:100%; height:100%; pointer-events:none; }
+.hop-layer { z-index:9; }
 .vegetable-button,.packed-vegetable,.hopping-vegetable { display:grid; place-items:center; border:0; background:transparent; filter:drop-shadow(0 5px 3px rgba(75,42,10,.32)); line-height:1; }
 .vegetable-button { position:relative; width:100%; max-width:118px; height:100%; min-height:58px; padding:0; cursor:pointer; touch-action:manipulation; transition:transform .14s ease,filter .14s ease; }
 .pile-vegetable { position:absolute; left:50%; bottom:4%; display:block; font-size:clamp(26px,3.1vw,45px); line-height:1; transform:translate(-50%,0) rotate(var(--pile-rotate,0deg)); transform-origin:50% 80%; }
@@ -69,9 +74,10 @@ button:disabled { cursor:not-allowed; filter:grayscale(.6); opacity:.56; }
 .recount-button { min-height:42px; padding:5px 12px; border:2px solid #fff; border-radius:13px; background:#ffd166; color:#17394d; cursor:pointer; font:inherit; font-size:12px; font-weight:1000; }
 .answer-actions { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px; }
 .answer-actions .next-order-button { min-height:42px; padding:5px 12px; border-radius:13px; font-size:12px; box-shadow:0 4px 0 rgba(21,65,72,.48); }
-.feedback-bubble { position:absolute; z-index:10; left:50%; bottom:1.2%; max-width:45%; padding:5px 14px; border-radius:999px; background:rgba(255,255,255,.9); color:#174052; font-size:clamp(10px,1.25vw,15px); font-weight:900; text-align:center; transform:translateX(-50%); }
+.feedback-bubble { display:none; }
 .answer-panel:not(.hidden) + .feedback-bubble { display:none; }
 .stall-sparkle { position:absolute; z-index:30; left:var(--x); bottom:10%; font-style:normal; font-size:clamp(20px,3vw,38px); pointer-events:none; animation:sparkle-up 1.25s var(--delay) ease-out both; }
+.stall-confetti { position:absolute; z-index:35; top:48%; left:50%; width:clamp(6px,.65vw,11px); height:clamp(10px,1.1vw,18px); border-radius:2px; background:var(--color); pointer-events:none; animation:confetti-blast 1.65s var(--delay) cubic-bezier(.16,.72,.3,1) both; }
 
 .game-actions { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin:18px auto 6px; }
 .next-order-button:not(:disabled) { animation:gentle-pulse 1.8s ease-in-out infinite; }
@@ -80,6 +86,7 @@ button:disabled { cursor:not-allowed; filter:grayscale(.6); opacity:.56; }
 @keyframes celebrate { 0% { transform:scale(1); } 45% { transform:scale(1.28) rotate(8deg); } 100% { transform:scale(1); } }
 @keyframes gentle-pulse { 50% { transform:translateY(-3px); filter:brightness(1.08); } }
 @keyframes sparkle-up { 0% { opacity:0; transform:translateY(0) rotate(0); } 22% { opacity:1; } 100% { opacity:0; transform:translateY(-190px) rotate(80deg); } }
+@keyframes confetti-blast { 0% { opacity:1; transform:translate(-50%,-50%) scale(.3) rotate(0); } 72% { opacity:1; } 100% { opacity:0; transform:translate(calc(-50% + var(--x)),calc(-50% - var(--y))) scale(1) rotate(var(--spin)); } }
 
 @media (max-width:760px) {
     .vegetable-main { padding-inline:6px; }
@@ -110,4 +117,93 @@ button:disabled { cursor:not-allowed; filter:grayscale(.6); opacity:.56; }
 @media (prefers-reduced-motion:reduce) {
     .hopping-vegetable { animation:none; left:var(--to-x); top:var(--to-y); }
     .vegetable-button.wrong,.number-card.wrong,.number-card.correct,.next-order-button:not(:disabled) { animation:none; }
+}
+
+/* Basket hotspots align to the original market artwork in percentages so
+   they remain attached to their baskets at every viewport size. */
+.stock-layer { inset:0; width:auto; height:auto; display:block; pointer-events:none; }
+.vegetable-button { position:absolute; max-width:none; height:auto; border-radius:20%; pointer-events:auto; }
+.vegetable-button[data-vegetable-id="cabbage"] { left:7.4%; top:21.5%; width:13.7%; height:8.5%; }
+.vegetable-button[data-vegetable-id="cauliflower"] { left:21.4%; top:21.5%; width:13%; height:8.5%; }
+.vegetable-button[data-vegetable-id="eggplant"] { left:6.5%; top:36.8%; width:11%; height:11%; }
+.vegetable-button[data-vegetable-id="potato"] { left:17.5%; top:36.8%; width:9.5%; height:11%; }
+.vegetable-button[data-vegetable-id="onion"] { left:26.8%; top:36.8%; width:9.6%; height:11%; }
+.vegetable-button[data-vegetable-id="pepper"] { left:35.9%; top:42.4%; width:12.8%; height:11%; }
+.vegetable-button[data-vegetable-id="tomato"] { left:.6%; top:53.3%; width:18.8%; height:25%; }
+.vegetable-button[data-vegetable-id="carrot"] { left:17.7%; top:53.3%; width:16.8%; height:25%; }
+.vegetable-button[data-vegetable-id="corn"] { left:33.7%; top:53.3%; width:17.2%; height:25%; }
+.vegetable-sprite { display:block; width:100%; height:100%; background-image:url("vegetable-sprites.png"); background-repeat:no-repeat; background-size:300% 300%; }
+.sprite-cabbage { background-position:0% 0%; }
+.sprite-cauliflower { background-position:50% 0%; }
+.sprite-eggplant { background-position:100% 0%; }
+.sprite-potato { background-position:0% 50%; }
+.sprite-onion { background-position:50% 50%; }
+.sprite-pepper { background-position:100% 50%; }
+.sprite-tomato { background-position:0% 100%; }
+.sprite-carrot { background-position:50% 100%; }
+.sprite-corn { background-position:100% 100%; }
+.source-vegetable { position:absolute; left:50%; bottom:18%; display:block; width:32%; aspect-ratio:1; transform:translateX(-50%) rotate(var(--pile-rotate,0deg)); filter:drop-shadow(0 3px 2px rgba(70,35,8,.32)); }
+.source-vegetable[data-pile-position="0"] { left:24%; bottom:18%; --pile-rotate:-10deg; }
+.source-vegetable[data-pile-position="1"] { left:49%; bottom:16%; --pile-rotate:7deg; }
+.source-vegetable[data-pile-position="2"] { left:75%; bottom:18%; --pile-rotate:-5deg; }
+.source-vegetable[data-pile-position="3"] { left:34%; bottom:40%; --pile-rotate:9deg; }
+.source-vegetable[data-pile-position="4"] { left:65%; bottom:41%; --pile-rotate:-9deg; }
+.source-vegetable[data-pile-position="5"] { left:18%; bottom:48%; --pile-rotate:-4deg; }
+.source-vegetable[data-pile-position="6"] { left:82%; bottom:48%; --pile-rotate:10deg; }
+.source-vegetable[data-pile-position="7"] { left:47%; bottom:60%; --pile-rotate:-3deg; }
+.source-vegetable[data-pile-position="8"] { left:69%; bottom:62%; --pile-rotate:6deg; }
+.vegetable-button[data-vegetable-id="cabbage"] .source-vegetable,
+.vegetable-button[data-vegetable-id="cauliflower"] .source-vegetable { width:44%; }
+.vegetable-button[data-vegetable-id="eggplant"] .source-vegetable { width:30%; }
+.vegetable-button[data-vegetable-id="eggplant"] .source-vegetable[data-pile-position="0"] { left:16%; bottom:18%; }
+.vegetable-button[data-vegetable-id="eggplant"] .source-vegetable[data-pile-position="1"] { left:38%; bottom:15%; }
+.vegetable-button[data-vegetable-id="eggplant"] .source-vegetable[data-pile-position="2"] { left:61%; bottom:18%; }
+.vegetable-button[data-vegetable-id="eggplant"] .source-vegetable[data-pile-position="3"] { left:83%; bottom:15%; }
+.vegetable-button[data-vegetable-id="eggplant"] .source-vegetable[data-pile-position="4"] { left:50%; bottom:40%; }
+.vegetable-button[data-vegetable-id="potato"] .source-vegetable { width:33%; }
+.vegetable-button[data-vegetable-id="onion"] .source-vegetable { width:35%; }
+.vegetable-button[data-vegetable-id="pepper"] .source-vegetable { width:35%; }
+/* The counter baskets are much deeper than the shelf baskets. Keep their
+   produce above the front wicker rim and spread it across the extra width. */
+.vegetable-button:is([data-vegetable-id="tomato"],[data-vegetable-id="carrot"],[data-vegetable-id="corn"]) .source-vegetable { width:27%; }
+.vegetable-button:is([data-vegetable-id="tomato"],[data-vegetable-id="carrot"],[data-vegetable-id="corn"]) .source-vegetable[data-pile-position="0"] { left:18%; bottom:14%; }
+.vegetable-button:is([data-vegetable-id="tomato"],[data-vegetable-id="carrot"],[data-vegetable-id="corn"]) .source-vegetable[data-pile-position="1"] { left:50%; bottom:12%; }
+.vegetable-button:is([data-vegetable-id="tomato"],[data-vegetable-id="carrot"],[data-vegetable-id="corn"]) .source-vegetable[data-pile-position="2"] { left:82%; bottom:14%; }
+.vegetable-button:is([data-vegetable-id="tomato"],[data-vegetable-id="carrot"],[data-vegetable-id="corn"]) .source-vegetable[data-pile-position="3"] { left:34%; bottom:29%; }
+.vegetable-button:is([data-vegetable-id="tomato"],[data-vegetable-id="carrot"],[data-vegetable-id="corn"]) .source-vegetable[data-pile-position="4"] { left:66%; bottom:30%; }
+.vegetable-button:is([data-vegetable-id="tomato"],[data-vegetable-id="carrot"],[data-vegetable-id="corn"]) .source-vegetable[data-pile-position="5"] { left:17%; bottom:43%; }
+.vegetable-button:is([data-vegetable-id="tomato"],[data-vegetable-id="carrot"],[data-vegetable-id="corn"]) .source-vegetable[data-pile-position="6"] { left:83%; bottom:43%; }
+.vegetable-button:is([data-vegetable-id="tomato"],[data-vegetable-id="carrot"],[data-vegetable-id="corn"]) .source-vegetable[data-pile-position="7"] { left:48%; bottom:55%; }
+.vegetable-button:is([data-vegetable-id="tomato"],[data-vegetable-id="carrot"],[data-vegetable-id="corn"]) .source-vegetable[data-pile-position="8"] { left:68%; bottom:56%; }
+.vegetable-button[data-vegetable-id="carrot"] .source-vegetable,
+.vegetable-button[data-vegetable-id="corn"] .source-vegetable { width:30%; }
+.vegetable-button:is([data-vegetable-id="tomato"],[data-vegetable-id="carrot"],[data-vegetable-id="corn"]) .source-count { top:auto; right:2%; bottom:23%; }
+.source-count { position:absolute; z-index:2; top:auto; right:1%; bottom:45%; display:grid; min-width:1.35em; aspect-ratio:1; place-items:center; border:1.5px solid #fff; border-radius:50%; background:#073b4c; color:#fff; font-size:clamp(9px,1.15vw,15px); font-weight:1000; box-shadow:0 2px 5px rgba(0,0,0,.38); }
+.vegetable-button:is([data-vegetable-id="cabbage"],[data-vegetable-id="cauliflower"]) .source-count { right:1%; bottom:61%; }
+.vegetable-button.requested { outline:0; background:radial-gradient(ellipse at 50% 42%,rgba(255,255,255,.42),rgba(255,243,107,.24) 45%,transparent 72%); box-shadow:0 0 15px 4px rgba(255,243,107,.72); animation:requested-hotspot 1s ease-in-out infinite; }
+.vegetable-button.depleted { pointer-events:none; opacity:.45; }
+.basket-layer { top:52%; left:58%; width:39%; height:15%; grid-template-columns:repeat(14,minmax(0,1fr)); grid-template-rows:repeat(2,minmax(0,1fr)); }
+.packed-vegetable { position:relative; width:98%; height:70%; font-size:0; }
+.packed-vegetable[data-basket-row="1"] { z-index:1; transform:scale(.9); }
+.packed-vegetable[data-basket-row="2"] { z-index:2; }
+.packed-vegetable[data-vegetable-id="cabbage"],
+.packed-vegetable[data-vegetable-id="cauliflower"] { width:109%; height:78%; }
+.packed-vegetable[data-vegetable-id="eggplant"],
+.packed-vegetable[data-vegetable-id="carrot"],
+.packed-vegetable[data-vegetable-id="corn"] { width:104%; height:74%; }
+.packed-vegetable[data-vegetable-id="potato"],
+.packed-vegetable[data-vegetable-id="onion"],
+.packed-vegetable[data-vegetable-id="pepper"],
+.packed-vegetable[data-vegetable-id="tomato"] { width:92%; height:66%; }
+.hopping-vegetable { width:8%; aspect-ratio:1; font-size:0; }
+@keyframes requested-basket { 50% { filter:drop-shadow(0 0 12px #fff36b); transform:scale(1.025); } }
+@keyframes requested-produce { 50% { filter:drop-shadow(0 0 7px #fff) drop-shadow(0 0 10px #fff36b); transform:translateX(-50%) rotate(var(--pile-rotate,0deg)) scale(1.08); } }
+@keyframes requested-hotspot { 50% { background-color:rgba(255,243,107,.18); box-shadow:0 0 20px 7px rgba(255,243,107,.82); } }
+@media(max-width:760px){
+  .stock-layer { inset:0; width:auto; height:auto; }
+  .basket-layer { top:52%; left:58%; width:39%; height:15%; }
+  .vegetable-button.requested { outline-width:3px; }
+  .source-count { border-width:1px; font-size:clamp(7px,2vw,11px); }
+  .order-card { top:20%; left:52%; width:auto; min-height:0; padding:0; transform:translateX(-50%); }
+  .speaker-button { min-height:30px; padding:4px 8px; font-size:clamp(8px,2.4vw,11px); }
 }

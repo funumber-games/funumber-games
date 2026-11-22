@@ -9,6 +9,41 @@
         return Math.floor(arrowAngle / sectionAngle) + 1;
     }
 
+    function getWheelLabelPosition(index, count, radiusPercent = 38) {
+        const sectionAngle = 360 / count;
+        const angle = index * sectionAngle + sectionAngle / 2;
+        const radians = angle * Math.PI / 180;
+        return {
+            left: 50 + radiusPercent * Math.sin(radians),
+            top: 50 - radiusPercent * Math.cos(radians)
+        };
+    }
+
+    function updateMatchStreak(currentCount, event) {
+        if (event === "spin") return { count: 0, announcement: "" };
+        const count = currentCount + 1;
+        const announcement = {
+            3: "Nice Job!",
+            5: "Good Spot!! Very Nice!!",
+            7: "Rocking Performance! Keep Going!"
+        }[count] || "";
+        return { count, announcement };
+    }
+
+    function getCombinedMatchAnnouncement(streakAnnouncement, blockEmptied) {
+        if (!blockEmptied) return streakAnnouncement;
+        if (!streakAnnouncement || streakAnnouncement === "Nice Job!") return "Nice Job!";
+        return `Nice Job! ${streakAnnouncement}`;
+    }
+
+    function getBlockConfettiColor(blockColor) {
+        return blockColor;
+    }
+
+    function getCelebrationTimings() {
+        return { niceJobMs: 1100, finalDelayMs: 1150 };
+    }
+
     function inSameBlock(row, column, startRow, startColumn, blockSize) {
         return Math.floor(row / blockSize) === Math.floor(startRow / blockSize) &&
             Math.floor(column / blockSize) === Math.floor(startColumn / blockSize);
@@ -163,6 +198,11 @@
 
     return {
         getWheelNumber,
+        getWheelLabelPosition,
+        updateMatchStreak,
+        getCombinedMatchAnnouncement,
+        getBlockConfettiColor,
+        getCelebrationTimings,
         canPlaceNumber,
         findConnectedGroup,
         getAutoFillCells,

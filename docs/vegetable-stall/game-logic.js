@@ -7,8 +7,11 @@
         { id: "carrot", singular: "carrot", plural: "carrots", emoji: "🥕" },
         { id: "tomato", singular: "tomato", plural: "tomatoes", emoji: "🍅" },
         { id: "pepper", singular: "bell pepper", plural: "bell peppers", emoji: "🫑" },
-        { id: "cucumber", singular: "cucumber", plural: "cucumbers", emoji: "🥒" },
-        { id: "broccoli", singular: "broccoli piece", plural: "broccoli pieces", emoji: "🥦" },
+        { id: "cabbage", singular: "cabbage", plural: "cabbages", emoji: "🥬" },
+        { id: "cauliflower", singular: "cauliflower", plural: "cauliflowers", emoji: "🥦" },
+        { id: "eggplant", singular: "eggplant", plural: "eggplants", emoji: "🍆" },
+        { id: "potato", singular: "potato", plural: "potatoes", emoji: "🥔" },
+        { id: "onion", singular: "onion", plural: "onions", emoji: "🧅" },
         { id: "corn", singular: "corn cob", plural: "corn cobs", emoji: "🌽" }
     ];
 
@@ -56,11 +59,7 @@
         }
 
         const total = parts.reduce((sum, part) => sum + part.quantity, 0);
-        const requestedIds = parts.map(part => part.vegetableId);
-        const stockKinds = mode === "simple"
-            ? requestedIds
-            : [...requestedIds, ...pool.map(item => item.id).filter(id => !requestedIds.includes(id))]
-                .slice(0, config.kinds);
+        const stockKinds = VEGETABLES.map(item => item.id);
 
         return { mode, parts, total, stockKinds };
     }
@@ -102,8 +101,20 @@
 
     function stockCount(order, vegetableId) {
         const requested = order.parts.find(part => part.vegetableId === vegetableId);
-        if (requested) return Math.min(11, requested.quantity + 2);
-        return 3;
+        if (requested) return Math.min(12, requested.quantity + 4);
+        return 5;
+    }
+
+    function transferOne(stock, packedCounts, vegetableId) {
+        if ((stock[vegetableId] || 0) < 1) return null;
+        return {
+            stock: { ...stock, [vegetableId]: stock[vegetableId] - 1 },
+            packedCounts: { ...packedCounts, [vegetableId]: (packedCounts[vegetableId] || 0) + 1 }
+        };
+    }
+
+    function shouldHighlightBasket(mode, activeVegetableId, basketVegetableId) {
+        return mode !== "difficult" && activeVegetableId === basketVegetableId;
     }
 
     return {
@@ -118,6 +129,8 @@
         packedTotal,
         answerChoices,
         stockCount,
+        transferOne,
+        shouldHighlightBasket,
         shuffled,
         randomInt,
         clampIndex

@@ -49,15 +49,25 @@
         </div>
 
         <div class="stall-scene" id="stallScene">
-            <img src="vegetable-stall-background.png" alt="A bright vegetable stall with two empty wicker baskets and a smiling customer">
+            <img src="vegetable-stall-stocked.png" alt="A bright vegetable market with stocked produce baskets and a large packing basket">
             <section class="order-card" aria-live="polite">
-                <p id="orderCaption">One carrot, please!</p>
+                <p class="visually-hidden" id="orderCaption">One carrot, please!</p>
                 <button type="button" class="speaker-button" id="speakerButton" aria-label="Hear the order again">🔊 Hear again</button>
             </section>
 
             <div class="stock-layer" id="stockLayer" aria-label="Vegetables available to pack"></div>
             <div class="basket-layer" id="basketLayer" aria-label="Packed vegetables"></div>
             <div class="hop-layer" id="hopLayer" aria-hidden="true"></div>
+            <svg class="basket-front-overlay" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <defs><clipPath id="basketFrontClip">
+                    <rect x="7.4" y="25.3" width="13.7" height="5.7"/><rect x="21.4" y="25.3" width="13" height="5.7"/>
+                    <rect x="6.5" y="43.3" width="11" height="5.5"/><rect x="17.5" y="43.3" width="9.5" height="5.5"/><rect x="26.8" y="43.3" width="9.6" height="5.5"/>
+                    <rect x="35.9" y="49.1" width="12.8" height="5"/>
+                    <rect x=".6" y="72" width="18.8" height="7"/><rect x="17.7" y="72" width="16.8" height="7"/><rect x="33.7" y="72" width="17.2" height="7"/>
+                    <rect x="57.2" y="65.5" width="42" height="13.5"/>
+                </clipPath></defs>
+                <image href="vegetable-stall-stocked.png" width="100" height="100" preserveAspectRatio="none" clip-path="url(#basketFrontClip)"/>
+            </svg>
 
             <section class="answer-panel hidden" id="answerPanel" aria-labelledby="answerQuestion">
                 <p id="answerQuestion">How many vegetables did you pack?</p>

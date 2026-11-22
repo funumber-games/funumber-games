@@ -10,6 +10,18 @@ describe("wheel selection", () => {
     expect(rules.getWheelNumber(-60, 6)).toBe(2);
     expect(rules.getWheelNumber(360 * 5, 9)).toBe(1);
   });
+
+  it.each([6, 9])("keeps all %i wheel labels centred and clear of the hub on phone layouts", count => {
+    const positions=Array.from({length:count},(_,index)=>rules.getWheelLabelPosition(index,count));
+    positions.forEach(({left,top}) => {
+      const distance=Math.hypot(left-50,top-50);
+      expect(distance).toBeCloseTo(38,8);
+      expect(left).toBeGreaterThanOrEqual(12);
+      expect(left).toBeLessThanOrEqual(88);
+      expect(top).toBeGreaterThanOrEqual(12);
+      expect(top).toBeLessThanOrEqual(88);
+    });
+  });
 });
 
 describe("number placement and matches", () => {
@@ -70,6 +82,44 @@ describe("spin streak", () => {
   it("resets the no-clear streak only after a match clears", () => {
     expect(rules.getNextSpinStreak(4, 0)).toBe(4);
     expect(rules.getNextSpinStreak(4, 3)).toBe(0);
+  });
+
+  it("resets the consecutive-match reward streak whenever the player spins", () => {
+    let streak=rules.updateMatchStreak(0,"match");
+    streak=rules.updateMatchStreak(streak.count,"match");
+    expect(streak.count).toBe(2);
+    expect(rules.updateMatchStreak(streak.count,"spin")).toEqual({count:0,announcement:""});
+  });
+
+  it("awards the no-spin streak messages at exactly three, five, and seven matches", () => {
+    let count=0;
+    const announcements=[];
+    for(let match=1;match<=8;match++){
+      const update=rules.updateMatchStreak(count,"match");
+      count=update.count;
+      if(update.announcement)announcements.push([match,update.announcement]);
+    }
+    expect(announcements).toEqual([
+      [3,"Nice Job!"],
+      [5,"Good Spot!! Very Nice!!"],
+      [7,"Rocking Performance! Keep Going!"]
+    ]);
+  });
+
+  it("combines a streak reward with the empty-block Nice Job announcement", () => {
+    expect(rules.getCombinedMatchAnnouncement("Good Spot!! Very Nice!!",true))
+      .toBe("Nice Job! Good Spot!! Very Nice!!");
+    expect(rules.getCombinedMatchAnnouncement("Nice Job!",true)).toBe("Nice Job!");
+  });
+
+  it("uses the exact cleared block colour for its confetti", () => {
+    expect(rules.getBlockConfettiColor("rgb(234, 77, 77)")).toBe("rgb(234, 77, 77)");
+    expect(rules.getBlockConfettiColor("#6df16d")).toBe("#6df16d");
+  });
+
+  it("finishes Nice Job before showing the final congratulations", () => {
+    const timings=rules.getCelebrationTimings();
+    expect(timings.finalDelayMs).toBeGreaterThan(timings.niceJobMs);
   });
 });
 

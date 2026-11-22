@@ -66,14 +66,10 @@
 
     function setVegetableVisual(element, id) {
         element.replaceChildren();
-        if (id === "cucumber") {
-            const cucumber = document.createElement("span");
-            cucumber.className = "whole-cucumber";
-            cucumber.setAttribute("aria-hidden", "true");
-            element.append(cucumber);
-            return;
-        }
-        element.textContent = logic.vegetableById(id).emoji;
+        const sprite=document.createElement("span");
+        sprite.className=`vegetable-sprite sprite-${id}`;
+        sprite.setAttribute("aria-hidden","true");
+        element.append(sprite);
     }
 
     function renderStock() {
@@ -94,17 +90,11 @@
 
     function renderVegetablePile(button, id) {
         const vegetable = logic.vegetableById(id);
-        const visibleCount = Math.min(state.stock[id], 9);
         button.replaceChildren();
-        button.setAttribute("aria-label", `${vegetable.singular} pile, ${state.stock[id]} available`);
-        for (let index = 0; index < visibleCount; index += 1) {
-            const item = document.createElement("span");
-            item.className = "pile-vegetable";
-            item.dataset.pilePosition = index;
-            item.setAttribute("aria-hidden", "true");
-            setVegetableVisual(item, id);
-            button.append(item);
-        }
+        button.setAttribute("aria-label", `${vegetable.singular} basket`);
+        button.classList.toggle("depleted",state.stock[id]===0);
+        const active=logic.activePart(state.order,state.packedCounts);
+        button.classList.toggle("requested",logic.shouldHighlightBasket(state.mode,active?.vegetableId,id));
     }
 
     function packedLayout(items) {
@@ -126,7 +116,7 @@
         }
 
         return rows.flatMap((row, rowIndex) => {
-            const firstColumn = 6 - row.length;
+            const firstColumn = 8 - row.length;
             return row.map((item, columnIndex) => ({
                 ...item,
                 row: rowIndex + 1,
@@ -142,6 +132,8 @@
             const item = document.createElement("span");
             item.className = "packed-vegetable";
             item.dataset.packedIndex = index;
+            item.dataset.vegetableId = id;
+            item.dataset.basketRow = layout[index].row;
             item.style.gridColumn = `${layout[index].column} / span 2`;
             item.style.gridRow = `${layout[index].row}`;
             setVegetableVisual(item, id);
@@ -164,16 +156,16 @@
         const sourceRect = button.getBoundingClientRect();
         const basketRect = basketLayer.getBoundingClientRect();
         const targetSlot = packedLayout([...state.packedItems, id]).at(-1);
-        const targetX = basketRect.left - sceneRect.left + basketRect.width * (targetSlot.column / 10 - .035);
-        const targetY = basketRect.top - sceneRect.top + basketRect.height * (targetSlot.row === 1 ? .02 : .48);
-        const startX = sourceRect.left - sceneRect.left + sourceRect.width * .35;
-        const startY = sourceRect.top - sceneRect.top + sourceRect.height * .2;
+        const targetX = basketRect.left - sceneRect.left + basketRect.width * (targetSlot.column / 14);
+        const targetY = basketRect.top - sceneRect.top + basketRect.height * (targetSlot.row === 1 ? .25 : .75);
+        const startX = sourceRect.left - sceneRect.left + sourceRect.width * .5;
+        const startY = sourceRect.top - sceneRect.top + sourceRect.height * .5;
         const hopper = document.createElement("span");
         hopper.className = "hopping-vegetable";
         setVegetableVisual(hopper, id);
-        hopper.style.left = `${startX}px`;
-        hopper.style.top = `${startY}px`;
         hopLayer.append(hopper);
+        hopper.style.left = `${startX-hopper.offsetWidth/2}px`;
+        hopper.style.top = `${startY-hopper.offsetHeight/2}px`;
 
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
             hopper.remove();
@@ -207,11 +199,13 @@
         state.busy = true;
         button.disabled = true;
         await animateHop(button, id);
-        state.stock[id] -= 1;
-        state.packedCounts[id] = (state.packedCounts[id] || 0) + 1;
+        const transfer=logic.transferOne(state.stock,state.packedCounts,id);
+        state.stock=transfer.stock;
+        state.packedCounts=transfer.packedCounts;
         state.packedItems.push(id);
         renderPacked();
         updateStockButton(id);
+        renderStock();
         updateStatus();
 
         const groupCount = state.packedCounts[id];
@@ -271,18 +265,20 @@
         }
 
         state.answered = true;
+        state.busy = true;
         button.classList.add("correct");
         numberCards.querySelectorAll("button").forEach(card => { card.disabled = true; });
-        nextOrderButton.disabled = false;
         stallScene.classList.add("success");
-        const itemName = state.order.parts.length === 1
-            ? logic.vegetableById(state.order.parts[0].vegetableId).plural
-            : "vegetables";
-        const message = `Yes, ${countWords[state.order.total]} ${itemName}. Thank you!`;
-        answerQuestion.textContent = message;
-        setFeedback(message);
-        speak(message);
+        answerQuestion.textContent = "Great job done!";
+        setFeedback("Great job done!");
         createCelebration();
+        speak("Great job done!");
+        await wait(1400);
+        answerQuestion.textContent = "Next order, please.";
+        setFeedback("Next order, please.");
+        speak("Next order, please.");
+        nextOrderButton.disabled = false;
+        state.busy = false;
     }
 
     async function recount() {
@@ -300,14 +296,17 @@
     }
 
     function createCelebration() {
-        for (let index = 0; index < 18; index += 1) {
-            const sparkle = document.createElement("i");
-            sparkle.className = "stall-sparkle";
-            sparkle.textContent = ["✨", "⭐", "🥕", "🍅"][index % 4];
-            sparkle.style.setProperty("--x", `${20 + Math.random() * 65}%`);
-            sparkle.style.setProperty("--delay", `${Math.random() * .35}s`);
-            stallScene.append(sparkle);
-            setTimeout(() => sparkle.remove(), 1500);
+        const colors = ["#ff4d6d", "#ffd166", "#22c55e", "#38bdf8", "#a855f7", "#fb923c"];
+        for (let index = 0; index < 56; index += 1) {
+            const confetti = document.createElement("i");
+            confetti.className = "stall-confetti";
+            confetti.style.setProperty("--color", colors[index % colors.length]);
+            confetti.style.setProperty("--x", `${(Math.random() - .5) * 86}vw`);
+            confetti.style.setProperty("--y", `${18 + Math.random() * 48}vh`);
+            confetti.style.setProperty("--spin", `${360 + Math.random() * 720}deg`);
+            confetti.style.setProperty("--delay", `${Math.random() * .18}s`);
+            stallScene.append(confetti);
+            setTimeout(() => confetti.remove(), 1900);
         }
     }
 

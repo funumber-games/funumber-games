@@ -33,6 +33,9 @@ let clearMatchesTimeout = null;
 let isClearingMatches = false;
 let isSpinning = false;
 let currentVoiceInstruction = "";
+let remainingChoiceGuidanceSpoken = false;
+let matchesSinceLastSpin = 0;
+const celebrationTimings = GameRules.getCelebrationTimings();
 
 function speakInstruction(message, speak = true) {
     currentVoiceInstruction = message;
@@ -64,6 +67,8 @@ function returnToModeSelection() {
     clearTimeout(clearMatchesTimeout);
     isClearingMatches = false;
     isSpinning = false;
+    remainingChoiceGuidanceSpoken = false;
+    matchesSinceLastSpin = GameRules.updateMatchStreak(matchesSinceLastSpin,"spin").count;
     currentMode = null;
     document.body.classList.remove("playing");
     rotation = 0;
@@ -86,6 +91,8 @@ function startGame(modeKey) {
     rotationsWithoutClick = 0;
     isClearingMatches = false;
     isSpinning = false;
+    remainingChoiceGuidanceSpoken = false;
+    matchesSinceLastSpin = GameRules.updateMatchStreak(matchesSinceLastSpin,"spin").count;
     clearTimeout(clearMatchesTimeout);
 
     spinButton.textContent = "Spin";
@@ -152,14 +159,13 @@ function buildWheel(config) {
         label.className = "wheel-number";
         label.textContent = number;
 
-        const angle = (number - 1) * sectionAngle + sectionAngle / 2;
-        const radians = angle * Math.PI / 180;
-        // Absolute positions start inside the wheel's border, so use the
-        // inner box center rather than the 300px outer diameter center.
-        const center = wheel.clientWidth / 2;
-        const radius = center - 30;
-        label.style.left = `${center + radius * Math.sin(radians)}px`;
-        label.style.top = `${center - radius * Math.cos(radians)}px`;
+        // Percentages keep every label centred on the same circle when the
+        // wheel shrinks for a phone screen. Pixel coordinates could be read
+        // while the responsive layout was still changing, pulling labels
+        // towards the hub on mobile devices.
+        const position = GameRules.getWheelLabelPosition(number - 1, config.wheelNumbers);
+        label.style.left = `${position.left}%`;
+        label.style.top = `${position.top}%`;
         wheel.appendChild(label);
     }
 
@@ -179,7 +185,7 @@ function updateWheelSelection() {
 }
 
 spinButton.addEventListener("click", () => {
-    if (!currentMode || isSpinning || !gameOverPopup.classList.contains("hidden")) return;
+    if (!currentMode || isSpinning || isClearingMatches || !gameOverPopup.classList.contains("hidden")) return;
     const config = modes[currentMode];
     if (GameRules.hasReachedSpinLimit(rotationsWithoutClick, config.rotationLimit)) {
         endGame("Try again!", "loss");
@@ -187,6 +193,7 @@ spinButton.addEventListener("click", () => {
     }
 
     isSpinning = true;
+    matchesSinceLastSpin = GameRules.updateMatchStreak(matchesSinceLastSpin,"spin").count;
     rotation += 360 * 5 + Math.random() * 360;
     rotationsWithoutClick++;
     spinsUsedDisplay.textContent = `Spins used: ${rotationsWithoutClick}/${config.rotationLimit}`;
@@ -203,13 +210,71 @@ wheel.addEventListener("transitionend", event => {
     });
     updateWheelSelection();
     const selectedNumber = GameRules.getWheelNumber(rotation, modes[currentMode].wheelNumbers);
-    const numberStillAvailable=[...table.querySelectorAll("td")].some(cell=>Number(cell.textContent)===selectedNumber);
+    const remainingNumbers=[...new Set([...table.querySelectorAll("td")]
+        .map(cell=>cell.textContent.trim()).filter(Boolean).map(Number))].sort((a,b)=>a-b);
+    const numberStillAvailable=remainingNumbers.includes(selectedNumber);
     const remainingSpins=Math.max(0,modes[currentMode].rotationLimit-rotationsWithoutClick);
-    const remainingMessage=`You have ${remainingSpins} spin${remainingSpins===1?"":"s"} remaining.`;
-    speakInstruction(numberStillAvailable
-        ? `The number is ${selectedNumber}. Tap an empty square beside the same number. ${remainingMessage}`
-        : `Oh oh! This number has already disappeared. Try again. ${remainingMessage}`);
+    if(numberStillAvailable){
+        speakInstruction(`Find ${selectedNumber} in the table.`);
+    }else if(remainingNumbers.length<=3&&!remainingChoiceGuidanceSpoken){
+        remainingChoiceGuidanceSpoken=true;
+        if(remainingNumbers.length===1){
+            speakInstruction(`The number you need is ${remainingNumbers[0]}. Good luck!`);
+        }else{
+            const choices=`${remainingNumbers.slice(0,-1).join(", ")} or ${remainingNumbers.at(-1)}`;
+            speakInstruction(`You need one of these numbers: ${choices}. Spin again.`);
+        }
+    }else if(remainingSpins===2){
+        speakInstruction("2 spins left. Good luck!");
+    }else{
+        speakInstruction("Spin Again");
+    }
 });
+
+function showMatchCelebration() {
+    document.querySelector(".match-celebration")?.remove();
+    const celebration=document.createElement("div");
+    celebration.className="match-celebration";
+    celebration.setAttribute("aria-hidden","true");
+    celebration.textContent="✨ Nice Job! ✨";
+    document.body.appendChild(celebration);
+    window.setTimeout(()=>celebration.remove(),celebrationTimings.niceJobMs);
+}
+
+function blockEmptiedBy(matches) {
+    if(!matches.length)return null;
+    const first=matches[0];
+    const startRow=Math.floor(first.parentElement.rowIndex/3)*3;
+    const startColumn=Math.floor(first.cellIndex/3)*3;
+    const matched=new Set(matches);
+    const blockCells=[];
+    for(let row=startRow;row<startRow+3;row++){
+        for(let column=startColumn;column<startColumn+3;column++)blockCells.push(table.rows[row].cells[column]);
+    }
+    return blockCells.every(cell=>matched.has(cell)||cell.textContent.trim()==="")
+        ? {anchor:table.rows[startRow+1].cells[startColumn+1],color:first.style.backgroundColor}
+        : null;
+}
+
+function showBlockConfetti(anchor,color) {
+    const bounds=anchor.getBoundingClientRect();
+    const originX=bounds.left+bounds.width/2;
+    const originY=bounds.top+bounds.height/2;
+    for(let index=0;index<28;index++){
+        const particle=document.createElement("span");
+        const angle=(Math.PI*2*index/28)+(Math.random()*.22-.11);
+        const distance=55+Math.random()*85;
+        particle.className="block-confetti";
+        particle.style.setProperty("--origin-x",`${originX}px`);
+        particle.style.setProperty("--origin-y",`${originY}px`);
+        particle.style.setProperty("--burst-x",`${Math.cos(angle)*distance}px`);
+        particle.style.setProperty("--burst-y",`${Math.sin(angle)*distance-24}px`);
+        particle.style.setProperty("--confetti-color",GameRules.getBlockConfettiColor(color));
+        particle.style.setProperty("--confetti-rotation",`${Math.random()*540-270}deg`);
+        document.body.appendChild(particle);
+        window.setTimeout(()=>particle.remove(),1000);
+    }
+}
 
 table.addEventListener("click", event => {
     const cell = event.target.closest("td");
@@ -239,13 +304,35 @@ table.addEventListener("click", event => {
 
     if (GameRules.shouldClearGroup(matches.length, number)) {
         isClearingMatches = true;
+        remainingChoiceGuidanceSpoken = false;
+        const emptiedBlock=blockEmptiedBy(matches);
+        const streakUpdate=GameRules.updateMatchStreak(matchesSinceLastSpin,"match");
+        matchesSinceLastSpin=streakUpdate.count;
+        const streakMessage=streakUpdate.announcement;
+        if(streakMessage&&!emptiedBlock){
+            showMatchCelebration();
+            speakInstruction(streakMessage);
+        }
         clearMatchesTimeout = setTimeout(() => {
             matches.forEach(matchedCell => { matchedCell.textContent = ""; });
+            if(emptiedBlock){
+                showMatchCelebration();
+                showBlockConfetti(emptiedBlock.anchor,emptiedBlock.color);
+                speakInstruction(GameRules.getCombinedMatchAnnouncement(streakMessage,true));
+            }
             rotationsWithoutClick = GameRules.getNextSpinStreak(rotationsWithoutClick, matches.length);
             spinsUsedDisplay.textContent = `Spins used: 0/${config.rotationLimit}`;
-            isClearingMatches = false;
+            const gameComplete=[...table.querySelectorAll("td")].every(cell=>cell.textContent.trim()==="");
+            if(gameComplete&&emptiedBlock){
+                spinButton.disabled=true;
+                clearMatchesTimeout=setTimeout(()=>{
+                    isClearingMatches=false;
+                    endGame("Congratulations!", "win");
+                },celebrationTimings.finalDelayMs);
+                return;
+            }
+            isClearingMatches=false;
             checkForLastNumber();
-            if (gameOverPopup.classList.contains("hidden")) speakInstruction("Great match! The group cleared. Spin again.");
         }, 500);
     } else {
         checkForLastNumber();
@@ -256,7 +343,7 @@ table.addEventListener("click", event => {
 function checkForLastNumber() {
     const remainingCells = [...table.querySelectorAll("td")]
         .filter(cell => cell.textContent.trim() !== "");
-    if (remainingCells.length <= 1) {
+    if (remainingCells.length === 0) {
         endGame("Congratulations!", "win");
     }
 }
