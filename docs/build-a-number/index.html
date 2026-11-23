@@ -25,14 +25,13 @@
       <h1>Build a Number</h1>
     </header>
     <section class="toolbar" aria-label="Game controls">
-      <span class="mode-status">Mode <strong id="modeStatus">Simple</strong></span>
       <button id="hearBtn" type="button">🔊 Hear Again</button>
-      <p id="caption" role="status" aria-live="polite">Build the number.</p>
+      <p id="caption" class="visually-hidden" role="status" aria-live="polite">Build the number.</p>
       <button id="nextBtn" type="button">Next Number →</button>
     </section>
 
     <section class="scene" aria-label="Build a Number circus game">
-      <img src="build-a-number-background.png" alt="A rabbit ringmaster beside a blank construction board and five empty shape trays">
+      <img src="build-a-number-background-v6.png" alt="A rabbit ringmaster beside a blank construction board and five empty shape trays">
       <div id="targetNumber" class="target-number" aria-label="Target number"></div>
       <svg id="board" class="board" viewBox="0 0 100 100" role="group" aria-label="Number building board"></svg>
       <div id="tray" class="tray" aria-label="Shape pieces"></div>
@@ -42,10 +41,7 @@
     </section>
 
     <section class="actions" aria-label="Building controls">
-      <button id="turnBtn" type="button">↻ Turn Piece</button>
-      <button id="hintBtn" type="button">💡 Hint</button>
       <button id="checkBtn" type="button">✓ Check</button>
-      <button id="undoBtn" type="button">↶ Undo</button>
       <button id="resetBtn" class="reset-button" type="button">Start / Reset</button>
       <button id="changeModeBtn" class="change-mode-button" type="button">Change Mode</button>
     </section>

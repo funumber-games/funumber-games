@@ -27,7 +27,7 @@
         placedBlocks: document.getElementById("placedBlocks"),
         bridgePlank: document.getElementById("bridgePlank"),
         rabbitCover: document.getElementById("rabbitCover"),
-        crossingRabbit: document.getElementById("crossingRabbit"),
+        rabbitCanvas: document.getElementById("rabbitCanvas"),
         workbench: document.getElementById("workbench"),
         blockPile: document.getElementById("blockPile"),
         plankChoices: document.getElementById("plankChoices"),
@@ -47,8 +47,57 @@
         plankValues: [3, 4, 5],
         currentInstruction: "",
         animation: null,
+        spriteAnimation: null,
         speechTimer: null
     };
+
+    const rabbitSheet = new Image();
+    rabbitSheet.src = "build-a-bridge-rabbit-running.png";
+
+    function sizeRabbitCanvas() {
+        const canvas = elements.rabbitCanvas;
+        const width = Math.max(1, Math.round(elements.scene.clientWidth));
+        const height = Math.max(1, Math.round(elements.scene.clientHeight));
+        if (canvas.width !== width) canvas.width = width;
+        if (canvas.height !== height) canvas.height = height;
+        return canvas.getContext("2d");
+    }
+
+    function drawRabbit(frame, xRatio, groundRatio, phase = 0, moving = false) {
+        if (!rabbitSheet.complete || !rabbitSheet.naturalWidth) return;
+        const canvas = elements.rabbitCanvas;
+        const context = sizeRabbitCanvas();
+        const width = canvas.width;
+        const height = canvas.height;
+        const x = width * xRatio;
+        const ground = height * groundRatio;
+        const frameWidth = rabbitSheet.naturalWidth / 8;
+        const frameHeight = rabbitSheet.naturalHeight;
+        const sourceY = frameHeight * .34;
+        const sourceHeight = frameHeight * .31;
+        const rabbitWidth = width * .13;
+        const rabbitHeight = sourceHeight / frameWidth * rabbitWidth;
+        const bounce = moving ? Math.sin(phase * Math.PI * 2) ** 2 * rabbitHeight * .035 : 0;
+        const squash = moving && (frame === 0 || frame === 5) ? .97 : 1;
+
+        context.clearRect(0, 0, width, height);
+        context.fillStyle = "rgba(37, 59, 41, .25)";
+        context.beginPath();
+        context.ellipse(x, ground - 2, rabbitWidth * .36, Math.max(3, rabbitHeight * .04), 0, 0, Math.PI * 2);
+        context.fill();
+        context.save();
+        context.translate(x, ground - bounce);
+        context.scale(1 / squash, squash);
+        context.drawImage(rabbitSheet, frame * frameWidth, sourceY, frameWidth, sourceHeight,
+            -rabbitWidth / 2, -rabbitHeight, rabbitWidth, rabbitHeight);
+        context.restore();
+    }
+
+    function drawWaitingRabbit(side = "left") {
+        drawRabbit(6, side === "left" ? .17 : .78, .39);
+    }
+
+    rabbitSheet.addEventListener("load", () => drawWaitingRabbit());
 
     function randomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -184,13 +233,14 @@
         state.phase = "measure";
         state.plankValues = createPlankValues();
         state.animation?.cancel();
+        state.spriteAnimation?.cancel();
         elements.scene.classList.remove("crossing");
         elements.sceneBackground.src = "build-a-bridge-layout-white-rabbit.png";
         elements.measureTrack.classList.remove("hidden");
-        elements.rabbitCover.classList.add("hidden");
-        elements.crossingRabbit.classList.add("hidden");
-        elements.crossingRabbit.classList.remove("crossed");
+        elements.rabbitCover.classList.remove("hidden");
+        drawWaitingRabbit();
         elements.bridgePlank.className = "bridge-plank hidden";
+        elements.bridgePlank.style.removeProperty("--unit-size");
         elements.doneButton.classList.toggle("hidden", state.mode === "simple");
         elements.nextButton.classList.add("hidden");
         elements.workbench.classList.remove("hidden");
@@ -282,30 +332,50 @@
 
     function runRabbitCrossing() {
         elements.scene.classList.add("crossing");
-        elements.workbench.classList.add("hidden");
+        elements.bridgePlank.style.setProperty("--unit-size", `${100 / state.gap}%`);
         elements.measureTrack.classList.add("hidden");
         elements.rabbitCover.classList.remove("hidden");
         elements.bridgePlank.classList.remove("hidden");
-        elements.crossingRabbit.classList.remove("hidden");
 
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         if (reduced) {
-            elements.crossingRabbit.classList.add("crossed");
+            drawWaitingRabbit("right");
             finishCrossing();
             return;
         }
 
-        const steps = Array.from({ length: 25 }, (_, index) => ({
-            left: `${19 + (54 * index / 24)}%`,
-            transform: `translateY(${index % 2 ? -5 : 0}%) rotate(${index % 2 ? -2 : 1}deg)`
-        }));
-        state.animation = elements.crossingRabbit.animate(steps, { duration: 2600, easing: "linear", fill: "forwards" });
-        state.animation.finished.then(finishCrossing).catch(() => {});
+        const gapLeft = 29.8;
+        const gapWidth = 38.9;
+        const rabbitAnchor = 0;
+        const blockFootfalls = Array.from({ length: state.gap }, (_, index) =>
+            gapLeft + ((index + .5) * gapWidth / state.gap) - rabbitAnchor
+        );
+        const movementPoints = [24, ...blockFootfalls, 78];
+        const stepDuration = 640;
+        const segmentCount = movementPoints.length - 1;
+        const totalDuration = stepDuration * segmentCount;
+        const startedAt = performance.now();
+        let animationFrame = 0;
+        let cancelled = false;
+        state.animation = { cancel() { cancelled = true; cancelAnimationFrame(animationFrame); } };
+
+        function animateRabbit(now) {
+            if (cancelled) return;
+            const elapsed = Math.min(now - startedAt, totalDuration);
+            const segment = Math.min(Math.floor(elapsed / stepDuration), segmentCount - 1);
+            const phase = elapsed >= totalDuration ? 0 : (elapsed % stepDuration) / stepDuration;
+            const x = movementPoints[segment] + (movementPoints[segment + 1] - movementPoints[segment]) * phase;
+            const frame = elapsed >= totalDuration ? 6 : Math.floor(phase * 8);
+            drawRabbit(frame, x / 100, .36, phase, elapsed < totalDuration);
+            if (elapsed < totalDuration) animationFrame = requestAnimationFrame(animateRabbit);
+            else finishCrossing();
+        }
+        animationFrame = requestAnimationFrame(animateRabbit);
     }
 
     function finishCrossing() {
         state.phase = "complete";
-        elements.crossingRabbit.classList.add("crossed");
+        drawWaitingRabbit("right");
         elements.nextButton.classList.remove("hidden");
         elements.feedback.textContent = "The rabbit reached the far bank. Wonderful measuring!";
         setInstruction("The rabbit made it across!", "Choose Next Crossing for another creek gap.");
@@ -322,6 +392,7 @@
         window.clearTimeout(state.speechTimer);
         window.speechSynthesis?.cancel();
         state.animation?.cancel();
+        state.spriteAnimation?.cancel();
         elements.gamePanel.classList.add("hidden");
         elements.modePanel.classList.remove("hidden");
         alignPageTop();

@@ -1,7 +1,7 @@
 (function () {
   const L = window.BuildNumberLogic;
   const $ = id => document.getElementById(id);
-  const state = { mode:'simple', index:0, number:0, numberDeck:[], parts:[], pieces:[], placed:new Set(), selected:null, history:[], locked:false };
+  const state = { mode:'simple', index:0, number:0, numberDeck:[], parts:[], pieces:[], placed:new Set(), selected:null, history:[], locked:false, roundId:0 };
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const board = $('board'), tray = $('tray'), caption = $('caption');
   const modeNames = { simple:'Simple', moderate:'Moderate', difficult:'Difficult' };
@@ -34,6 +34,7 @@
     return shuffled(pieces);
   }
   function begin(number, announce=true) {
+    state.roundId += 1;
     state.number = number; state.parts=L.partsFor(number); state.pieces=makePieces(state.parts); state.placed.clear(); state.selected=null; state.history=[]; state.locked=false;
     $('targetNumber').textContent=number; $('celebration').hidden=true;
     render();
@@ -71,14 +72,19 @@
     tray.replaceChildren();
     const slots=[...state.pieces]; while(slots.length<5) slots.push(null);
     slots.forEach(piece=>{
-      if(!piece){ tray.append(document.createElement('span')); return; }
+      const slot=document.createElement('span'); slot.className='piece-slot';
+      if(!piece){ tray.append(slot); return; }
       const btn=document.createElement('button'); btn.type='button'; btn.className='piece'; btn.dataset.pieceId=piece.pieceId; btn.setAttribute('aria-label',piece.name);
+      btn.dataset.kind=piece.kind;
       if(state.selected===piece.pieceId) btn.classList.add('selected'); if(piece.used) btn.classList.add('used');
       const visibleRotation=((piece.rotation-piece.targetRotation)%180+180)%180;
       btn.style.setProperty('--rotation',`${visibleRotation}deg`);
       btn.innerHTML=`<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${piece.path}"></path></svg>`;
       btn.addEventListener('click',()=>selectPiece(piece.pieceId)); enableDrag(btn,piece);
-      tray.append(btn);
+      const rotate=document.createElement('button'); rotate.type='button'; rotate.className='piece-turn'; rotate.textContent='↻'; rotate.setAttribute('aria-label',`Turn ${piece.name}`);
+      rotate.hidden=state.mode==='simple'||piece.used;
+      rotate.addEventListener('click',event=>{event.stopPropagation();turnPiece(piece.pieceId);});
+      slot.append(btn,rotate); tray.append(slot);
     });
   }
   function selectPiece(id) { if(state.locked)return; state.selected=state.selected===id?null:id; render(); if(state.selected){const p=getPiece(id);speak(`Selected ${p.name}. Tap its place on the board.`);} }
@@ -91,12 +97,26 @@
     state.history.push({type:'place',targetId,pieceId:piece.pieceId}); state.placed.add(targetId); piece.used=true; state.selected=null; render();
     if(L.isComplete(state.parts,[...state.placed])) finish(); else speak(`Great! ${state.placed.size} part${state.placed.size===1?'':'s'} placed.`);
   }
-  function turn(){ if(!state.selected){speak('Choose a piece to turn.');return;} const p=getPiece(state.selected); state.history.push({type:'turn',pieceId:p.pieceId,from:p.rotation}); p.rotation=(p.rotation+45)%180; render(); speak(`Turned ${p.name}.`); }
-  function undo(){ const a=state.history.pop(); if(!a){speak('There is nothing to undo yet.');return;} if(a.type==='place'){state.placed.delete(a.targetId);getPiece(a.pieceId).used=false;} else getPiece(a.pieceId).rotation=a.from; state.locked=false;$('celebration').hidden=true;render();speak('Undone.'); }
-  function hint(){ const target=state.parts.find(p=>!state.placed.has(p.id)); if(!target){speak('The number is complete.');return;} let piece=state.pieces.find(p=>!p.used&&p.id===target.id&&!p.extra); if(!piece){speak(`Look for a ${target.name}.`);return;} state.selected=piece.pieceId; if(piece.rotation!==target.rotation&&state.mode!=='simple') speak(`Choose the highlighted ${piece.name}, then turn it to fit.`); else speak(`Choose the highlighted ${piece.name}, then tap the glowing place.`); render(); }
-  function check(){ if(L.isComplete(state.parts,[...state.placed]))finish(); else {const left=state.parts.length-state.placed.size;speak(`${left} part${left===1?'':'s'} still need a place.`);hint();} }
-  function finish(){state.locked=true;$('celebrationText').textContent=`You built the number ${state.number}!`;$('celebration').hidden=false;render();speak(`Fantastic! You built the number ${state.number}.`);}
-  function updateButtons(){ $('turnBtn').hidden=state.mode==='simple'; $('checkBtn').hidden=state.mode!=='difficult'; $('hintBtn').textContent=state.mode==='difficult'?'Show Outline':'💡 Hint'; }
+  function turnPiece(pieceId){ if(state.locked)return; const p=getPiece(pieceId); if(!p||p.used)return; state.selected=pieceId; state.history.push({type:'turn',pieceId:p.pieceId,from:p.rotation}); p.rotation=(p.rotation+45)%180; render(); speak(`Turned ${p.name}.`); }
+  function check(){ if(L.isComplete(state.parts,[...state.placed]))finish(); else {const left=state.parts.length-state.placed.size;speak(`${left} part${left===1?'':'s'} still need a place.`);} }
+  function launchConfetti(){
+    const colors=['#ff4d6d','#ffd166','#22c55e','#38bdf8','#a855f7','#fb923c'];
+    for(let index=0;index<60;index+=1){
+      const bit=document.createElement('i'); bit.className='build-confetti';
+      bit.style.setProperty('--color',colors[index%colors.length]);
+      bit.style.setProperty('--x',`${(Math.random()-.5)*78}vw`); bit.style.setProperty('--y',`${18+Math.random()*42}vh`);
+      bit.style.setProperty('--spin',`${360+Math.random()*720}deg`); bit.style.setProperty('--delay',`${Math.random()*.2}s`);
+      $('celebration').parentElement.append(bit); setTimeout(()=>bit.remove(),1900);
+    }
+  }
+  async function finish(){
+    state.locked=true; const completedRound=state.roundId; render();
+    await new Promise(resolve=>setTimeout(resolve,3000));
+    if(completedRound!==state.roundId||!state.locked)return;
+    $('celebrationText').textContent=`You built the number ${state.number}!`;
+    $('celebration').hidden=false; launchConfetti(); speak(`Fantastic! You built the number ${state.number}.`);
+  }
+  function updateButtons(){ $('checkBtn').hidden=state.mode!=='difficult'; }
   function next(){
     if(!state.numberDeck.length) state.numberDeck=L.shuffledNumbers(Math.random,state.number);
     begin(state.numberDeck.shift());
@@ -105,14 +125,21 @@
     let start=null;
     btn.addEventListener('pointerdown',e=>{start={x:e.clientX,y:e.clientY};btn.setPointerCapture(e.pointerId);});
     btn.addEventListener('pointermove',e=>{if(!start)return;if(Math.hypot(e.clientX-start.x,e.clientY-start.y)>8){btn.classList.add('dragging');btn.style.translate=`${e.clientX-start.x}px ${e.clientY-start.y}px`;}});
-    btn.addEventListener('pointerup',e=>{if(!start)return;const dragged=btn.classList.contains('dragging');btn.classList.remove('dragging');btn.style.translate='';start=null;if(!dragged)return;state.selected=piece.pieceId;const el=document.elementFromPoint(e.clientX,e.clientY);const hit=el&&el.closest&&el.closest('.target-hit');if(hit)placeSelected(hit.dataset.id);else render();});
+    btn.addEventListener('pointerup',e=>{if(!start)return;const dragged=btn.classList.contains('dragging');btn.classList.remove('dragging');btn.style.translate='';start=null;if(!dragged)return;state.selected=piece.pieceId;const targetId=targetNearPoint(e.clientX,e.clientY,piece.pieceId);if(targetId)placeSelected(targetId);else render();});
   }
+  function targetNearPoint(clientX,clientY,pieceId){
+    const targetId=matchingTarget(pieceId); if(!targetId)return null;
+    const hit=board.querySelector(`.target-hit[data-id="${targetId}"]`); if(!hit)return null;
+    const rect=hit.getBoundingClientRect(); const margin=Math.max(24,Math.min(board.clientWidth,board.clientHeight)*.07);
+    return clientX>=rect.left-margin&&clientX<=rect.right+margin&&clientY>=rect.top-margin&&clientY<=rect.bottom+margin?targetId:null;
+  }
+  board.addEventListener('click',event=>{if(!state.selected||event.target.closest('.target-hit'))return;const targetId=targetNearPoint(event.clientX,event.clientY,state.selected);if(targetId)placeSelected(targetId);});
   document.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => {
-    state.mode=button.dataset.mode; state.index=0; state.numberDeck=L.shuffledNumbers(); $('modeStatus').textContent=modeNames[state.mode]; $('modeOverlay').hidden=true; begin(state.numberDeck.shift());
+    state.mode=button.dataset.mode; state.index=0; state.numberDeck=L.shuffledNumbers(); $('modeOverlay').hidden=true; begin(state.numberDeck.shift());
   }));
   $('changeModeBtn').addEventListener('click',()=>{$('modeOverlay').hidden=false; if('speechSynthesis' in window) speechSynthesis.cancel();});
   $('hearBtn').addEventListener('click',()=>speak(`Build the number ${state.number}.`)); $('nextBtn').addEventListener('click',next);
-  $('turnBtn').addEventListener('click',turn); $('hintBtn').addEventListener('click',hint); $('checkBtn').addEventListener('click',check); $('undoBtn').addEventListener('click',undo); $('resetBtn').addEventListener('click',()=>begin(state.number));
+  $('checkBtn').addEventListener('click',check); $('resetBtn').addEventListener('click',()=>begin(state.number));
   $('helpBtn').addEventListener('click',()=>$('helpDialog').showModal()); $('closeHelp').addEventListener('click',()=>$('helpDialog').close());
   begin(0,false);
 })();

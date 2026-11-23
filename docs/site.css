@@ -300,3 +300,20 @@ body.site-page {
     .home-page .game-list-icon { width: 37px; }
     .home-page .game-launch { min-width: 82px; padding-inline: 7px; font-size: 11px; }
 }
+
+/* Compact search-friendly summary of the learning covered by the games. */
+.home-page .skills-section { position:relative; width:min(1120px,calc(100% - 40px)); margin:38px auto 18px; padding:15px 18px; border:1px solid rgba(255,255,255,.3); border-radius:18px; background:rgba(4,52,69,.52); }
+.home-page .skills-section::before { position:absolute; top:-20px; left:10%; width:80%; height:1px; background:linear-gradient(90deg,transparent,rgba(255,226,138,.8),transparent); content:""; }
+.home-page .skills-heading { display:flex; align-items:end; justify-content:space-between; gap:14px; margin-bottom:10px; }
+.home-page .skills-heading .eyebrow { margin:0; font-size:9px; }
+.home-page .skills-heading h2 { margin:0; font-size:clamp(18px,2vw,25px); }
+.home-page .skills-list { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; margin:0; padding:0; list-style:none; }
+.home-page .skills-list li { display:flex; min-height:38px; align-items:center; justify-content:center; padding:7px 9px; border-radius:11px; background:rgba(255,255,255,.1); color:rgba(255,255,255,.94); font-size:12px; font-weight:800; line-height:1.25; text-align:center; }
+@media (min-width:761px) { .home-page .skills-section { width:min(1500px,calc(100% - 80px)); } }
+@media (max-width:760px) {
+    .home-page .skills-section { width:min(calc(100% - 28px),640px); margin-top:30px; padding:12px; }
+    .home-page .skills-heading { display:block; text-align:center; }
+    .home-page .skills-heading .eyebrow { margin-bottom:3px; }
+    .home-page .skills-list { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+    .home-page .skills-list li { min-height:34px; padding:6px; font-size:10px; }
+}

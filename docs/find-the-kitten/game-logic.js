@@ -4,7 +4,7 @@
     root.FindKittenRules = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
     const MODES = {
-        simple: { label: "Simple", digits: [1, 2, 3, 4, 5], steps: 1, visible: false },
+        simple: { label: "Simple", digits: [1, 2, 3, 4, 5], steps: 1, visible: true },
         moderate: { label: "Moderate", digits: [1, 2, 3, 4, 5, 6, 7, 8, 9], steps: 1, visible: false },
         difficult: { label: "Difficult", digits: [1, 2, 3, 4, 5, 6, 7, 8, 9], steps: 2, visible: false }
     };
@@ -159,7 +159,7 @@
                 targetIndex: 0,
                 expected: [0],
                 clues: [`${target.clue}. Find zero.`],
-                announcement: `Zero. The ${target.name} is empty, so there are no objects inside.`
+                announcement: String(digit)
             };
         }
         if (mode === "simple") {
@@ -211,5 +211,29 @@
         }));
     }
 
-    return { MODES, SCENES, shuffle, createRound, createTurn, checkTap, getRevealSequence, validateSpatialRelation, validateScenes };
+    const KITTEN_PLACEMENTS = [
+        { name: "bottom-right", left: 82, top: 72, right: 98, bottom: 98 },
+        { name: "bottom-left", left: 2, top: 72, right: 18, bottom: 98 },
+        { name: "top-right", left: 82, top: 2, right: 98, bottom: 28 },
+        { name: "top-left", left: 2, top: 2, right: 18, bottom: 28 },
+        { name: "middle-left", left: 2, top: 37, right: 18, bottom: 63 },
+        { name: "middle-right", left: 82, top: 37, right: 98, bottom: 63 }
+    ];
+
+    function overlapsLocation(placement, location) {
+        const left = location.x - location.width / 2;
+        const right = location.x + location.width / 2;
+        const top = location.y - location.height / 2;
+        const bottom = location.y + location.height / 2;
+        return !(right < placement.left || left > placement.right || bottom < placement.top || top > placement.bottom);
+    }
+
+    function findSafeKittenPlacement(scene) {
+        if (!scene || !Array.isArray(scene.locations)) return "bottom-left";
+        return KITTEN_PLACEMENTS.find(placement =>
+            scene.locations.every(location => !overlapsLocation(placement, location))
+        )?.name || "bottom-left";
+    }
+
+    return { MODES, SCENES, KITTEN_PLACEMENTS, shuffle, createRound, createTurn, checkTap, getRevealSequence, validateSpatialRelation, validateScenes, overlapsLocation, findSafeKittenPlacement };
 });

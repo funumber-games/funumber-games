@@ -67,7 +67,7 @@ describe('Build a Number game logic', () => {
   it('keeps all artwork and scripts inside the game folder', () => {
     const html = readFileSync(resolve(gameDir, 'index.html'), 'utf8');
     expect(html).not.toMatch(/https?:\/\//);
-    expect(existsSync(resolve(gameDir, 'build-a-number-background.png'))).toBe(true);
+    expect(existsSync(resolve(gameDir, 'build-a-number-background-v6.png'))).toBe(true);
     expect(existsSync(resolve(gameDir, 'number-reference-0-9.png'))).toBe(true);
   });
 
@@ -77,5 +77,39 @@ describe('Build a Number game logic', () => {
     expect(html).toContain('id="modeOverlay"');
     expect(html).toContain('id="changeModeBtn"');
     expect(html).not.toContain('id="modeSelect"');
+  });
+
+  it('uses the simplified controls and delays the Fantastic celebration', () => {
+    const html=readFileSync(resolve(gameDir,'index.html'),'utf8');
+    const script=readFileSync(resolve(gameDir,'build-a-number.js'),'utf8');
+    expect(html).not.toContain('class="mode-status"');
+    expect(html).not.toContain('id="hintBtn"');
+    expect(html).not.toContain('id="undoBtn"');
+    expect(html).toContain('id="hearBtn"');
+    expect(html).toContain('id="nextBtn"');
+    expect(script).toContain('setTimeout(resolve,3000)');
+    expect(script).toContain("launchConfetti()");
+  });
+
+  it('uses forgiving target boundaries for turned-piece taps and drops', () => {
+    const script=readFileSync(resolve(gameDir,'build-a-number.js'),'utf8');
+    const css=readFileSync(resolve(gameDir,'build-a-number.css'),'utf8');
+    expect(script).toContain('targetNearPoint(e.clientX,e.clientY,piece.pieceId)');
+    expect(script).toContain('Math.max(24,Math.min(board.clientWidth,board.clientHeight)*.07)');
+    expect(css).toContain('stroke-width:30');
+  });
+
+  it('normalizes each shape type and gives each occupied tray slot a rotate control', () => {
+    const html=readFileSync(resolve(gameDir,'index.html'),'utf8');
+    const script=readFileSync(resolve(gameDir,'build-a-number.js'),'utf8');
+    const css=readFileSync(resolve(gameDir,'build-a-number.css'),'utf8');
+    expect(html).toContain('src="build-a-number-background-v6.png"');
+    expect(html).not.toContain('id="turnBtn"');
+    expect(script).toContain('btn.dataset.kind=piece.kind');
+    expect(script).toContain("rotate.className='piece-turn'");
+    expect(script).toContain('turnPiece(piece.pieceId)');
+    expect(css).toContain('.piece[data-kind="curve"] svg');
+    expect(css).toContain('.piece-turn { position:absolute');
+    expect(css).toContain('left:25.5%; right:25.5%');
   });
 });

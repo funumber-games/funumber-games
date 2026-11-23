@@ -75,6 +75,8 @@
         .prop-response { position:absolute; z-index:1; top:50%; left:50%; width:25px; height:25px; transform:translate(-50%,-50%); border-radius:50%; pointer-events:none; }
         .scene-digit { position:absolute; z-index:6; top:50%; left:50%; display:grid; width:clamp(24px,2.7vw,34px); aspect-ratio:1; place-items:center; transform:translate(-50%,-50%) scale(.15); border:3px solid white; border-radius:50%; background:linear-gradient(145deg,#fff7b8,#ffbd4a); box-shadow:0 3px 0 #9b6324,0 5px 10px rgba(0,0,0,.35); color:#12384a; font-size:clamp(14px,1.6vw,19px); font-weight:1000; opacity:0; pointer-events:none; }
         .scene-digit.found { transform:translate(-50%,-50%) scale(1); opacity:1; }
+        .hotspot-layer.easy-visible-digits .scene-digit.easy-visible { width:auto; aspect-ratio:auto; transform:translate(-50%,-50%) scale(1); border:0; border-radius:0; background:transparent; box-shadow:none; color:rgba(8,48,62,.66); font-size:clamp(12px,1.25vw,16px); opacity:.72; text-shadow:0 1px 1px rgba(255,255,255,.58),0 0 2px rgba(255,255,255,.3); }
+        .hotspot-layer.easy-visible-digits .scene-digit.easy-visible.found { color:#fff6a8; opacity:1; transform:translate(-50%,-50%) scale(1.32); text-shadow:0 1px 2px #073c50,0 0 5px #16b88a,0 0 10px #fff; }
         .hotspot.revealing::before { border-color:#fff2a0; background:rgba(255,225,112,.25); animation:object-shift .72s ease; }
         .hotspot.revealing .prop-response { width:68%; height:68%; background:rgba(255,255,255,.14); box-shadow:0 0 0 4px rgba(255,255,255,.7),0 8px 18px rgba(0,0,0,.22); animation:object-lift .72s ease; }
         .hotspot.revealing .scene-digit { animation:digit-pop .58s .24s cubic-bezier(.2,1.5,.35,1) both; }
@@ -84,10 +86,18 @@
         .hotspot.animate-roll .prop-response { animation:roll .48s ease; background:rgba(255,255,255,.08); }
         .hotspot.animate-tip .prop-response { animation:tip .42s ease; background:rgba(255,255,255,.08); }
         .hotspot.animate-peek .prop-response { animation:peek .45s ease; background:rgba(255,255,255,.08); }
-        .kitten-peek { position:absolute; z-index:12; right:4%; bottom:-4%; display:grid; justify-items:center; transform:translateY(105%); transition:transform .7s cubic-bezier(.2,1.45,.3,1); pointer-events:none; }
-        .kitten-peek.show { transform:translateY(0); }
-        .kitten-face { font-size:clamp(70px,12vw,150px); filter:drop-shadow(0 9px 7px rgba(0,0,0,.4)); }
-        .kitten-sign { margin-top:-18px; padding:6px 12px; border:3px solid white; border-radius:14px; background:var(--coral); font-size:clamp(14px,2vw,22px); font-weight:1000; box-shadow:0 5px 0 #a83b58; }
+        .kitten-peek { position:absolute; z-index:12; width:16%; height:26%; opacity:0; transition:opacity .25s ease; pointer-events:none; --kitten-progress:0%; }
+        .kitten-peek.show { opacity:1; }
+        .kitten-peek[data-position="bottom-right"] { right:2%; bottom:2%; }
+        .kitten-peek[data-position="bottom-left"] { left:2%; bottom:2%; }
+        .kitten-peek[data-position="top-right"] { top:2%; right:2%; }
+        .kitten-peek[data-position="top-left"] { top:2%; left:2%; }
+        .kitten-peek[data-position="middle-right"] { top:37%; right:2%; }
+        .kitten-peek[data-position="middle-left"] { top:37%; left:2%; }
+        .kitten-reveal { position:absolute; inset:0; display:grid; place-items:center; overflow:visible; clip-path:inset(calc(100% - var(--kitten-progress)) 0 0); transition:clip-path .65s cubic-bezier(.2,.8,.25,1); }
+        .kitten-face { font-size:clamp(56px,9vw,105px); line-height:1; filter:drop-shadow(0 7px 6px rgba(0,0,0,.4)); }
+        .kitten-sign { position:absolute; bottom:0; left:50%; max-width:100%; padding:4px 7px; transform:translateX(-50%) scale(.7); border:2px solid white; border-radius:10px; background:var(--coral); box-shadow:0 3px 0 #a83b58; font-size:clamp(8px,1.1vw,12px); font-weight:1000; opacity:0; white-space:nowrap; transition:opacity .25s ease,transform .35s ease; }
+        .kitten-peek.complete .kitten-sign { opacity:1; transform:translateX(-50%) scale(1); }
         .confetti { position:absolute; z-index:11; inset:0; overflow:hidden; pointer-events:none; }
         .confetti i { position:absolute; top:-12%; width:10px; height:18px; border-radius:3px; animation:confetti 1.7s linear forwards; }
         .found-strip { display:flex; min-height:38px; align-items:center; justify-content:center; gap:9px; margin:8px auto 0; padding:5px 10px; border:1px solid rgba(255,255,255,.3); border-radius:14px; background:rgba(3,31,46,.76); }
@@ -209,7 +219,7 @@
                     <img class="scene-image" id="sceneImage" alt="">
                     <div class="hotspot-layer" id="hotspotLayer"></div>
                     <div class="confetti" id="confetti" aria-hidden="true"></div>
-                    <div class="kitten-peek" id="kittenPeek" aria-hidden="true"><div class="kitten-face">🐱</div><div class="kitten-sign">You found me!</div></div>
+                    <div class="kitten-peek" id="kittenPeek" aria-hidden="true"><div class="kitten-reveal"><div class="kitten-face">🐱</div></div><div class="kitten-sign">You found me!</div></div>
                 </div>
                 <div class="found-strip" aria-live="polite"><span class="found-label">Numbers found</span><div class="found-numbers" id="foundNumbers"><span class="found-empty">None yet</span></div></div>
             </section>
@@ -259,6 +269,7 @@
     const endDialog = document.getElementById("endDialog");
     let state = null;
     let advanceTimer = 0;
+    let speechSequence = 0;
 
     Object.entries(rules.SCENES).forEach(([id, scene], index) => {
         const label = document.createElement("label");
@@ -269,8 +280,12 @@
 
     function selectedValue(name) { return document.querySelector(`input[name="${name}"]:checked`)?.value; }
 
-    function speak(text) {
-        if (!("speechSynthesis" in window) || !text) return;
+    function speak(text, onFinished) {
+        const sequence = ++speechSequence;
+        if (!("speechSynthesis" in window) || !text) {
+            onFinished?.();
+            return;
+        }
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         const voices = window.speechSynthesis.getVoices();
@@ -278,7 +293,18 @@
         utterance.lang = utterance.voice?.lang || "en-IN";
         utterance.rate = 1;
         utterance.pitch = 1;
+        let finished = false;
+        let fallbackTimer = 0;
+        const finish = () => {
+            if (finished || sequence !== speechSequence) return;
+            finished = true;
+            clearTimeout(fallbackTimer);
+            onFinished?.();
+        };
+        utterance.addEventListener("end", finish, { once:true });
+        utterance.addEventListener("error", finish, { once:true });
         window.speechSynthesis.speak(utterance);
+        fallbackTimer = window.setTimeout(finish, Math.max(1800, text.split(/\s+/).length * 550));
     }
 
     function renderScene() {
@@ -288,7 +314,9 @@
         sceneCounter.textContent = scene.name;
         sceneName.textContent = `${scene.emoji} ${scene.name}`;
         modeCounter.textContent = rules.MODES[state.mode].label;
+        kittenPeek.dataset.position = rules.findSafeKittenPlacement(scene);
         hotspotLayer.replaceChildren();
+        hotspotLayer.classList.toggle("easy-visible-digits", state.mode === "simple");
         scene.locations.forEach((location, index) => {
             const button = document.createElement("button");
             button.type = "button";
@@ -306,6 +334,7 @@
             response.className = "prop-response";
             const marker = document.createElement("span");
             marker.className = "scene-digit";
+            if (state.mode === "simple" && index <= 5) marker.classList.add("easy-visible");
             marker.textContent = index;
             marker.setAttribute("aria-hidden", "true");
             button.append(response, marker);
@@ -351,6 +380,13 @@
         });
     }
 
+    function updateKittenProgress() {
+        const progress = state?.round?.length ? Math.round(state.found.size / state.round.length * 100) : 0;
+        kittenPeek.style.setProperty("--kitten-progress", `${progress}%`);
+        kittenPeek.classList.toggle("show", progress > 0);
+        kittenPeek.classList.toggle("complete", progress === 100);
+    }
+
     function revealNumberAtTarget() {
         const button = hotspotLayer.querySelector(`[data-index="${state.turn.targetIndex}"]`);
         const marker = button?.querySelector(".scene-digit");
@@ -388,13 +424,26 @@
         statusText.textContent = revealed ? "Answer revealed. Let’s continue!" : "Wonderful listening!";
         state.found.add(state.turn.digit);
         updateFoundNumbers();
+        updateKittenProgress();
         progressCounter.textContent = `${[...state.found].filter(value => value > 0).length} / ${state.round.length - 1}`;
-        speak(state.turn.announcement);
         clearTimeout(advanceTimer);
-        advanceTimer = window.setTimeout(() => {
+        let speechFinished = false;
+        let minimumDelayFinished = false;
+        let advanced = false;
+        const advanceWhenReady = () => {
+            if (advanced || !speechFinished || !minimumDelayFinished) return;
+            advanced = true;
             state.turnIndex += 1;
             if (state.turnIndex >= state.round.length) finishGame(); else beginTurn();
+        };
+        advanceTimer = window.setTimeout(() => {
+            minimumDelayFinished = true;
+            advanceWhenReady();
         }, revealed ? 1350 : state.turn.digit === 0 ? 1450 : 950);
+        speak(state.turn.announcement, () => {
+            speechFinished = true;
+            advanceWhenReady();
+        });
     }
 
     function handleTap(index, button) {
@@ -458,7 +507,7 @@
         progressCounter.textContent = `${state.round.length - 1} / ${state.round.length - 1}`;
         clueCaption.textContent = "The kitten is peeking out!";
         statusText.textContent = "You followed every clue.";
-        kittenPeek.classList.add("show");
+        updateKittenProgress();
         makeConfetti();
         speak("You found the kitten! Wonderful listening!");
         window.setTimeout(() => {
@@ -469,13 +518,15 @@
 
     function startGame() {
         clearTimeout(advanceTimer);
+        speechSequence += 1;
         window.speechSynthesis?.cancel();
         const theme = state?.theme || selectedValue("theme");
         const mode = state?.mode || selectedValue("mode");
         state = { theme, mode, round:rules.createRound(theme, mode), turnIndex:0, step:0, turn:null, found:new Set(), locked:false };
         setupPanel.hidden = true;
         gamePanel.hidden = false;
-        kittenPeek.classList.remove("show");
+        kittenPeek.classList.remove("show", "complete");
+        kittenPeek.style.setProperty("--kitten-progress", "0%");
         confetti.replaceChildren();
         renderScene();
         beginTurn();
@@ -483,6 +534,7 @@
 
     function showSetup() {
         clearTimeout(advanceTimer);
+        speechSequence += 1;
         window.speechSynthesis?.cancel();
         state = null;
         gamePanel.hidden = true;
@@ -494,7 +546,7 @@
     document.getElementById("startButton").addEventListener("click", startGame);
     document.getElementById("resetButton").addEventListener("click", startGame);
     document.getElementById("changeButton").addEventListener("click", showSetup);
-    document.getElementById("replayButton").addEventListener("click", () => state && speak(state.turn.clues[state.step]));
+    document.getElementById("replayButton").addEventListener("click", () => state && !state.locked && speak(state.turn.clues[state.step]));
     document.getElementById("revealButton").addEventListener("click", revealAnswer);
     document.getElementById("playAgainButton").addEventListener("click", () => { endDialog.hidden = true; startGame(); });
     document.getElementById("chooseAgainButton").addEventListener("click", showSetup);

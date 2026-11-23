@@ -6,8 +6,23 @@ import { fileURLToPath } from "node:url";
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const homePath = resolve(projectRoot, "docs/index.html");
 const homeMarkup = readFileSync(homePath, "utf8");
+const homeStyles = readFileSync(resolve(projectRoot, "docs/site.css"), "utf8");
 
 describe("home page game navigation", () => {
+  it("includes a concise search description and learning-skills summary", () => {
+    expect(homeMarkup).toContain("Free Maths Games for Kids | FuNumber Games");
+    expect(homeMarkup).toContain("Big smiles.<br><span>Bigger learning.</span>");
+    expect(homeMarkup).toContain('id="skills-title"');
+    expect(homeMarkup).toContain("Counting &amp; number recognition");
+    expect(homeMarkup).toContain("Addition, subtraction &amp; mental maths");
+    expect(homeMarkup.indexOf("New games are on the way!")).toBeLessThan(homeMarkup.indexOf('id="skills-title"'));
+  });
+
+  it("visually separates the closing skills section from the new-games banner", () => {
+    expect(homeStyles).toContain(".home-page .skills-section::before");
+    expect(homeStyles).toContain("margin:38px auto 18px");
+  });
+
   it("links Word Wheels to its playable page", () => {
     expect(homeMarkup).toContain('href="./word-wheels/index.html"');
     expect(existsSync(resolve(projectRoot, "docs/word-wheels/index.html"))).toBe(true);

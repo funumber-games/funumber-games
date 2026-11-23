@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 
 const rules = require("../docs/find-the-kitten/game-logic.js");
 
@@ -46,6 +47,36 @@ describe("Find the Kitten scene content", () => {
   });
 });
 
+describe("progressive kitten reveal", () => {
+  it("finds a kitten position that does not overlap any number in every scene", () => {
+    Object.values(rules.SCENES).forEach(scene => {
+      const name = rules.findSafeKittenPlacement(scene);
+      const placement = rules.KITTEN_PLACEMENTS.find(candidate => candidate.name === name);
+      expect(placement).toBeDefined();
+      scene.locations.forEach(location => expect(rules.overlapsLocation(placement, location)).toBe(false));
+    });
+  });
+
+  it("reveals the exact percentage of the kitten as numbers are found", () => {
+    const html = readFileSync(new URL("../docs/find-the-kitten/index.html", import.meta.url), "utf8");
+    expect(html).toContain("Math.round(state.found.size / state.round.length * 100)");
+    expect(html).toContain('kittenPeek.style.setProperty("--kitten-progress", `${progress}%`)');
+    expect(html).toContain('kittenPeek.classList.toggle("complete", progress === 100)');
+    expect(html).toContain("clip-path:inset(calc(100% - var(--kitten-progress)) 0 0)");
+  });
+});
+
+describe("voice commentary sequencing", () => {
+  it("waits for both the commentary and the visual delay before announcing the next clue", () => {
+    const html = readFileSync(new URL("../docs/find-the-kitten/index.html", import.meta.url), "utf8");
+    expect(html).toContain("let speechFinished = false");
+    expect(html).toContain("let minimumDelayFinished = false");
+    expect(html).toContain("if (advanced || !speechFinished || !minimumDelayFinished) return");
+    expect(html).toContain("speak(state.turn.announcement, () =>");
+    expect(html).toContain("state && !state.locked && speak");
+  });
+});
+
 describe("Find the Kitten modes", () => {
   it.each([
     ["simple", 6, [1, 2, 3, 4, 5]],
@@ -58,12 +89,26 @@ describe("Find the Kitten modes", () => {
     expect(new Set(round.slice(1))).toEqual(new Set(digits));
   });
 
-  it("keeps Simple mode digits hidden until the intended location is selected", () => {
+  it("shows all ten subtle number locations in Simple mode", () => {
     const turn = rules.createTurn("music", "simple", 3);
-    expect(rules.MODES.simple.visible).toBe(false);
+    expect(rules.MODES.simple.visible).toBe(true);
     expect(turn.digit).toBe(3);
     expect(turn.expected).toEqual([3]);
     expect(turn.clues[0]).toContain("Find 3");
+  });
+
+  it("uses smaller borderless digits 0–5 only for Simple mode in every scene", () => {
+    const html = readFileSync(new URL("../docs/find-the-kitten/index.html", import.meta.url), "utf8");
+    expect(html).toContain('hotspotLayer.classList.toggle("easy-visible-digits", state.mode === "simple")');
+    expect(html).toContain('if (state.mode === "simple" && index <= 5) marker.classList.add("easy-visible")');
+    expect(html).toMatch(/easy-visible-digits \.scene-digit\.easy-visible \{[^}]*width:auto;[^}]*border:0;[^}]*background:transparent;/);
+  });
+
+  it("clearly highlights a visible Simple-mode number after it is found", () => {
+    const html = readFileSync(new URL("../docs/find-the-kitten/index.html", import.meta.url), "utf8");
+    expect(html).toContain(".scene-digit.easy-visible.found");
+    expect(html).toContain("scale(1.32)");
+    expect(html).toContain("0 0 5px #16b88a");
   });
 
   it("uses one location-only clue in Moderate mode", () => {
@@ -78,7 +123,7 @@ describe("Find the Kitten modes", () => {
     const kitchenZero = rules.createTurn("kitchen", "simple", 0);
     expect(circusZero.clues[0]).toMatch(/empty chest/i);
     expect(kitchenZero.clues[0]).toMatch(/empty basket/i);
-    expect(circusZero.announcement).toMatch(/^Zero\./);
+    expect(circusZero.announcement).toBe("0");
   });
 
   it("requires both Difficult taps in order", () => {
