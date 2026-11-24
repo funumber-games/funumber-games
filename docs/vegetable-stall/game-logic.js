@@ -41,9 +41,10 @@
         return `${quantity} ${quantity === 1 ? vegetable.singular : vegetable.plural}`;
     }
 
-    function makeOrder(mode, rng = Math.random) {
+    function makeOrder(mode, rng = Math.random, vegetableIds = []) {
         const config = MODE_CONFIG[mode] || MODE_CONFIG.simple;
-        const pool = shuffled(VEGETABLES, rng);
+        const chosenVegetables = vegetableIds.map(vegetableById).filter(Boolean);
+        const pool = chosenVegetables.length >= config.parts ? chosenVegetables : shuffled(VEGETABLES, rng);
         let parts;
 
         if (config.parts === 1) {
@@ -64,10 +65,33 @@
         return { mode, parts, total, stockKinds };
     }
 
+    function drawVegetables(deck = [], count = 1, rng = Math.random) {
+        let remaining = Array.isArray(deck) ? [...deck] : [];
+        const selected = [];
+        const allIds = VEGETABLES.map(vegetable => vegetable.id);
+        while (selected.length < count) {
+            if (!remaining.length) remaining = shuffled(allIds, rng);
+            let index = remaining.findIndex(id => !selected.includes(id));
+            if (index < 0) {
+                remaining = shuffled(allIds, rng);
+                index = remaining.findIndex(id => !selected.includes(id));
+            }
+            selected.push(remaining.splice(index, 1)[0]);
+        }
+        return { selected, remaining };
+    }
+
     function orderText(order) {
         const phrases = order.parts.map(part => quantityWords(part.quantity, vegetableById(part.vegetableId)));
         if (phrases.length === 1) return `${phrases[0]}, please!`;
         return `${phrases[0]} and ${phrases[1]}, please!`;
+    }
+
+    function completionText(order) {
+        if (order?.mode === "difficult" && order.parts?.length === 2) {
+            return `${order.parts[0].quantity} plus ${order.parts[1].quantity} equals ${order.total}. Great job done!`;
+        }
+        return "Great job done!";
     }
 
     function activePart(order, packedCounts) {
@@ -117,12 +141,25 @@
         return mode !== "difficult" && activeVegetableId === basketVegetableId;
     }
 
+    async function withBusyLock(state, task) {
+        if (!state || state.busy || typeof task !== "function") return false;
+        state.busy = true;
+        try {
+            await task();
+            return true;
+        } finally {
+            state.busy = false;
+        }
+    }
+
     return {
         VEGETABLES,
         MODE_CONFIG,
         vegetableById,
         makeOrder,
+        drawVegetables,
         orderText,
+        completionText,
         activePart,
         canAccept,
         isComplete,
@@ -131,6 +168,7 @@
         stockCount,
         transferOne,
         shouldHighlightBasket,
+        withBusyLock,
         shuffled,
         randomInt,
         clampIndex

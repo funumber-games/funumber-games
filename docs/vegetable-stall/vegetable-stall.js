@@ -23,6 +23,7 @@
         packedCounts: {},
         packedItems: [],
         stock: {},
+        vegetableDeck: [],
         round: 1,
         busy: false,
         answered: false
@@ -35,23 +36,50 @@
         return document.querySelector('input[name="mode"]:checked')?.value || "simple";
     }
 
-    function preferredVoice() {
+    function preferredVoice(role = "default") {
         const voices = window.speechSynthesis?.getVoices?.() || [];
+        const englishVoices = voices.filter(voice => /^en/i.test(voice.lang));
+        const maleName = /rishi|daniel|aaron|alex|fred|gordon|matthew|thomas|male/i;
+        const femaleName = /heera|veena|lekha|samantha|karen|moira|tessa|zira|susan|female/i;
+        if (role === "male") {
+            return englishVoices.find(voice => maleName.test(voice.name))
+                || englishVoices.find(voice => !femaleName.test(voice.name));
+        }
+        if (role === "female") {
+            return englishVoices.find(voice => femaleName.test(voice.name))
+                || englishVoices.find(voice => !maleName.test(voice.name));
+        }
         return voices.find(voice => /rishi/i.test(voice.name))
             || voices.find(voice => /^en-IN$/i.test(voice.lang))
             || voices.find(voice => /^en/i.test(voice.lang));
     }
 
-    function speak(text) {
-        if (!("speechSynthesis" in window)) return;
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "en-IN";
-        utterance.rate = 1;
-        utterance.pitch = 1;
-        const voice = preferredVoice();
-        if (voice) utterance.voice = voice;
-        window.speechSynthesis.speak(utterance);
+    function speak(text, { voiceRole = "default", pitch = 1 } = {}) {
+        return new Promise(resolve => {
+            if (!("speechSynthesis" in window) || !text) {
+                resolve();
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "en-IN";
+            utterance.rate = 1;
+            utterance.pitch = pitch;
+            const voice = preferredVoice(voiceRole);
+            if (voice) utterance.voice = voice;
+            let finished = false;
+            let fallbackTimer = 0;
+            const finish = () => {
+                if (finished) return;
+                finished = true;
+                clearTimeout(fallbackTimer);
+                resolve();
+            };
+            utterance.addEventListener("end", finish, { once:true });
+            utterance.addEventListener("error", finish, { once:true });
+            window.speechSynthesis.speak(utterance);
+            fallbackTimer = window.setTimeout(finish, Math.max(1800, text.split(/\s+/).length * 550));
+        });
     }
 
     function updateStatus() {
@@ -109,7 +137,7 @@
                     .filter(item => item.id === part.vegetableId);
             });
         } else if (items.length <= 5) {
-            rows[0] = items.map((id, originalIndex) => ({ id, originalIndex }));
+            rows[1] = items.map((id, originalIndex) => ({ id, originalIndex }));
         } else {
             rows[0] = items.slice(0, 5).map((id, originalIndex) => ({ id, originalIndex }));
             rows[1] = items.slice(5).map((id, index) => ({ id, originalIndex: index + 5 }));
@@ -139,6 +167,17 @@
             setVegetableVisual(item, id);
             basketLayer.append(item);
         });
+    }
+
+    function clearReceivingBasket() {
+        state.packedCounts = {};
+        state.packedItems = [];
+        basketLayer.replaceChildren();
+        hopLayer.replaceChildren();
+        answerPanel.classList.add("hidden");
+        stallScene.classList.remove("success");
+        stallScene.querySelectorAll(".stall-confetti").forEach(piece => piece.remove());
+        packedCount.textContent = "0 / 0";
     }
 
     function updateStockButton(id) {
@@ -258,9 +297,16 @@
             button.classList.add("wrong");
             const originalQuestion = answerQuestion.textContent;
             answerQuestion.textContent = "Let’s count them again.";
-            speak("Let's count them again.");
-            await recount();
-            answerQuestion.textContent = originalQuestion;
+            await logic.withBusyLock(state, async () => {
+                try {
+                    await speak("Let's count them again.");
+                    await recount({ alreadyLocked:true });
+                } finally {
+                    answerQuestion.textContent = originalQuestion;
+                    button.classList.remove("wrong");
+                    button.focus({ preventScroll:true });
+                }
+            });
             return;
         }
 
@@ -269,30 +315,38 @@
         button.classList.add("correct");
         numberCards.querySelectorAll("button").forEach(card => { card.disabled = true; });
         stallScene.classList.add("success");
-        answerQuestion.textContent = "Great job done!";
-        setFeedback("Great job done!");
+        const completionMessage = logic.completionText(state.order);
+        answerQuestion.textContent = completionMessage;
+        setFeedback(completionMessage);
         createCelebration();
-        speak("Great job done!");
-        await wait(1400);
-        answerQuestion.textContent = "Next order, please.";
-        setFeedback("Next order, please.");
-        speak("Next order, please.");
+        await Promise.all([speak(completionMessage), wait(1400)]);
+        answerQuestion.textContent = "Next order!";
+        setFeedback("Next order!");
+        speak("Next order!");
         nextOrderButton.disabled = false;
         state.busy = false;
     }
 
-    async function recount() {
-        if (state.busy || !state.packedItems.length) return;
-        state.busy = true;
+    async function recount({ alreadyLocked = false } = {}) {
+        if (!state.packedItems.length || state.busy && !alreadyLocked) return false;
         const items = [...basketLayer.querySelectorAll(".packed-vegetable")];
-        for (let index = 0; index < items.length; index += 1) {
-            items.forEach(item => item.classList.remove("counting"));
-            items[index].classList.add("counting");
-            speak(countWords[index + 1]);
-            await wait(720);
+        const performRecount = async () => {
+            try {
+                for (let index = 0; index < items.length; index += 1) {
+                    items.forEach(item => item.classList.remove("counting"));
+                    items[index].classList.add("counting");
+                    await speak(countWords[index + 1]);
+                    await wait(120);
+                }
+            } finally {
+                items.forEach(item => item.classList.remove("counting"));
+            }
+        };
+        if (alreadyLocked) {
+            await performRecount();
+            return true;
         }
-        items.forEach(item => item.classList.remove("counting"));
-        state.busy = false;
+        return logic.withBusyLock(state, performRecount);
     }
 
     function createCelebration() {
@@ -312,7 +366,10 @@
 
     function startOrder({ announce = true } = {}) {
         window.speechSynthesis?.cancel();
-        state.order = logic.makeOrder(state.mode);
+        const vegetableCount = logic.MODE_CONFIG[state.mode].parts;
+        const draw = logic.drawVegetables(state.vegetableDeck, vegetableCount);
+        state.vegetableDeck = draw.remaining;
+        state.order = logic.makeOrder(state.mode, Math.random, draw.selected);
         state.packedCounts = {};
         state.packedItems = [];
         state.busy = false;
@@ -329,16 +386,26 @@
         if (announce) speak(orderCaption.textContent);
     }
 
-    function startGame() {
+    async function startGame() {
         state.mode = selectedMode();
         state.round = 1;
+        state.vegetableDeck = [];
         modePanel.classList.add("hidden");
         gamePanel.classList.remove("hidden");
+        clearReceivingBasket();
+        state.busy = true;
+        setFeedback("Mr. Ramesh is visiting the vegetable stall.");
+        await speak("Mr. Ramesh has gone to buy vegetables at the vegetable stall. Please help him pack the vegetables.", { voiceRole:"male", pitch:1.18 });
+        await wait(250);
+        setFeedback("Hello, Mr. Ramesh. How can I help you today?");
+        await speak("Hello, Mr. Ramesh. How can I help you today?", { voiceRole:"female", pitch:1.05 });
+        await wait(250);
         startOrder();
     }
 
     function resetGame() {
         state.round = 1;
+        state.vegetableDeck = [];
         startOrder();
     }
 
@@ -350,6 +417,8 @@
 
     function changeMode() {
         window.speechSynthesis?.cancel();
+        state.vegetableDeck = [];
+        clearReceivingBasket();
         gamePanel.classList.add("hidden");
         modePanel.classList.remove("hidden");
         $("#startButton").focus();
@@ -359,7 +428,7 @@
     $("#resetButton").addEventListener("click", resetGame);
     $("#changeModeButton").addEventListener("click", changeMode);
     $("#speakerButton").addEventListener("click", () => speak(orderCaption.textContent));
-    $("#recountButton").addEventListener("click", recount);
+    $("#recountButton").addEventListener("click", () => recount());
     nextOrderButton.addEventListener("click", nextOrder);
     document.addEventListener("keydown", event => {
         if (gamePanel.classList.contains("hidden")) return;

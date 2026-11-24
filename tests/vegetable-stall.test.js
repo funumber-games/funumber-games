@@ -14,6 +14,35 @@ describe("Vegetable Stall game logic", () => {
     expect(order.stockKinds).toHaveLength(9);
   });
 
+  it("uses every vegetable once before beginning a new order cycle", () => {
+    let deck = [];
+    const selected = [];
+    for (let index = 0; index < rules.VEGETABLES.length; index += 1) {
+      const draw = rules.drawVegetables(deck, 1, fixedRng(0.37));
+      selected.push(draw.selected[0]);
+      deck = draw.remaining;
+    }
+    expect(new Set(selected).size).toBe(rules.VEGETABLES.length);
+    const nextCycle = rules.drawVegetables(deck, 1, fixedRng(0.37));
+    expect(selected).toContain(nextCycle.selected[0]);
+  });
+
+  it("keeps two-part orders distinct when a new cycle begins", () => {
+    const draw = rules.drawVegetables(["carrot"], 2, fixedRng(0.2));
+    expect(draw.selected).toHaveLength(2);
+    expect(new Set(draw.selected).size).toBe(2);
+  });
+
+  it("announces the completed calculation in Difficult mode", () => {
+    const order = {
+      mode:"difficult",
+      parts:[{ vegetableId:"carrot", quantity:7 },{ vegetableId:"onion", quantity:2 }],
+      total:9
+    };
+    expect(rules.completionText(order)).toBe("7 plus 2 equals 9. Great job done!");
+    expect(rules.completionText({ mode:"simple", parts:[order.parts[0]], total:7 })).toBe("Great job done!");
+  });
+
   it("creates Moderate orders up to 9 with two or three visible kinds", () => {
     const order = rules.makeOrder("moderate", fixedRng(0.7));
     expect(order.parts).toHaveLength(1);
@@ -151,18 +180,73 @@ describe("Vegetable Stall game logic", () => {
     const css=readFileSync(new URL("../docs/vegetable-stall/vegetable-stall.css",import.meta.url),"utf8");
     expect(script).toContain("item.dataset.basketRow = layout[index].row");
     expect(script).toContain("item.dataset.vegetableId = id");
-    expect(css).toContain('.packed-vegetable[data-basket-row="1"] { z-index:1; transform:scale(.9); }');
-    expect(css).toContain('.packed-vegetable[data-basket-row="2"] { z-index:2; }');
-    expect(css).toContain(".packed-vegetable { position:relative; width:98%; height:70%; font-size:0; }");
+    expect(script).toContain("rows[1] = items.map");
+    expect(css).toContain('.packed-vegetable[data-basket-row="1"] { z-index:1; transform:translateY(12%)');
+    expect(css).toContain('.packed-vegetable[data-basket-row="2"] { z-index:2; transform:translateY(var(--packed-shift))');
+    expect(css).toContain(".packed-vegetable { position:relative; width:130%; height:90%;");
+    expect(css).toContain('width:150%; height:106%;');
+    expect(css).toContain(".packed-vegetable::after");
     expect(css).toContain("grid-template-columns:repeat(14,minmax(0,1fr))");
   });
 
   it("celebrates each completed order before inviting the next order", () => {
     const script=readFileSync(new URL("../docs/vegetable-stall/vegetable-stall.js",import.meta.url),"utf8");
     const css=readFileSync(new URL("../docs/vegetable-stall/vegetable-stall.css",import.meta.url),"utf8");
-    expect(script.indexOf('speak("Great job done!")')).toBeLessThan(script.indexOf('speak("Next order, please.")'));
+    expect(script.indexOf("await Promise.all([speak(completionMessage), wait(1400)])")).toBeLessThan(script.indexOf('speak("Next order!")'));
+    expect(script).not.toContain("Next order, please.");
+    expect(rules.orderText(rules.makeOrder("simple", fixedRng(0.5)))).toMatch(/please!$/);
     expect(script).toContain("for (let index = 0; index < 56; index += 1)");
     expect(script).toContain('confetti.className = "stall-confetti"');
     expect(css).toContain("@keyframes confetti-blast");
+  });
+
+  it("finishes the Mr. Ramesh story introduction before starting the first order", () => {
+    const script=readFileSync(new URL("../docs/vegetable-stall/vegetable-stall.js",import.meta.url),"utf8");
+    const story=script.indexOf('await speak("Mr. Ramesh has gone to buy vegetables at the vegetable stall. Please help him pack the vegetables.", { voiceRole:"male", pitch:1.18 })');
+    const greeting=script.indexOf('await speak("Hello, Mr. Ramesh. How can I help you today?", { voiceRole:"female", pitch:1.05 })');
+    const firstOrder=script.indexOf("startOrder();", greeting);
+    expect(story).toBeGreaterThan(-1);
+    expect(greeting).toBeGreaterThan(story);
+    expect(firstOrder).toBeGreaterThan(greeting);
+  });
+
+  it("uses distinct installed voice profiles for the narrator and shopkeeper", () => {
+    const script=readFileSync(new URL("../docs/vegetable-stall/vegetable-stall.js",import.meta.url),"utf8");
+    expect(script).toContain('if (role === "male")');
+    expect(script).toContain('if (role === "female")');
+    expect(script).toContain("utterance.pitch = pitch");
+  });
+
+  it("clears the receiving basket immediately when changing or starting a mode", () => {
+    const script=readFileSync(new URL("../docs/vegetable-stall/vegetable-stall.js",import.meta.url),"utf8");
+    expect(script).toContain("function clearReceivingBasket()");
+    expect(script).toContain("basketLayer.replaceChildren()");
+    const startGame=script.slice(script.indexOf("async function startGame()"),script.indexOf("function resetGame()"));
+    const changeMode=script.slice(script.indexOf("function changeMode()"),script.indexOf('$("#startButton")'));
+    expect(startGame).toContain("clearReceivingBasket()");
+    expect(changeMode).toContain("clearReceivingBasket()");
+  });
+
+  it("draws each order from the session vegetable deck", () => {
+    const script=readFileSync(new URL("../docs/vegetable-stall/vegetable-stall.js",import.meta.url),"utf8");
+    expect(script).toContain("logic.drawVegetables(state.vegetableDeck, vegetableCount)");
+    expect(script).toContain("state.vegetableDeck = draw.remaining");
+    expect(script).toContain("logic.makeOrder(state.mode, Math.random, draw.selected)");
+  });
+
+  it("always releases the game lock after a failed wrong-answer recount", async () => {
+    const state = { busy:false };
+    await expect(rules.withBusyLock(state, async () => {
+      throw new Error("speech failed");
+    })).rejects.toThrow("speech failed");
+    expect(state.busy).toBe(false);
+  });
+
+  it("returns to the same number question after recounting a wrong answer", () => {
+    const script=readFileSync(new URL("../docs/vegetable-stall/vegetable-stall.js",import.meta.url),"utf8");
+    expect(script).toContain("await logic.withBusyLock(state, async () =>");
+    expect(script).toContain("await recount({ alreadyLocked:true })");
+    expect(script).toContain("answerQuestion.textContent = originalQuestion");
+    expect(script).toContain('button.focus({ preventScroll:true })');
   });
 });
