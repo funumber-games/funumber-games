@@ -5,6 +5,22 @@ const require = createRequire(import.meta.url);
 const logic = require("../docs/bundle-delivery/game-logic.js");
 
 describe("Bundle Delivery game logic", () => {
+  it("counts the pieces actually packed, including ten loose pencils", () => {
+    expect(logic.countPackedPencils(1, 3)).toEqual([10, 11, 12, 13]);
+    expect(logic.countPackedPencils(0, 10)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(logic.countPackedPencils(0, 0)).toEqual([]);
+  });
+
+  it.each([
+    [2, 2, "They are correct. Thank you Mr. Jones!"],
+    [2, 1, "Add one more loose pencil."],
+    [2, 4, "Take out 2 loose pencils."],
+    [1, 2, "Add one more bundle."],
+    [3, 2, "Take out one bundle."]
+  ])("gives Lucy the right reply for %i bundles and %i loose pencils", (bundles, loose, reply) => {
+    expect(logic.deliveryReply(22, bundles, loose)).toContain(reply);
+  });
+
   it.each([
     [21, 2, 1],
     [34, 3, 4],
@@ -25,8 +41,8 @@ describe("Bundle Delivery game logic", () => {
   it("gives a specific add or remove hint", () => {
     expect(logic.packingHint(34, 2, 4)).toBe("Add one more bundle.");
     expect(logic.packingHint(34, 4, 4)).toBe("Take out one bundle.");
-    expect(logic.packingHint(34, 3, 2)).toBe("Add 2 more loose sticks.");
-    expect(logic.packingHint(34, 3, 5)).toBe("Take out one loose stick.");
+    expect(logic.packingHint(34, 3, 2)).toBe("Add 2 more loose pencils.");
+    expect(logic.packingHint(34, 3, 5)).toBe("Take out one loose pencil.");
   });
 
   it("regroups exactly ten ones into one ten without changing value", () => {

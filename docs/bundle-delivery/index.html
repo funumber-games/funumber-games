@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#073b4c">
-    <meta name="description" content="Build two-digit orders with bundles of ten and loose craft sticks.">
+    <meta name="description" content="Build two-digit orders with bundles of ten and loose colour pencils.">
     <title>Bundle Delivery — FuNumber Games</title>
     <link rel="stylesheet" href="../site.css">
     <link rel="stylesheet" href="bundle-delivery.css">
@@ -37,7 +37,7 @@
             <label class="mode-option"><input type="radio" name="mode" value="moderate"><span class="mode-emoji" aria-hidden="true">🔟</span><span class="mode-copy"><strong>Moderate Mode</strong><small>Ages 4–5 · Orders 21–99</small></span></label>
             <label class="mode-option"><input type="radio" name="mode" value="difficult"><span class="mode-emoji" aria-hidden="true">🎁</span><span class="mode-copy"><strong>Difficult Mode</strong><small>Ages 5–7 · Part-filled and regrouping</small></span></label>
         </div>
-        <p class="mode-details">Pack bundles of ten in Tens and single sticks in Ones, then deliver the exact order.</p>
+        <p class="mode-details">Pack bundles of ten in Tens and single pencils in Ones, then deliver the exact order.</p>
         <button type="button" class="start-button" id="startButton">Let’s Go!</button>
     </section>
 
@@ -49,47 +49,43 @@
         </div>
 
         <div class="bundle-scene" id="bundleScene">
-            <img src="bundle-delivery-background.png" alt="A bright craft stall with bundle and stick supply trays, a two-part delivery crate, and a smiling customer">
+            <img src="stationery-store.png" alt="A stationery shop with two wooden supply trays and a lined delivery basket">
 
             <section class="order-card" aria-live="polite">
                 <span class="order-number" id="orderNumber">34</span>
                 <span class="order-breakdown" id="orderBreakdown">3 tens + 4 ones</span>
-                <button type="button" class="speaker-button" id="speakerButton" aria-label="Hear the order again">🔊</button>
             </section>
 
             <div class="supply-layer bundle-supply" id="bundleSupply" aria-label="Bundles of ten available"></div>
-            <div class="supply-layer stick-supply" id="stickSupply" aria-label="Loose sticks available"></div>
+            <div class="supply-layer stick-supply" id="stickSupply" aria-label="Loose pencils available"></div>
 
             <section class="crate-zone tens-zone" aria-label="Tens compartment">
-                <div class="guide-grid" id="tensGuides" aria-hidden="true"></div>
                 <div class="packed-grid bundle-grid" id="packedBundles"></div>
             </section>
             <section class="crate-zone ones-zone" aria-label="Ones compartment">
-                <div class="guide-grid" id="onesGuides" aria-hidden="true"></div>
                 <div class="packed-grid stick-grid" id="packedSticks"></div>
             </section>
             <span class="crate-label tens-label">Tens <b id="tensCount">0</b></span>
             <span class="crate-label ones-label">Ones <b id="onesCount">0</b></span>
             <div class="hop-layer" id="hopLayer" aria-hidden="true"></div>
 
-            <aside class="game-controls" aria-live="polite">
-                <p class="prompt" id="promptText">Pack the order, then deliver it.</p>
+            <div class="game-controls">
                 <div class="control-row">
-                    <button type="button" class="hint-button" id="hintButton">💡 Hint</button>
-                    <button type="button" class="bundle-ten-button hidden" id="bundleTenButton">Tie 10 Ones → 1 Ten</button>
+                    <button type="button" class="speaker-button" id="speakerButton">🔊 Hear again</button>
                     <button type="button" class="deliver-button" id="deliverButton">Deliver</button>
-                    <button type="button" class="next-order-button hidden" id="nextOrderButton">Next Order →</button>
+                    <button type="button" class="hint-button" id="hintButton">💡 Hint</button>
                 </div>
-            </aside>
+            </div>
+        </div>
+        <p class="prompt" id="promptText" role="status">Pack the order, then deliver it.</p>
 
-            <div class="demo-overlay hidden" id="demoOverlay">
-                <div class="demo-card">
-                    <p class="demo-title">Ten ones make one ten!</p>
-                    <div class="demo-sticks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-                    <div class="demo-arrow" aria-hidden="true">→</div>
-                    <span class="craft-bundle demo-bundle" aria-hidden="true"></span>
-                    <button type="button" id="closeDemoButton">Start packing</button>
-                </div>
+        <div class="demo-overlay hidden" id="demoOverlay">
+            <div class="demo-card">
+                <p class="demo-title" id="demoTitle">Ten single pencils make one pencil bundle.</p>
+                <div class="demo-sticks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                <div class="demo-arrow" aria-hidden="true">→</div>
+                <span class="craft-bundle demo-bundle" aria-hidden="true"></span>
+                <button type="button" id="closeDemoButton">Start packing</button>
             </div>
         </div>
 
@@ -106,9 +102,9 @@
         <p class="eyebrow">BUNDLE DELIVERY</p>
         <h2 id="instructionsTitle">How to play</h2>
         <ol class="instruction-steps">
-            <li><strong>Listen to the order</strong><span>The customer asks for a two-digit number of craft sticks.</span></li>
-            <li><strong>Pack tens and ones</strong><span>Each tied bundle is ten. Each loose stick is one.</span></li>
-            <li><strong>Fix any item</strong><span>Tap a packed bundle or stick to return it before delivery.</span></li>
+            <li><strong>Listen to the order</strong><span>The customer asks for a two-digit number of colour pencils.</span></li>
+            <li><strong>Pack tens and ones</strong><span>Each box holds ten pencils. Each loose pencil is one.</span></li>
+            <li><strong>Fix any item</strong><span>Tap a packed bundle or pencil to return it before delivery.</span></li>
             <li><strong>Deliver the order</strong><span>Use Deliver when the Tens and Ones compartments are ready.</span></li>
         </ol>
         <p class="instruction-tip">There is no timer or penalty. Use Hint or Hear again whenever you need help.</p>

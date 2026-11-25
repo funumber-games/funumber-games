@@ -34,8 +34,8 @@
         const looseGap = target.ones - loose;
         if (bundleGap > 0) return `Add ${bundleGap === 1 ? "one more bundle" : `${bundleGap} more bundles`}.`;
         if (bundleGap < 0) return `Take out ${bundleGap === -1 ? "one bundle" : `${Math.abs(bundleGap)} bundles`}.`;
-        if (looseGap > 0) return `Add ${looseGap === 1 ? "one more loose stick" : `${looseGap} more loose sticks`}.`;
-        if (looseGap < 0) return `Take out ${looseGap === -1 ? "one loose stick" : `${Math.abs(looseGap)} loose sticks`}.`;
+        if (looseGap > 0) return `Add ${looseGap === 1 ? "one more loose pencil" : `${looseGap} more loose pencils`}.`;
+        if (looseGap < 0) return `Take out ${looseGap === -1 ? "one loose pencil" : `${Math.abs(looseGap)} loose pencils`}.`;
         return "The order is ready to deliver!";
     }
 
@@ -50,10 +50,19 @@
 
     function countSequence(order) {
         const { tens, ones } = digitsFor(order);
+        return countPackedPencils(tens, ones);
+    }
+
+    function countPackedPencils(tens, ones) {
         const values = [];
         for (let value = 1; value <= tens; value += 1) values.push(value * 10);
         for (let value = 1; value <= ones; value += 1) values.push(tens * 10 + value);
         return values;
+    }
+
+    function deliveryReply(order, bundles, loose) {
+        if (validatePacking(order, bundles, loose)) return "They are correct. Thank you Mr. Jones!";
+        return `They are not correct. Please fix the order. ${packingHint(order, bundles, loose)}`;
     }
 
     function initialPacking(mode, order, rng = Math.random) {
@@ -67,5 +76,5 @@
         };
     }
 
-    return { MODE_CONFIG, digitsFor, packedValue, makeOrder, validatePacking, packingHint, canBundleTen, bundleTen, countSequence, initialPacking };
+    return { MODE_CONFIG, digitsFor, packedValue, makeOrder, validatePacking, packingHint, canBundleTen, bundleTen, countSequence, countPackedPencils, deliveryReply, initialPacking };
 });
