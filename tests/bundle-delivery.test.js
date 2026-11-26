@@ -13,12 +13,13 @@ describe("Bundle Delivery game logic", () => {
 
   it.each([
     [2, 2, "They are correct. Thank you Mr. Jones!"],
-    [2, 1, "Add one more loose pencil."],
-    [2, 4, "Take out 2 loose pencils."],
-    [1, 2, "Add one more bundle."],
-    [3, 2, "Take out one bundle."]
+    [2, 1, "They are not correct. Add one more loose pencil."],
+    [2, 4, "They are not correct. Please take out 2 loose pencils."],
+    [1, 2, "They are not correct. Add one more bundle."],
+    [3, 2, "They are not correct. Please take out one bundle."],
+    [1, 12, "They are not correct. Add one more bundle."]
   ])("gives Lucy the right reply for %i bundles and %i loose pencils", (bundles, loose, reply) => {
-    expect(logic.deliveryReply(22, bundles, loose)).toContain(reply);
+    expect(logic.deliveryReply(22, bundles, loose)).toBe(reply);
   });
 
   it.each([

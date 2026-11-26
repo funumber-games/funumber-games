@@ -148,7 +148,7 @@ it("counts an incorrect order, allows a correction, and advances only after a co
   expect(game.spoken.slice(-6, -1)).toEqual([
     "Here you go. Please count if they are correct.", "ten", "twenty", "twenty-one", "twenty-two"
   ]);
-  expect(game.spoken.at(-1)).toContain("Take out one loose pencil.");
+  expect(game.spoken.at(-1)).toBe("They are not correct. Please take out one loose pencil.");
   expect(game.get("deliverButton").textContent).toBe("Deliver");
 
   game.get("packedSticks").firstElementChild.click();

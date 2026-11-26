@@ -62,7 +62,9 @@
 
     function deliveryReply(order, bundles, loose) {
         if (validatePacking(order, bundles, loose)) return "They are correct. Thank you Mr. Jones!";
-        return `They are not correct. Please fix the order. ${packingHint(order, bundles, loose)}`;
+        const hint = packingHint(order, bundles, loose);
+        const request = hint.startsWith("Take out ") ? `Please take out ${hint.slice("Take out ".length)}` : hint;
+        return `They are not correct. ${request}`;
     }
 
     function initialPacking(mode, order, rng = Math.random) {

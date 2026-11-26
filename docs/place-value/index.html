@@ -6,8 +6,12 @@
   <meta name="theme-color" content="#073b4c">
   <meta name="description" content="Build three-digit numbers with hundreds, tens, and ones in a colorful place-value game.">
   <title>Place Value Builder — FuNumber Games</title>
+  <script src="game-logic.js"></script>
+  <!-- Tower, selection, and feedback selectors also match elements and classes created by the game script. -->
+  <!--suppress CssUnusedSymbol -->
   <style>
-    :root{font-family:"Trebuchet MS","Segoe UI",sans-serif;--navy:#073b4c;--gold:#ffd166;--coral:#ff7058;--teal:#0cae9b;--purple:#8b5fd3;color:#fff}*{box-sizing:border-box}body{min-height:100vh;min-height:100dvh;margin:0;display:flex;flex-direction:column;background:radial-gradient(circle at 85% 12%,#14b8aa77,transparent 32%),linear-gradient(135deg,#073b4c,#087f89 58%,#0c6976);font-family:inherit}.hidden{display:none!important}button{font:inherit}.global-header{display:flex;min-height:70px;align-items:center;justify-content:space-between;gap:12px;padding:8px clamp(14px,4vw,54px);border-bottom:1px solid #ffffff40;background:#042b3bf2;box-shadow:0 6px 20px #001d2a55}.brand{color:#fff;font-size:clamp(18px,2.6vw,24px);font-weight:1000;letter-spacing:-.04em;text-decoration:none}.brand strong,.brand sup{color:var(--gold)}.brand sup{font-size:.48em}.nav{display:flex;gap:8px}.nav a,.nav button{padding:9px 15px;border:1px solid #ffffff55;border-radius:999px;background:#ffffff16;color:#fff;font-weight:900;text-decoration:none;cursor:pointer}main{width:min(1320px,calc(100% - 24px));flex:1;margin:0 auto;padding:10px 0 16px}.page-title{text-align:center}.page-title p{margin:0;color:#ffe28a;font-size:10px;font-weight:1000;letter-spacing:.16em}.page-title h1{margin:3px 0 8px;font-size:clamp(26px,4vh,38px);letter-spacing:-.04em}.mode-panel,.play-panel{border:1px solid #ffffff55;border-radius:24px;background:linear-gradient(135deg,#073b4cdd,#104858ed);box-shadow:0 14px 35px #001c2866}.mode-panel{width:min(720px,100%);margin:14px auto;padding:clamp(18px,4vw,30px);text-align:center}.mode-panel h2{margin:0 0 16px}.mode-options{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}.mode-option{position:relative;display:flex;min-width:190px;min-height:145px;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:16px;border:3px solid #ffffffd9;border-radius:24px;color:#fff;cursor:pointer;box-shadow:0 7px 0 #0004;transition:transform .16s}.mode-option:nth-child(1){background:linear-gradient(145deg,#ff7b54,#ffbf69)}.mode-option:nth-child(2){background:linear-gradient(145deg,#00a896,#55d6be)}.mode-option:nth-child(3){background:linear-gradient(145deg,#7952cc,#e15aa8)}.mode-option:has(input:checked){outline:4px solid #ffe264;outline-offset:3px;transform:translateY(-4px)}.mode-option input{position:absolute;top:10px;left:10px;accent-color:#174390}.mode-option .emoji{font-size:36px}.mode-option strong{font-size:18px}.mode-option small{font-weight:800}.mode-panel>p{color:#ffffffd0;font-size:13px}.primary,.secondary{min-height:48px;padding:10px 22px;border:2px solid #ffffffbb;border-radius:16px;color:#fff;font-size:16px;font-weight:1000;cursor:pointer}.primary{background:linear-gradient(135deg,#ff745a,#f34e67);box-shadow:0 5px 0 #a83b58}.secondary{background:linear-gradient(135deg,#13b6a3,#078ca8);box-shadow:0 5px 0 #064c57}.play-panel{padding:10px 14px 16px}.status-row{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}.pill{padding:7px 13px;border:1px solid #ffffff66;border-radius:999px;background:#052e3de6;font-weight:900}.pill b{margin-left:5px;color:var(--gold)}.game-layout{display:grid;grid-template-columns:minmax(250px,.75fr) minmax(500px,1.25fr);gap:clamp(14px,3vw,34px);align-items:center}.roller-zone h2,.blocks-zone h2{margin:0 0 9px;text-align:center;font-size:clamp(20px,3vh,28px)}.roller-machine{position:relative;width:min(100%,360px);margin:auto;padding:24px;border:10px solid #6a381f;border-radius:28px;background:repeating-linear-gradient(90deg,#db3d53 0 28px,#fff3dc 28px 52px);box-shadow:inset 0 0 0 5px #ffd166,0 11px 0 #3c2518}.roller-display{display:flex;justify-content:center;gap:8px;padding:18px;border:5px solid #8aa0b2;border-radius:17px;background:linear-gradient(#d9e4ef,#fff 30%,#fff 70%,#c6d5e4);box-shadow:inset 0 5px 14px #173a4d45}.digit{display:grid;width:29%;aspect-ratio:.72;place-items:center;border:2px solid #b6c4d1;border-radius:12px;background:#fff;color:#14384c;font-size:clamp(54px,9vw,86px);font-weight:1000;line-height:1;box-shadow:0 5px 0 #8091a0}.roller-display.spinning .digit{animation:digit-roll .18s linear infinite}.roller-caption{min-height:50px;margin:15px auto 0;text-align:center;color:#fff1ca;font-weight:900;line-height:1.4}.place-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,2vw,18px);align-items:end}.place-column{position:relative;padding:10px 10px 12px;border:4px solid #ffffffaa;border-radius:22px;background:#ffffff12;box-shadow:0 8px 18px #001d2a66}.place-column h3{margin:0 0 7px;text-align:center;font-size:clamp(15px,2vw,21px)}.place-column small{display:block;margin-top:1px;color:#ffffffc9;font-size:10px}.block-stack{display:flex;height:min(47vh,420px);min-height:260px;flex-direction:column-reverse;gap:3px}.block{display:grid;min-height:0;flex:1;place-items:center;border:2px solid #ffffff90;border-radius:7px;background:#ffffff26;color:#ffffffb0;cursor:pointer;font-weight:1000;transition:transform .12s,filter .12s,background .12s}.hundreds .block.selected{background:linear-gradient(135deg,#48a8ff,#1677ca);color:#fff}.tens .block.selected{background:linear-gradient(135deg,#65dc82,#179b50);color:#fff}.ones .block.selected{background:linear-gradient(135deg,#ffe677,#e7ad1e);color:#2f3e44}.block:hover{transform:translateY(-1px);filter:brightness(1.12)}.zero-button{width:100%;min-height:38px;margin-top:7px;border:2px solid #ffffff99;border-radius:11px;background:#082f3e;color:#fff;cursor:pointer;font-weight:1000}.zero-button.selected{outline:4px solid #fff1a2;background:#6d4ca7}.place-column.wrong{animation:shake .4s;border-color:#ff8074;background:#7b343a99}.place-column.correct{animation:success-pop .55s;border-color:#baff96;box-shadow:0 0 28px #b2ff8e99}.feedback{min-height:48px;margin:10px 0 0;padding:10px;border:1px solid #ffffff55;border-radius:14px;background:#052e3dbb;text-align:center;font-size:16px;font-weight:900}.feedback.retry{color:#ffe28a;background:#713d35}.feedback.success{color:#d5ffbd;background:#0c5b4b}.controls{display:flex;justify-content:center;gap:16px;margin-top:18px}.confetti{position:fixed;z-index:40;inset:0;overflow:hidden;pointer-events:none}.confetti span{position:absolute;top:-20px;animation:confetti-fall 1.2s ease-in forwards}.overlay{position:fixed;z-index:50;inset:0;display:grid;place-items:center;padding:18px;background:#031f2dda;backdrop-filter:blur(6px)}.instruction-card{width:min(600px,100%);padding:26px;border:3px solid #fff;border-radius:26px;background:linear-gradient(145deg,#fff8e7,#d9fff4);color:#17394a;box-shadow:0 20px 65px #0008}.instruction-card h2{margin:0 0 12px}.instruction-card li{margin:10px 0;line-height:1.45}.dialog-actions{display:flex;justify-content:center;gap:10px;margin-top:18px}.end-card{position:relative;width:min(900px,96vw);aspect-ratio:16/9;overflow:hidden;border:5px solid #fff;border-radius:27px;background:url("../win-banner.jpg") center/cover no-repeat;box-shadow:0 22px 70px #000a}.end-message{position:absolute;right:23%;bottom:19%;left:23%;padding:9px;border-radius:15px;background:#073b4cdd;text-align:center;font-size:clamp(16px,3vw,28px);font-weight:1000}.end-actions{position:absolute;right:0;bottom:5%;left:0;display:flex;justify-content:center;gap:10px}.site-footer{align-self:flex-end;margin:8px 12px;color:#ffffffd9;font-size:10px}.close{float:right;border:0;background:#ff7058;color:#fff;width:38px;height:38px;border-radius:50%;font-size:24px;cursor:pointer}@keyframes digit-roll{50%{transform:translateY(7px);filter:blur(2px)}}@keyframes shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}@keyframes success-pop{50%{transform:scale(1.03)}}@keyframes confetti-fall{to{transform:translateY(105vh) rotate(560deg);opacity:.4}}@media(max-width:800px){.game-layout{grid-template-columns:1fr}.roller-machine{width:min(100%,300px)}.roller-display{padding:10px}.block-stack{height:330px}.controls{margin-top:14px}}@media(max-width:480px){main{width:calc(100% - 14px)}.global-header{padding:8px 10px}.nav a,.nav button{padding:8px 9px;font-size:12px}.mode-option{min-width:145px;min-height:112px}.play-panel{padding:7px}.place-grid{gap:5px}.place-column{padding:6px 5px 8px;border-width:3px;border-radius:15px}.block-stack{height:300px;min-height:0;gap:2px}.block{font-size:12px}.place-column h3{font-size:14px}.controls{gap:7px}.controls button{padding:8px 10px;font-size:13px}.end-message{right:10%;left:10%}}
+    :root{font-family:"Trebuchet MS","Segoe UI",sans-serif;--navy:#073b4c;--gold:#ffd166;--coral:#ff7058;--teal:#0cae9b;--purple:#8b5fd3;color:#fff}*{box-sizing:border-box}body{min-height:100vh;margin:0;display:flex;flex-direction:column;background:radial-gradient(circle at 85% 12%,#14b8aa77,transparent 32%),linear-gradient(135deg,#073b4c,#087f89 58%,#0c6976);font-family:inherit}.hidden{display:none!important}button{font:inherit}.global-header{display:flex;min-height:70px;align-items:center;justify-content:space-between;gap:12px;padding:8px clamp(14px,4vw,54px);border-bottom:1px solid #ffffff40;background:#042b3bf2;box-shadow:0 6px 20px #001d2a55}.brand{color:#fff;font-size:clamp(18px,2.6vw,24px);font-weight:1000;letter-spacing:-.04em;text-decoration:none}.brand strong,.brand sup{color:var(--gold)}.brand sup{font-size:.48em}.nav{display:flex;gap:8px}.nav a,.nav button{padding:9px 15px;border:1px solid #ffffff55;border-radius:999px;background:#ffffff16;color:#fff;font-weight:900;text-decoration:none;cursor:pointer}main{width:min(1320px,calc(100% - 24px));flex:1;margin:0 auto;padding:10px 0 16px}.page-title{text-align:center}.page-title p{margin:0;color:#ffe28a;font-size:10px;font-weight:1000;letter-spacing:.16em}.page-title h1{margin:3px 0 8px;font-size:clamp(26px,4vh,38px);letter-spacing:-.04em}.mode-panel,.play-panel{border:1px solid #ffffff55;border-radius:24px;background:linear-gradient(135deg,#073b4cdd,#104858ed);box-shadow:0 14px 35px #001c2866}.mode-panel{width:min(720px,100%);margin:14px auto;padding:clamp(18px,4vw,30px);text-align:center}.mode-panel h2{margin:0 0 16px}.mode-options{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}.mode-option{position:relative;display:flex;min-width:190px;min-height:145px;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:16px;border:3px solid #ffffffd9;border-radius:24px;color:#fff;cursor:pointer;box-shadow:0 7px 0 #0004;transition:transform .16s}.mode-option:nth-child(1){background:linear-gradient(145deg,#ff7b54,#ffbf69)}.mode-option:nth-child(2){background:linear-gradient(145deg,#00a896,#55d6be)}.mode-option:nth-child(3){background:linear-gradient(145deg,#7952cc,#e15aa8)}.mode-option:has(input:checked){outline:4px solid #ffe264;outline-offset:3px;transform:translateY(-4px)}.mode-option input{position:absolute;top:10px;left:10px;accent-color:#174390}.mode-option .emoji{font-size:36px}.mode-option strong{font-size:18px}.mode-option small{font-weight:800}.mode-panel>p{color:#ffffffd0;font-size:13px}.primary,.secondary{min-height:48px;padding:10px 22px;border:2px solid #ffffffbb;border-radius:16px;color:#fff;font-size:16px;font-weight:1000;cursor:pointer}.primary{background:linear-gradient(135deg,#ff745a,#f34e67);box-shadow:0 5px 0 #a83b58}.secondary{background:linear-gradient(135deg,#13b6a3,#078ca8);box-shadow:0 5px 0 #064c57}.play-panel{padding:10px 14px 16px}.status-row{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}.pill{padding:7px 13px;border:1px solid #ffffff66;border-radius:999px;background:#052e3de6;font-weight:900}.pill b{margin-left:5px;color:var(--gold)}.game-layout{display:grid;grid-template-columns:minmax(250px,.75fr) minmax(500px,1.25fr);gap:clamp(14px,3vw,34px);align-items:center}.roller-zone h2,.blocks-zone h2{margin:0 0 9px;text-align:center;font-size:clamp(20px,3vh,28px)}.roller-machine{position:relative;width:min(100%,360px);margin:auto;padding:24px;border:10px solid #6a381f;border-radius:28px;background:repeating-linear-gradient(90deg,#db3d53 0 28px,#fff3dc 28px 52px);box-shadow:inset 0 0 0 5px #ffd166,0 11px 0 #3c2518}.roller-display{display:flex;justify-content:center;gap:8px;padding:18px;border:5px solid #8aa0b2;border-radius:17px;background:linear-gradient(#d9e4ef,#fff 30%,#fff 70%,#c6d5e4);box-shadow:inset 0 5px 14px #173a4d45}.roller-caption{min-height:50px;margin:15px auto 0;text-align:center;color:#fff1ca;font-weight:900;line-height:1.4}.place-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,2vw,18px);align-items:end}.place-column{position:relative;padding:10px 10px 12px;border:4px solid #ffffffaa;border-radius:22px;background:#ffffff12;box-shadow:0 8px 18px #001d2a66}.place-column h3{margin:0 0 7px;text-align:center;font-size:clamp(15px,2vw,21px)}.place-column small{display:block;margin-top:1px;color:#ffffffc9;font-size:10px}.block-stack{display:flex;height:min(47vh,420px);min-height:260px;flex-direction:column-reverse;gap:3px}.block{display:grid;min-height:0;flex:1;place-items:center;border:2px solid #ffffff90;border-radius:7px;background:#ffffff26;color:#ffffffb0;cursor:pointer;font-weight:1000;transition:transform .12s,filter .12s,background .12s}.hundreds .block.selected{background:linear-gradient(135deg,#48a8ff,#1677ca);color:#fff}.tens .block.selected{background:linear-gradient(135deg,#65dc82,#179b50);color:#fff}.ones .block.selected{background:linear-gradient(135deg,#ffe677,#e7ad1e);color:#2f3e44}.block:hover{transform:translateY(-1px);filter:brightness(1.12)}.zero-button{width:100%;min-height:38px;margin-top:7px;border:2px solid #ffffff99;border-radius:11px;background:#082f3e;color:#fff;cursor:pointer;font-weight:1000}.zero-button.selected{outline:4px solid #fff1a2;background:#6d4ca7}.place-column.wrong{animation:shake .4s;border-color:#ff8074;background:#7b343a99}.place-column.correct{animation:success-pop .55s;border-color:#baff96;box-shadow:0 0 28px #b2ff8e99}.feedback{min-height:48px;margin:10px 0 0;padding:10px;border:1px solid #ffffff55;border-radius:14px;background:#052e3dbb;text-align:center;font-size:16px;font-weight:900}.feedback.retry{color:#ffe28a;background:#713d35}.feedback.success{color:#d5ffbd;background:#0c5b4b}.controls{display:flex;justify-content:center;gap:16px;margin-top:18px}.confetti{position:fixed;z-index:40;inset:0;overflow:hidden;pointer-events:none}.confetti span{position:absolute;top:-20px;animation:confetti-fall 1.2s ease-in forwards}.overlay{position:fixed;z-index:50;inset:0;display:grid;place-items:center;padding:18px;background:#031f2dda;backdrop-filter:blur(6px)}.instruction-card{width:min(600px,100%);padding:26px;border:3px solid #fff;border-radius:26px;background:linear-gradient(145deg,#fff8e7,#d9fff4);color:#17394a;box-shadow:0 20px 65px #0008}.instruction-card h2{margin:0 0 12px}.instruction-card li{margin:10px 0;line-height:1.45}.dialog-actions{display:flex;justify-content:center;gap:10px;margin-top:18px}.end-card{position:relative;width:min(900px,96vw);aspect-ratio:16/9;overflow:hidden;border:5px solid #fff;border-radius:27px;background:url("../win-banner.jpg") center/cover no-repeat;box-shadow:0 22px 70px #000a}.end-message{position:absolute;right:23%;bottom:19%;left:23%;padding:9px;border-radius:15px;background:#073b4cdd;text-align:center;font-size:clamp(16px,3vw,28px);font-weight:1000}.end-actions{position:absolute;right:0;bottom:5%;left:0;display:flex;justify-content:center;gap:10px}.site-footer{align-self:flex-end;margin:8px 12px;color:#ffffffd9;font-size:10px}.close{float:right;border:0;background:#ff7058;color:#fff;width:38px;height:38px;border-radius:50%;font-size:24px;cursor:pointer}@keyframes digit-roll{50%{transform:translateY(7px);filter:blur(2px)}}@keyframes shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}@keyframes success-pop{50%{transform:scale(1.03)}}@keyframes confetti-fall{to{transform:translateY(105vh) rotate(560deg);opacity:.4}}@media(max-width:800px){.game-layout{grid-template-columns:1fr}.roller-machine{width:min(100%,300px)}.roller-display{padding:10px}.block-stack{height:330px}.controls{margin-top:14px}}@media(max-width:480px){main{width:calc(100% - 14px)}.global-header{padding:8px 10px}.nav a,.nav button{padding:8px 9px;font-size:12px}.mode-option{min-width:145px;min-height:112px}.play-panel{padding:7px}.place-grid{gap:5px}.place-column{padding:6px 5px 8px;border-width:3px;border-radius:15px}.block-stack{height:300px;min-height:0;gap:2px}.block{font-size:12px}.place-column h3{font-size:14px}.controls{gap:7px}.controls button{padding:8px 10px;font-size:13px}.end-message{right:10%;left:10%}}
+    @supports (min-height:100dvh){body{min-height:100dvh}}
     .rolled-number{display:grid;width:100%;min-height:150px;place-items:center;border:2px solid #b6c4d1;border-radius:12px;background:#fff;color:#14384c;font-size:clamp(70px,12vw,112px);font-weight:1000;letter-spacing:.04em;line-height:1;box-shadow:0 5px 0 #8091a0}
     .roller-display.spinning .rolled-number{animation:digit-roll .18s linear infinite}
     /* Circus cube-climb towers, adapted from the supplied animation reference. */
@@ -15,14 +19,14 @@
     .blocks-zone>h2::after{content:"Count upward and tap the cube you need";display:block;margin-top:2px;color:#ffe28a;font-size:11px;letter-spacing:.04em}
     .place-grid{position:relative;padding:18px 12px 12px;border:3px solid #ffd16699;border-radius:28px;background:radial-gradient(circle at 50% 104%,#ffd16655,transparent 30%),linear-gradient(180deg,#30143cbb,#6b2148b8 58%,#2c173ddd),url("circus-place-value-towers.png") center/cover no-repeat;box-shadow:inset 0 0 28px #17091f99,0 12px 25px #001d2a55;overflow:hidden}
     .place-grid::before{content:"";position:absolute;z-index:0;top:0;right:0;left:0;height:32px;background:repeating-linear-gradient(90deg,#fff4cf 0 22px,#ef3d5d 22px 44px);clip-path:polygon(0 0,100% 0,96% 62%,92% 32%,88% 62%,84% 32%,80% 62%,76% 32%,72% 62%,68% 32%,64% 62%,60% 32%,56% 62%,52% 32%,48% 62%,44% 32%,40% 62%,36% 32%,32% 62%,28% 32%,24% 62%,20% 32%,16% 62%,12% 32%,8% 62%,4% 32%,0 62%);filter:drop-shadow(0 4px 2px #0005)}
-    .place-column{--cube:#ef4b62;--cube-dark:#a62143;--cube-light:#ff9aaa;--art-x:21.85%;z-index:1;padding:35px 12px 14px;border:4px solid #ffd76a;border-radius:28px 28px 18px 18px;background:linear-gradient(90deg,#ffffff14 0 12%,transparent 12% 88%,#00000020 88%),linear-gradient(180deg,#641c3f,#35172f);box-shadow:inset 0 0 0 3px #fff3ce77,inset 0 -12px 20px #16091e88,0 10px 0 #241226,0 16px 24px #0007;overflow:visible}
+    .place-column{--column-delay:0ms;--cube:#ef4b62;--cube-dark:#a62143;--cube-light:#ff9aaa;--art-x:21.85%;z-index:1;padding:35px 12px 14px;border:4px solid #ffd76a;border-radius:28px 28px 18px 18px;background:linear-gradient(90deg,#ffffff14 0 12%,transparent 12% 88%,#00000020 88%),linear-gradient(180deg,#641c3f,#35172f);box-shadow:inset 0 0 0 3px #fff3ce77,inset 0 -12px 20px #16091e88,0 10px 0 #241226,0 16px 24px #0007;overflow:visible}
     .place-column.tens{--cube:#f6c844;--cube-dark:#a86d0f;--cube-light:#fff09a;--art-x:49.72%;background:linear-gradient(90deg,#ffffff14 0 12%,transparent 12% 88%,#00000020 88%),linear-gradient(180deg,#164f7a,#132b55)}
     .place-column.ones{--cube:#2ca9e8;--cube-dark:#11649d;--cube-light:#9be5ff;--art-x:76.95%;background:linear-gradient(90deg,#ffffff14 0 12%,transparent 12% 88%,#00000020 88%),linear-gradient(180deg,#126e67,#123d54)}
     .place-column h3{position:relative;z-index:3;margin-bottom:9px;text-shadow:0 2px 2px #0008}
     .place-column small{color:#fff1c7}
     .tower-stage{position:relative;padding:9px 7px 4px;border-radius:18px 18px 8px 8px;background:linear-gradient(90deg,#0003,#ffffff10 18% 82%,#0004);box-shadow:inset 0 0 18px #0006;overflow:hidden}
     .block-stack{position:relative;z-index:2;width:clamp(57px,6vw,68px);height:min(45vh,405px);min-height:270px;margin:0 auto;gap:3px;filter:drop-shadow(5px 10px 5px #0007)}
-    .block{position:relative;overflow:visible;margin-right:7px;border:2px solid color-mix(in srgb,var(--cube-light) 82%,white);border-radius:7px 5px 5px 7px;background-image:linear-gradient(105deg,#ffffff35 0 15%,transparent 34% 72%,#00000025 100%),url("circus-place-value-towers.png");background-size:100% 100%,720% var(--slice-size);background-position:center,var(--art-x) var(--slice-y);background-repeat:no-repeat;box-shadow:inset 2px 3px 3px #fff8,inset -4px -5px 4px #0003,0 3px 0 color-mix(in srgb,var(--cube-dark) 82%,black);transform-origin:50% 100%;transform-style:preserve-3d;isolation:isolate}
+    .block{--slice-size:760%;--slice-y:100%;--level:1;position:relative;overflow:visible;margin-right:7px;border:2px solid color-mix(in srgb,var(--cube-light) 82%,white);border-radius:7px 5px 5px 7px;background-image:linear-gradient(105deg,#ffffff35 0 15%,transparent 34% 72%,#00000025 100%),url("circus-place-value-towers.png");background-size:100% 100%,720% var(--slice-size);background-position:center,var(--art-x) var(--slice-y);background-repeat:no-repeat;box-shadow:inset 2px 3px 3px #fff8,inset -4px -5px 4px #0003,0 3px 0 color-mix(in srgb,var(--cube-dark) 82%,black);transform-origin:50% 100%;transform-style:preserve-3d;isolation:isolate}
     .block::before{content:"";position:absolute;z-index:2;top:-7px;right:-2px;left:4px;height:9px;border:1px solid color-mix(in srgb,var(--cube-light) 76%,white);border-radius:5px 5px 1px 1px;background:linear-gradient(135deg,#fff9,var(--cube-light) 38%,var(--cube));clip-path:polygon(7% 0,100% 0,91% 100%,0 100%);pointer-events:none}
     .block::after{content:"";position:absolute;z-index:2;top:-1px;right:-9px;bottom:-3px;width:10px;border:1px solid color-mix(in srgb,var(--cube-dark) 78%,black);border-radius:1px 5px 5px 1px;background:linear-gradient(180deg,var(--cube),var(--cube-dark));clip-path:polygon(0 4%,100% 0,100% 91%,0 100%);box-shadow:2px 2px 2px #0004;pointer-events:none}
     .place-column .block.selected{z-index:3!important;background-image:linear-gradient(105deg,#ffffff52 0 15%,transparent 34% 72%,#00000020 100%),url("circus-place-value-towers.png")!important;background-size:100% 100%,720% var(--slice-size)!important;background-position:center,var(--art-x) var(--slice-y)!important;background-repeat:no-repeat!important;outline:4px solid #fff5a5;outline-offset:-3px;filter:brightness(1.14) saturate(1.12);animation:cube-choice .38s cubic-bezier(.2,.85,.3,1.35)}
@@ -37,6 +41,161 @@
     @keyframes cube-victory{50%{transform:translateY(-7px) rotate(2deg);filter:brightness(1.25)}}
     @media(max-width:800px){.place-grid{padding:17px 8px 10px}.place-column{padding:32px 8px 11px}}
     @media(max-width:480px){.place-grid{padding:14px 4px 8px;border-radius:19px}.place-grid::before{height:25px}.place-column{padding:27px 4px 8px;border-width:3px;border-radius:18px 18px 13px 13px}.tower-stage{padding:6px 4px 2px}.block-stack{height:286px;min-height:0;gap:2px}.block{margin-right:5px}.block::before{top:-5px;height:7px}.block::after{right:-7px;width:8px}.blocks-zone>h2::after{font-size:9px}}
+    @media(min-width:801px){.game-layout{grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr)}}
+    .blocks-zone>h2::after,.place-column small{display:none}
+    .place-grid{padding-top:11px}
+    .place-grid::before{height:17px}
+    .place-column{padding-top:10px}
+    .place-column h3{margin-bottom:3px}
+    .block-stack{height:clamp(160px,calc(100dvh - 360px),320px);min-height:0}
+    .tower-value{min-height:1.5em;margin:0 0 4px;text-align:center;color:#fff1b9;font-weight:900;font-size:clamp(10px,1.5vw,16px)}
+    .swap-card{text-align:center;max-height:calc(100dvh - 20px);overflow:auto}
+    .swap-digits{display:flex;justify-content:center;gap:8px}
+    .swap-digits span{display:grid;place-items:center;width:1.65em;height:1.5em;border-radius:10px;background:#fff;font-size:clamp(26px,6vw,44px);font-weight:900}
+    .swap-digits .swapping{background:#ffe18a}
+    .swap-card button:disabled{opacity:.55;cursor:default}
+    .instruction-card{max-height:calc(100dvh - 20px);overflow:auto}
+    @media(max-width:800px),(max-height:570px){
+      .global-header{min-height:42px;padding:4px 10px}
+      .brand{font-size:15px}
+      .nav a,.nav button{padding:6px 8px;font-size:11px;white-space:nowrap}
+      main{padding:3px 0 6px}
+      .page-title p,.roller-zone h2,.blocks-zone h2,.place-column small{display:none}
+      .page-title h1{font-size:22px;margin:0 0 4px}
+      .play-panel{padding:5px}
+      .status-row{gap:4px;margin-bottom:4px}
+      .pill{padding:3px 7px;font-size:11px}
+      .game-layout{gap:5px}
+      .roller-machine{width:min(100%,140px);padding:4px;border-width:4px;border-radius:13px;box-shadow:inset 0 0 0 2px #ffd166,0 3px 0 #3c2518}
+      .roller-display{padding:2px;border-width:2px;border-radius:8px}
+      .rolled-number{min-height:32px;font-size:32px;border-radius:6px;box-shadow:none}
+      .roller-caption{min-height:0;margin:4px 0 0;font-size:11px}
+      .place-grid{padding:6px 3px 5px;gap:4px;border-radius:14px}
+      .place-grid::before{height:13px}
+      .place-column{min-width:0;padding:5px 3px;border-width:2px;border-radius:11px;box-shadow:inset 0 0 0 1px #fff3ce77}
+      .place-column h3{margin:0 0 2px;font-size:13px}
+      .tower-value{font-size:10px;margin-bottom:2px;line-height:1.2;min-height:1.25em;display:grid;place-items:center}
+      .tower-stage{padding:4px 3px 2px}
+      .block-stack{width:min(100%,66px);height:clamp(100px,calc(100dvh - 320px),300px);min-height:0;gap:2px}
+      .block{margin-right:5px;border-width:1px}
+      .block::before{top:-3px;height:5px}
+      .block::after{right:-5px;width:6px}
+      .zero-button{min-height:28px;margin-top:3px;font-size:11px}
+      .feedback{min-height:28px;margin:4px 0 0;padding:5px;font-size:12px}
+      .controls{gap:5px;margin-top:5px}
+      .controls button{min-height:40px;padding:4px 7px;font-size:11px;white-space:nowrap}
+      .site-footer{margin:2px 8px;font-size:9px}
+      .mode-panel{margin:5px auto;padding:10px}
+      .mode-panel h2{margin:0 0 6px}
+      .mode-options{gap:6px}
+      .mode-option{min-width:0;min-height:0;flex:1 1 0;padding:8px 3px}
+      .mode-option input{position:static;margin:0}
+      .mode-option .emoji{font-size:20px}
+      .mode-option strong,.mode-option small{font-size:11px}
+    }
+    @media(orientation:landscape) and (max-height:570px){
+      .game-layout{grid-template-columns:minmax(120px,.6fr) minmax(0,1.4fr)}
+      .page-title h1{font-size:16px}
+      .tower-value{min-height:1.3em}
+      .block-stack{height:clamp(65px,calc(100dvh - 245px),290px)}
+      .controls button{min-height:34px}
+      .swap-card{padding:10px}
+      .swap-card p,.swap-card .dialog-actions{margin:6px 0}
+      .swap-card button{min-height:34px;padding:4px 10px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      .place-grid.climbing .block-stack,.place-grid.climbing .block,.place-column .block.selected{animation:none}
+    }
+    .game-layout{grid-template-columns:minmax(0,.7fr) auto minmax(0,1.3fr);gap:clamp(5px,1vw,14px)}
+    .place-grid{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:clamp(2px,.6vw,9px)}
+    .equation-symbol{z-index:1;align-self:center;color:#fff3bc;text-align:center;font-weight:1000;line-height:1;text-shadow:0 2px 2px #132636}
+    .equation-equals{font-size:clamp(32px,6vw,76px)}
+    .equation-plus{font-size:clamp(19px,3vw,40px)}
+    .place-column{min-width:0}
+    .block-stack{max-width:100%}
+    .place-column.has-selection .block:not(.selected){opacity:.38;filter:saturate(.35)}
+    .place-column .block.selected{outline:3px solid #fff;outline-offset:-2px;box-shadow:inset 0 0 0 4px #ffcf4c,0 0 6px #ffdb6d}
+    .zero-button.selected{background:#ffe18a;color:#182b3b;outline:2px solid #fff;outline-offset:-3px}
+    @media(max-width:800px) and (orientation:portrait){
+      .game-layout{grid-template-columns:minmax(0,1fr);gap:2px}
+      .equation-equals{font-size:25px}
+      .block-stack{height:clamp(95px,calc(100dvh - 345px),285px)}
+    }
+    @media(max-width:800px),(max-height:570px){
+      body:has(#playPanel:not(.hidden)){height:100dvh;min-height:0}
+      body:has(#playPanel:not(.hidden)) main{display:grid;grid-template-rows:auto minmax(0,1fr);min-height:0}
+      .play-panel{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:0}
+      .game-layout{min-height:0;align-items:stretch}
+      .roller-zone{align-self:center}
+      .blocks-zone{display:grid;grid-template-rows:minmax(0,1fr) auto;min-height:0}
+      .place-grid{min-height:0;align-items:stretch}
+      .place-column{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;min-height:0}
+      .tower-stage{min-height:0}
+      .block-stack{height:100%;min-height:0;filter:none}
+      .equation-symbol{
+        display:grid;
+        place-items:center;
+        border-radius:7px;
+        background:#102e41;
+        color:#ffe49a;
+        text-shadow:none;
+      }
+      .equation-plus{width:clamp(20px,5vw,28px);height:28px;font-size:24px}
+      .equation-equals{width:32px;height:30px;font-size:30px;justify-self:center}
+      .place-column .block.selected{outline:2px solid #fff7b4;outline-offset:-1px;box-shadow:inset 0 0 0 3px #ffcf4c,0 0 4px #ffdb6d}
+      .place-column.has-selection .block:not(.selected){opacity:.25}
+      .controls button{touch-action:manipulation}
+    }
+    @media(max-width:800px) and (orientation:portrait){
+      .game-layout{grid-template-rows:auto auto minmax(0,1fr)}
+    }
+    @media(orientation:landscape) and (max-height:570px){
+      .game-layout{grid-template-columns:minmax(92px,.5fr) auto minmax(0,1.5fr);grid-template-rows:minmax(0,1fr)}
+    }
+    .number-answer{display:grid;justify-items:center;gap:6px;text-align:center}
+    .number-answer label{font-weight:900}
+    .number-answer output{min-width:4ch;padding:3px 7px;border:2px solid #ffd166;border-radius:10px;background:#fff9e8;color:#14384c;text-align:center;font-size:clamp(20px,4vw,34px);font-weight:900}
+    .number-answer .primary{min-height:34px;padding:4px 10px;font-size:14px}
+    .answer-entry{display:flex;align-items:center;justify-content:center;gap:5px}
+    .digit-chooser{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;width:min(100%,260px)}
+    .digit-chooser button,.answer-entry .secondary{min-height:36px;padding:2px 5px;border-radius:8px;font-size:15px;box-shadow:none}
+    .number-answer button:disabled{opacity:.5;cursor:default}
+    .place-column .block:disabled,.place-column .zero-button:disabled{cursor:default}
+    .place-column .block:disabled:hover{transform:none}
+    @media(max-width:800px),(max-height:570px){
+      .number-answer{gap:3px;font-size:12px}
+      .number-answer output{font-size:20px}
+    }
+    @media(max-width:800px) and (orientation:portrait){
+      .number-answer{grid-template-columns:minmax(0,1fr)}
+    }
+    .game-layout.reverse-layout{grid-template-columns:minmax(0,1.3fr) auto minmax(0,.7fr)}
+    .reverse-layout .blocks-zone{order:0}
+    .reverse-layout .equation-equals{order:1}
+    .reverse-layout .roller-zone{order:2}
+    .number-answer .roller-machine{width:auto;padding:8px;border-width:4px;border-radius:14px}
+    .reverse-layout .roller-zone{justify-self:start}
+    .reverse-layout .number-answer{gap:10px}
+    .reverse-layout .number-answer .roller-machine{box-shadow:inset 0 0 0 3px #ffd166,0 4px 0 #3c2518}
+    .reverse-layout .tower-value,
+    .reverse-layout .block:not(.selected),
+    .reverse-layout .zero-button:not(.selected){visibility:hidden}
+    .reverse-layout .place-column.correct .tower-value{visibility:visible}
+    .reverse-layout .zero-button.selected{
+      border:0;
+      outline:0;
+      background:none;
+      box-shadow:none;
+      color:#fff1b9;
+    }
+    @media(max-width:800px) and (orientation:portrait){
+      .game-layout.reverse-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto auto}
+      .reverse-layout .roller-zone{justify-self:center}
+      .reverse-layout .number-answer{gap:4px 8px}
+    }
+    @media(orientation:landscape) and (max-height:570px){
+      .game-layout.reverse-layout{grid-template-columns:minmax(0,1.5fr) auto minmax(92px,.5fr)}
+    }
   </style>
 </head>
 <body>
@@ -48,7 +207,7 @@
       <div class="mode-options">
         <label class="mode-option"><input type="radio" name="mode" value="simple" checked><span class="emoji">🐣</span><strong>Simple Mode</strong><small>Ages 3–4 · 6 numbers</small></label>
         <label class="mode-option"><input type="radio" name="mode" value="moderate"><span class="emoji">🧩</span><strong>Moderate Mode</strong><small>Ages 4–5 · 10 numbers</small></label>
-        <label class="mode-option"><input type="radio" name="mode" value="difficult"><span class="emoji">🚀</span><strong>Difficult Mode</strong><small>Ages 5–7 · 15 numbers</small></label>
+        <label class="mode-option"><input type="radio" name="mode" value="difficult"><span class="emoji">🚀</span><strong>Difficult Mode</strong><small>Ages 5–7 · Read 15 towers</small></label>
       </div>
       <p>Read the roller, then build its hundreds, tens, and ones.</p>
       <button class="primary" id="startButton" type="button">Let’s Go!</button>
@@ -56,11 +215,23 @@
 
     <section class="play-panel hidden" id="playPanel">
       <div class="status-row"><span class="pill">Round <b id="roundLabel">1 / 6</b></span><span class="pill">Built <b id="scoreLabel">0</b></span><span class="pill">Mode <b id="modeLabel">Simple</b></span></div>
-      <div class="game-layout">
-        <section class="roller-zone"><h2>1. Spin a number</h2><div class="roller-machine"><div class="roller-display" id="rollerDisplay"><span class="rolled-number" id="rolledNumber">---</span></div></div><p class="roller-caption" id="rollerCaption">The roller will choose a three-digit number.</p></section>
-        <section class="blocks-zone"><h2>2. Build it with blocks</h2><div class="place-grid" id="placeGrid"></div><div class="feedback" id="feedback" role="status">Choose a block height in all three columns.</div></section>
+      <div class="game-layout" id="gameLayout">
+        <section class="roller-zone">
+          <div id="numberRoller"><h2>1. Spin a number</h2><div class="roller-machine"><div class="roller-display" id="rollerDisplay"><span class="rolled-number" id="rolledNumber">---</span></div></div><p class="roller-caption" id="rollerCaption">The roller will choose a three-digit number.</p></div>
+          <form id="numberAnswer" class="number-answer hidden" aria-labelledby="numberQuestion">
+            <strong id="numberQuestion">What number do the blocks make?</strong>
+            <div class="answer-entry">
+              <output id="numberGuess" aria-label="Your answer">?</output>
+              <button id="eraseDigit" class="secondary" type="button" aria-label="Erase last digit">⌫</button>
+              <button id="checkNumber" class="primary" type="submit">Check</button>
+            </div>
+            <div id="digitChooser" class="digit-chooser" role="group" aria-label="Choose a digit"></div>
+          </form>
+        </section>
+        <span class="equation-symbol equation-equals" aria-label="equals">=</span>
+        <section class="blocks-zone"><h2 id="towerHeading">2. Build it with blocks</h2><div class="place-grid" id="placeGrid"></div><div class="feedback" id="feedback" role="status">Choose a block height in all three columns.</div></section>
       </div>
-      <div class="controls"><button class="secondary" id="resetButton" type="button">Start / Reset</button><button class="primary" id="changeModeButton" type="button">Change Mode</button></div>
+      <div class="controls"><button class="secondary" id="hearButton" type="button">🔊 Hear Again</button><button class="secondary" id="resetButton" type="button">Start / Reset</button><button class="primary" id="changeModeButton" type="button">Change Mode</button></div>
     </section>
   </main>
   <footer class="site-footer">© 2026 FuNumber Games</footer>
@@ -68,22 +239,77 @@
   <div class="overlay hidden" id="instructions"><div class="instruction-card"><button class="close" id="closeHow" type="button" aria-label="Close">×</button><h2>How to Play</h2><ol><li>Watch the roller choose a three-digit number.</li><li>Tap a block in each column. Every block below it lights up.</li><li>If a digit is zero, tap the <strong>0 / None</strong> button.</li><li>All three choices are checked automatically. Change any red column and try again.</li></ol></div></div>
   <div class="overlay hidden" id="endOverlay"><div class="end-card"><div class="end-message">You are a Place Value Star!</div><div class="end-actions"><button class="primary" id="replayButton" type="button">Play Again</button><button class="secondary" id="endModeButton" type="button">Change Mode</button></div></div></div>
   <div class="confetti hidden" id="confetti"></div>
+  <div class="overlay hidden" id="swapOverlay" role="dialog" aria-modal="true" aria-labelledby="swapHeading">
+    <div class="instruction-card swap-card">
+      <h2 id="swapHeading">Digit Swap</h2>
+      <p id="swapQuestion"></p>
+      <div id="swapDigits" class="swap-digits" aria-hidden="true"></div>
+      <div id="swapChoices" class="dialog-actions"></div>
+      <p id="swapFeedback" role="status"></p>
+      <div class="dialog-actions">
+        <button id="swapHear" class="secondary" type="button">🔊 Hear Again</button>
+        <button id="swapContinue" class="primary" type="button">Continue</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    const $=id=>document.getElementById(id);
+    const byId=id=>document.getElementById(id);
+    const {towerValue,towerSpeech,towerCounts,matchesNumber,makeSwapChallenge,createSpeechQueue}=window.PlaceValueLogic;
     const MODES={simple:{name:"Simple",rounds:6},moderate:{name:"Moderate",rounds:10},difficult:{name:"Difficult",rounds:15}};
     const PLACES=[{key:"hundreds",title:"Hundreds",color:"Red snake"},{key:"tens",title:"Tens",color:"Gold caterpillar"},{key:"ones",title:"Ones",color:"Blue fuzzy friend"}];
     const CUBE_SLICES={1:[1010,1175],2:[899,1012],3:[788,901],4:[667,789],5:[546,668],6:[425,547],7:[304,426],8:[183,305],9:[39,184]};
+    const climbs=new Map();
+
+    function paintCube(block,slice){
+      const [top,bottom]=CUBE_SLICES[slice];
+      block.style.setProperty("--slice-size",`${125400/(bottom-top)}%`);
+      block.style.setProperty("--slice-y",`${100*top/(1254-bottom+top)}%`);
+    }
     const state={mode:"simple",round:0,score:0,target:0,selections:{hundreds:null,tens:null,ones:null},busy:false,runId:0};
+    let guidance="";
+    let swapSpeech="";
+    let numberGuess="";
+    const speech=window.speechSynthesis;
+    speech?.getVoices();
+
+    const narration=createSpeechQueue(typeof SpeechSynthesisUtterance==="function"?speech:null,text=>{
+      const line=new SpeechSynthesisUtterance(text);
+      line.lang="en-IN";
+      line.rate=.92;
+      return line;
+    });
+    const speak=narration.say;
+
+    function placeCount(key,value){
+      return `${value} ${value===1?key.slice(0,-1):key}`;
+    }
 
     function buildColumns(){
-      const grid=$("placeGrid");grid.innerHTML="";
+      const grid=byId("placeGrid");grid.innerHTML="";
       PLACES.forEach((place,index)=>{
+        if(index>0){
+          const plus=document.createElement("span");
+          plus.className="equation-symbol equation-plus";
+          plus.textContent="+";
+          plus.setAttribute("aria-label","plus");
+          grid.appendChild(plus);
+        }
         const column=document.createElement("div");column.className=`place-column ${place.key}`;column.dataset.place=place.key;
         column.style.setProperty("--column-delay",`${index*120}ms`);
-        column.innerHTML=`<h3>${place.title}<small>${place.color} cubes</small></h3><div class="tower-stage"><div class="block-stack"></div></div><button class="zero-button" type="button">0 / No cubes</button>`;
+        column.innerHTML=`<h3>${place.title}<small>${place.color} cubes</small></h3><div class="tower-value">—</div><div class="tower-stage"><div class="block-stack"></div></div><button class="zero-button" type="button">0 / No cubes</button>`;
         const stack=column.querySelector(".block-stack");
-        for(let value=1;value<=9;value++){const block=document.createElement("button"),[sliceTop,sliceBottom]=CUBE_SLICES[value],sliceHeight=sliceBottom-sliceTop;block.type="button";block.className="block";block.dataset.value=value;block.style.setProperty("--level",value);block.style.setProperty("--slice-size",`${125400/sliceHeight}%`);block.style.setProperty("--slice-y",`${100*sliceTop/(1254-sliceHeight)}%`);block.setAttribute("aria-label",`Count to ${value} and select ${value} ${place.title.toLowerCase()} cubes`);block.addEventListener("click",()=>select(place.key,value));stack.appendChild(block);}
+        for(let value=1;value<=9;value++){
+          const block=document.createElement("button");
+          block.type="button";
+          block.className="block";
+          block.dataset.value=value;
+          block.style.setProperty("--level",value);
+          paintCube(block,value);
+          block.setAttribute("aria-label",`Count to ${value} and select ${value} ${place.title.toLowerCase()} cubes`);
+          block.addEventListener("click",()=>select(place.key,value));
+          stack.appendChild(block);
+        }
         column.querySelector(".zero-button").addEventListener("click",()=>select(place.key,0));grid.appendChild(column);
       });
     }
@@ -92,25 +318,230 @@
       if(state.mode==="moderate"){let h=1+Math.floor(Math.random()*9),t=Math.floor(Math.random()*10),o=Math.floor(Math.random()*10);if(t===0&&o===0)o=1+Math.floor(Math.random()*9);return 100*h+10*t+o;}
       return 100*(1+Math.floor(Math.random()*9))+Math.floor(Math.random()*100);
     }
-    function digits(){return {hundreds:Math.floor(state.target/100),tens:Math.floor(state.target/10)%10,ones:state.target%10};}
-    function renderSelection(key){const column=document.querySelector(`[data-place="${key}"]`),value=state.selections[key];column.classList.remove("wrong","correct");column.querySelectorAll(".block").forEach(block=>block.classList.toggle("selected",value>0&&Number(block.dataset.value)<=value));column.querySelector(".zero-button").classList.toggle("selected",value===0);}
-    function replayCubeClimb(){const grid=$("placeGrid");grid.classList.remove("climbing");void grid.offsetWidth;grid.classList.add("climbing");window.setTimeout(()=>grid.classList.remove("climbing"),1500);}
-    function clearSelections(){state.selections={hundreds:null,tens:null,ones:null};PLACES.forEach(place=>renderSelection(place.key));}
-    function select(key,value){if(state.busy)return;state.selections[key]=value;renderSelection(key);$("feedback").className="feedback";$("feedback").textContent=`${value} ${key} selected.`;if(PLACES.every(place=>state.selections[place.key]!==null))checkAnswer();}
-    function checkAnswer(){
-      const answer=digits(),wrong=PLACES.filter(place=>state.selections[place.key]!==answer[place.key]);
-      if(wrong.length){wrong.forEach(place=>{const column=document.querySelector(`[data-place="${place.key}"]`);column.classList.remove("wrong");void column.offsetWidth;column.classList.add("wrong");});$("feedback").className="feedback retry";$("feedback").textContent="Almost! Change the red column and try again.";return;}
-      state.busy=true;PLACES.forEach(place=>document.querySelector(`[data-place="${place.key}"]`).classList.add("correct"));$("feedback").className="feedback success";$("feedback").textContent=`Brilliant! You built ${state.target}.`;celebrate();const runId=state.runId;
-      window.setTimeout(()=>{if(runId!==state.runId)return;state.score++;state.round++;updateStatus();if(state.round>=MODES[state.mode].rounds){state.busy=false;$("endOverlay").classList.remove("hidden");return;}spinNumber();},1050);
+    function digits(){return towerCounts(state.target);}
+    function renderSelection(key,animate=false){
+      const column=document.querySelector(`[data-place="${key}"]`),value=state.selections[key];
+      window.clearTimeout(climbs.get(key));
+      climbs.delete(key);
+      column.classList.remove("wrong","correct");
+      column.classList.toggle("has-selection",value!==null);
+      const blocks=column.querySelectorAll(".block");
+      function showHeight(height){
+        blocks.forEach((block,index)=>{
+          const level=index+1;
+          const selected=level<=height;
+          block.classList.toggle("selected",selected);
+          paintCube(block,selected?9-height+level:level);
+        });
+        if(height<value){
+          climbs.set(key,window.setTimeout(()=>showHeight(height+1),55));
+        }else climbs.delete(key);
+      }
+      const climb=animate&&value>1&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      showHeight(climb?1:value);
+      column.querySelector(".zero-button").classList.toggle("selected",value===0);
+      column.querySelector(".tower-value").textContent=value===null?"—":`${placeCount(key,value)} = ${towerValue(key,value)}`;
     }
-    function celebrate(){const box=$("confetti");box.innerHTML="";box.classList.remove("hidden");const colors=["#ffd166","#ff7058","#52d3c5","#9e75e8","#fff"];for(let i=0;i<45;i++){const bit=document.createElement("span");bit.textContent=i%3?"★":"●";bit.style.left=`${Math.random()*100}%`;bit.style.color=colors[i%colors.length];bit.style.fontSize=`${12+Math.random()*17}px`;bit.style.animationDelay=`${Math.random()*.25}s`;box.appendChild(bit);}window.setTimeout(()=>box.classList.add("hidden"),1500);}
-    function spinNumber(){const runId=state.runId;state.busy=true;clearSelections();replayCubeClimb();$("rollerDisplay").classList.add("spinning");$("rollerCaption").textContent="Rolling a new number…";$("feedback").className="feedback";$("feedback").textContent="Watch the circus cubes climb into place!";let timer=window.setInterval(()=>$("rolledNumber").textContent=String(100+Math.floor(Math.random()*900)),75);window.setTimeout(()=>{if(runId!==state.runId){clearInterval(timer);return;}clearInterval(timer);state.target=randomTarget();$("rolledNumber").textContent=String(state.target);$("rollerDisplay").classList.remove("spinning");$("rollerCaption").textContent=`Build ${state.target}: count upward and tap one cube in each tower.`;$("feedback").textContent="Count from the bottom, then tap the cube you need.";state.busy=false;},850);}
-    function updateStatus(){$("roundLabel").textContent=`${Math.min(state.round+1,MODES[state.mode].rounds)} / ${MODES[state.mode].rounds}`;$("scoreLabel").textContent=state.score;$("modeLabel").textContent=MODES[state.mode].name;}
-    function beginGame(mode){state.runId++;state.mode=mode;state.round=0;state.score=0;state.busy=false;$("modePanel").classList.add("hidden");$("playPanel").classList.remove("hidden");$("endOverlay").classList.add("hidden");updateStatus();spinNumber();}
-    function showModes(){state.runId++;$("playPanel").classList.add("hidden");$("endOverlay").classList.add("hidden");$("modePanel").classList.remove("hidden");}
+    function replayCubeClimb(){const grid=byId("placeGrid");grid.classList.remove("climbing");void grid.offsetWidth;grid.classList.add("climbing");window.setTimeout(()=>grid.classList.remove("climbing"),1500);}
+    function clearSelections(){state.selections={hundreds:null,tens:null,ones:null};PLACES.forEach(place=>renderSelection(place.key));}
+    function select(key,value){
+      if(state.busy||state.mode==="difficult")return;
+      state.selections[key]=value;
+      renderSelection(key,true);
+      const spokenValue=towerSpeech(key,value);
+      byId("feedback").className="feedback";
+      byId("feedback").textContent=spokenValue;
+      if(PLACES.every(place=>state.selections[place.key]!==null))checkAnswer(spokenValue);
+      else speak(spokenValue);
+    }
+    async function checkAnswer(spokenValue){
+      const answer=digits(),wrong=PLACES.filter(place=>state.selections[place.key]!==answer[place.key]);
+      if(wrong.length){wrong.forEach(place=>{const column=document.querySelector(`[data-place="${place.key}"]`);column.classList.remove("wrong");void column.offsetWidth;column.classList.add("wrong");});byId("feedback").className="feedback retry";byId("feedback").textContent=`Try again. Check ${wrong.map(place=>place.key).join(" and ")}.`;speak(`${spokenValue} ${byId("feedback").textContent}`);return;}
+      await completeRound(spokenValue);
+    }
+
+    async function completeRound(spokenValue=""){
+      state.busy=true;
+      PLACES.forEach(place=>document.querySelector(`[data-place="${place.key}"]`).classList.add("correct"));
+      const values=PLACES.map(place=>towerValue(place.key,state.selections[place.key]));
+      byId("feedback").className="feedback success";
+      byId("feedback").textContent=`${values.join(" + ")} = ${state.target}`;
+      const runId=state.runId;
+      celebrate();
+      await Promise.all([
+        speak(spokenValue?`${spokenValue} Well done! You built ${state.target}.`:`Correct! The blocks make ${state.target}.`),
+        new Promise(resolve=>window.setTimeout(resolve,1050))
+      ]);
+      if(runId!==state.runId)return;
+      state.score++;
+      updateStatus();
+      const challenge=(state.round+1)%3===0?makeSwapChallenge(state.target):null;
+      if(challenge)showSwap(challenge);
+      else advanceRound();
+    }
+
+    function advanceRound(){
+      byId("swapOverlay").classList.add("hidden");
+      state.round++;
+      updateStatus();
+      if(state.round>=MODES[state.mode].rounds){
+        byId("endOverlay").classList.remove("hidden");
+        byId("replayButton").focus();
+        speak("You are a Place Value Star!");
+      }else spinNumber();
+    }
+
+    function showSwap(challenge){
+      const {left,right,digit,from,to,answer}=challenge;
+      swapSpeech=`Swap the ${PLACES[left].key} and ${PLACES[right].key} digits in ${state.target}. What number do you make?`;
+      byId("swapQuestion").textContent=swapSpeech;
+      byId("swapFeedback").textContent="";
+      byId("swapContinue").disabled=true;
+      const tiles=String(state.target).split("").map((value,index)=>{
+        const tile=document.createElement("span");
+        tile.textContent=value;
+        if(index===left||index===right)tile.className="swapping";
+        return tile;
+      });
+      byId("swapDigits").replaceChildren(...tiles);
+      const choices=[state.target,answer].sort((a,b)=>a-b).map(value=>{
+        const button=document.createElement("button");
+        button.type="button";
+        button.className="primary";
+        button.textContent=value;
+        button.addEventListener("click",async()=>{
+          if(value!==answer){
+            byId("swapFeedback").textContent="Try again. The two highlighted digits trade places.";
+            speak(byId("swapFeedback").textContent);
+            return;
+          }
+          choices.forEach(choice=>{choice.disabled=true;});
+          const distance=tiles[right].offsetLeft-tiles[left].offsetLeft;
+          [tiles[left].textContent,tiles[right].textContent]=[tiles[right].textContent,tiles[left].textContent];
+          if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+            tiles[left].animate?.([{transform:`translateX(${distance}px)`},{transform:"none"}],350);
+            tiles[right].animate?.([{transform:`translateX(${-distance}px)`},{transform:"none"}],350);
+          }
+          swapSpeech=from===to
+            ? `${state.target} becomes ${answer}. Zero moves from ${PLACES[left].key} to ${PLACES[right].key}. It still means there are no cubes in that place.`
+            : `${state.target} becomes ${answer}. The ${digit} moves from ${PLACES[left].key} to ${PLACES[right].key}, so its value changes from ${from} to ${to}.`;
+          byId("swapFeedback").textContent=swapSpeech;
+          const runId=state.runId;
+          await speak(swapSpeech);
+          if(runId!==state.runId)return;
+          byId("swapContinue").disabled=false;
+          byId("swapContinue").focus();
+        });
+        return button;
+      });
+      byId("swapChoices").replaceChildren(...choices);
+      byId("swapOverlay").classList.remove("hidden");
+      choices[0].focus();
+      speak(swapSpeech);
+    }
+    function celebrate(){const box=byId("confetti");box.innerHTML="";box.classList.remove("hidden");const colors=["#ffd166","#ff7058","#52d3c5","#9e75e8","#fff"];for(let i=0;i<45;i++){const bit=document.createElement("span");bit.textContent=i%3?"★":"●";bit.style.left=`${Math.random()*100}%`;bit.style.color=colors[i%colors.length];bit.style.fontSize=`${12+Math.random()*17}px`;bit.style.animationDelay=`${Math.random()*.25}s`;box.appendChild(bit);}window.setTimeout(()=>box.classList.add("hidden"),1500);}
+    function spinNumber(){
+      const runId=state.runId;
+      state.busy=true;
+      clearSelections();
+      replayCubeClimb();
+      if(state.mode==="difficult"){
+        state.target=randomTarget();
+        state.selections=digits();
+        PLACES.forEach(place=>renderSelection(place.key));
+        numberGuess="";
+        byId("feedback").className="feedback";
+        byId("feedback").textContent="Count the highlighted blocks in each tower.";
+        guidance="Count the highlighted hundreds, tens, and ones. Enter the number they make.";
+        state.busy=false;
+        renderNumberGuess();
+        speak(guidance);
+        return;
+      }
+      byId("rollerDisplay").classList.add("spinning");
+      byId("rollerCaption").textContent="Rolling a new number…";
+      byId("feedback").className="feedback";
+      byId("feedback").textContent="Get ready to build!";
+      const timer=window.setInterval(()=>{
+        if(runId!==state.runId){window.clearInterval(timer);return;}
+        byId("rolledNumber").textContent=String(100+Math.floor(Math.random()*900));
+      },75);
+      window.setTimeout(()=>{
+        window.clearInterval(timer);
+        if(runId!==state.runId)return;
+        state.target=randomTarget();
+        byId("rolledNumber").textContent=String(state.target);
+        byId("rollerDisplay").classList.remove("spinning");
+        byId("rollerCaption").textContent=`Build ${state.target}`;
+        byId("feedback").textContent="Count from the bottom. Tap one choice in each tower.";
+        guidance=`Build ${state.target}. Count from the bottom.`;
+        state.busy=false;
+        speak(guidance);
+      },850);
+    }
+    function updateStatus(){byId("roundLabel").textContent=`${Math.min(state.round+1,MODES[state.mode].rounds)} / ${MODES[state.mode].rounds}`;byId("scoreLabel").textContent=state.score;byId("modeLabel").textContent=MODES[state.mode].name;}
+    function beginGame(mode){narration.stop();guidance="";state.runId++;state.mode=mode;state.round=0;state.score=0;state.busy=false;byId("modePanel").classList.add("hidden");byId("playPanel").classList.remove("hidden");byId("endOverlay").classList.add("hidden");byId("swapOverlay").classList.add("hidden");
+      const reverse=mode==="difficult";
+      byId("gameLayout").classList.toggle("reverse-layout",reverse);
+      byId("towerHeading").textContent=reverse?"Read the towers":"2. Build it with blocks";
+      byId("numberRoller").classList.toggle("hidden",reverse);
+      byId("numberAnswer").classList.toggle("hidden",!reverse);
+      byId("placeGrid").querySelectorAll("button").forEach(button=>{button.disabled=reverse;});
+      byId("placeGrid").querySelectorAll(".zero-button").forEach(button=>{button.textContent=reverse?"0":"0 / No cubes";});
+      updateStatus();
+      spinNumber();
+    }
+    function showModes(){narration.stop();state.runId++;byId("playPanel").classList.add("hidden");byId("endOverlay").classList.add("hidden");byId("swapOverlay").classList.add("hidden");byId("modePanel").classList.remove("hidden");}
+    byId("hearButton").addEventListener("click",()=>{if(!state.busy)speak(guidance);});
+    function renderNumberGuess(){
+      byId("numberGuess").textContent=numberGuess||"?";
+      byId("eraseDigit").disabled=state.busy||numberGuess.length===0;
+      byId("checkNumber").disabled=state.busy||numberGuess.length!==3;
+      byId("digitChooser").querySelectorAll("button").forEach(button=>{
+        button.disabled=state.busy||numberGuess.length===3;
+      });
+    }
+    for(let digit=0;digit<=9;digit++){
+      const key=document.createElement("button");
+      key.type="button";
+      key.className="secondary";
+      key.textContent=digit;
+      key.addEventListener("click",()=>{
+        if(state.busy||numberGuess.length>=3)return;
+        numberGuess+=digit;
+        renderNumberGuess();
+        if(numberGuess.length===3)byId("checkNumber").focus();
+      });
+      byId("digitChooser").appendChild(key);
+    }
+    byId("eraseDigit").addEventListener("click",()=>{
+      numberGuess=numberGuess.slice(0,-1);
+      renderNumberGuess();
+    });
+    byId("numberAnswer").addEventListener("submit",event=>{
+      event.preventDefault();
+      if(state.busy||state.mode!=="difficult")return;
+      if(!matchesNumber(numberGuess,state.target)){
+        byId("feedback").className="feedback retry";
+        byId("feedback").textContent="Try again. Count the highlighted blocks in each tower.";
+        speak(byId("feedback").textContent);
+        return;
+      }
+      completeRound();
+      renderNumberGuess();
+    });
+    byId("swapHear").addEventListener("click",()=>speak(swapSpeech));
+    byId("swapContinue").addEventListener("click",async()=>{
+      const runId=state.runId;
+      byId("swapContinue").disabled=true;
+      byId("swapHear").disabled=true;
+      await narration.whenIdle();
+      byId("swapHear").disabled=false;
+      if(runId===state.runId)advanceRound();
+    });
     document.querySelectorAll('input[name="mode"]').forEach(input=>input.addEventListener("change",()=>state.mode=input.value));
-    $("startButton").addEventListener("click",()=>beginGame(state.mode));$("resetButton").addEventListener("click",()=>beginGame(state.mode));$("changeModeButton").addEventListener("click",showModes);$("replayButton").addEventListener("click",()=>beginGame(state.mode));$("endModeButton").addEventListener("click",showModes);
-    $("howButton").addEventListener("click",()=>$("instructions").classList.remove("hidden"));$("closeHow").addEventListener("click",()=>$("instructions").classList.add("hidden"));$("instructions").addEventListener("click",event=>{if(event.target===$("instructions"))$("instructions").classList.add("hidden");});
+    byId("startButton").addEventListener("click",()=>beginGame(state.mode));byId("resetButton").addEventListener("click",()=>beginGame(state.mode));byId("changeModeButton").addEventListener("click",showModes);byId("replayButton").addEventListener("click",()=>beginGame(state.mode));byId("endModeButton").addEventListener("click",showModes);
+    byId("howButton").addEventListener("click",()=>byId("instructions").classList.remove("hidden"));byId("closeHow").addEventListener("click",()=>byId("instructions").classList.add("hidden"));byId("instructions").addEventListener("click",event=>{if(event.target===byId("instructions"))byId("instructions").classList.add("hidden");});
     buildColumns();
   </script>
 </body>
