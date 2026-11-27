@@ -50,7 +50,7 @@ describe("spoken game guidance",()=>{
   it("explains double-digit answers in Maths Spin",()=>{
     const script=read("docs/equation/equation-game.js");
     expect(script).toContain("remainingSpins");
-    expect(script).toContain("remainingMessage");
+    expect(script).toContain("missedSpinMessage(board, remainingSpins)");
     expect(script).toContain("If the answer is double digits");
     expect(script).toContain("reductionWorking");
     expect(script).toContain("getDigitReductionSteps");
@@ -58,7 +58,9 @@ describe("spoken game guidance",()=>{
 
   it("limits repeated solve guidance and schedules an inactivity reminder",()=>{
     const script=read("docs/equation/equation-game.js");
-    expect(script).toContain("guidancePromptsShown<2");
+    expect(script).toContain("const initialGuidance = firstSpin;");
+    expect(script).toContain("firstSpin = false;");
+    expect(script).toContain('"Check out the solution."');
     expect(script).toContain("scheduleAnswerReminder");
     expect(script).toContain("},5000)");
     expect(script).toContain("clearAnswerReminder");

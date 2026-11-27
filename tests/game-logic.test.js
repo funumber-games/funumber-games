@@ -164,6 +164,17 @@ describe("two-wheel math game rules", () => {
     expect(rules.canPlaceNumber(board, 1, 0, 0)).toBe(false);
   });
 
+  it("puts the larger operand first on the Maths Spin subtraction wheel", () => {
+    for (const maxAnswer of [6, 9]) {
+      for (let sample = 0; sample < 100; sample++) {
+        const { values, selectedIndices: [first, second] } =
+          rules.createNumberWheelValues(sample * 17, "-", maxAnswer, () => sample / 100);
+        expect(values[first]).toBeGreaterThan(values[second]);
+        expect(values[first] - values[second]).toBeLessThanOrEqual(maxAnswer);
+      }
+    }
+  });
+
   it("maps the two arrows to opposite divisions on the 10-section wheel", () => {
     const [first, second] = rules.getOppositeSectorIndices(0);
     expect(first).toBe(0);

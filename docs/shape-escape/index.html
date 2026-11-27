@@ -6,32 +6,30 @@
     <meta name="theme-color" content="#073b4c">
     <meta name="description" content="Spin for a shape and help it escape through a matching window in Shape Escape.">
     <title>Shape Escape — FuNumber Games</title>
+    <!-- Shape, wheel, and celebration selectors target elements created by the game. -->
+    <!--suppress CssUnusedSymbol -->
     <style>
         :root{color-scheme:light;font-family:"Trebuchet MS","Segoe UI",sans-serif;--navy:#073b4c;--gold:#ffd166;--coral:#ff7058;--cream:#fff9ed;--teal:#0cae9b}
-        *{box-sizing:border-box}html{min-height:100%;background:#073b4c}body{display:flex;min-height:100vh;min-height:100dvh;flex-direction:column;margin:0;color:#fff;background:linear-gradient(135deg,rgba(3,43,62,.8),rgba(2,111,126,.68) 54%,rgba(246,163,75,.42)),radial-gradient(ellipse at 80% 5%,#00b9b3,transparent 48%),linear-gradient(140deg,#0b5266,#087f89 58%,#0c6976)}button{font:inherit}
+        *{box-sizing:border-box}html{min-height:100%;background:#073b4c}body{display:flex;min-height:100vh;flex-direction:column;margin:0;color:#fff;background:linear-gradient(135deg,rgba(3,43,62,.8),rgba(2,111,126,.68) 54%,rgba(246,163,75,.42)),radial-gradient(ellipse at 80% 5%,#00b9b3,transparent 48%),linear-gradient(140deg,#0b5266,#087f89 58%,#0c6976)}button{font:inherit}
+        @supports (min-height:100dvh){body{min-height:100dvh}}
         .global-header{position:sticky;top:0;z-index:20;display:flex;min-height:76px;align-items:center;justify-content:space-between;gap:16px;padding:8px clamp(16px,5vw,70px);border-bottom:1px solid rgba(255,255,255,.2);background:rgba(4,43,59,.94);box-shadow:0 7px 22px rgba(0,0,0,.17);backdrop-filter:blur(12px)}.brand{color:#fff;font-size:clamp(18px,2vw,23px);font-weight:900;letter-spacing:-.04em;text-decoration:none;white-space:nowrap}.brand strong,.brand sup{color:var(--gold)}.brand sup{margin-left:2px;font-size:.48em;vertical-align:top}.main-nav{display:flex;align-items:center;gap:10px}.main-nav a,.how-to-play-trigger{padding:10px 16px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.1);color:white;cursor:pointer;font-size:14px;font-weight:900;text-decoration:none}.main-nav a:hover,.how-to-play-trigger:hover{background:rgba(255,255,255,.22)}
         main{width:min(1440px,calc(100% - 32px));flex:1;margin:0 auto;padding:12px 0 18px}.page-title{margin:0 0 10px;text-align:center}.eyebrow{margin:0 0 3px;color:#ffe28a;font-size:10px;font-weight:1000;letter-spacing:.17em}h1{margin:0;font-size:clamp(25px,3vh,34px);letter-spacing:-.04em;text-shadow:0 3px 10px rgba(0,0,0,.2)}
         .mode-panel,.play-panel{border:1px solid rgba(255,255,255,.3);border-radius:22px;background:rgba(5,46,62,.8);box-shadow:0 14px 34px rgba(0,0,0,.2);backdrop-filter:blur(10px)}.mode-panel{width:min(720px,100%);margin:16px auto;padding:20px;border-color:rgba(255,255,255,.45);background:rgba(10,29,52,.78);text-align:center}.mode-panel h2{margin:0 0 14px;font-size:22px}.mode-options{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-bottom:14px}.mode-option{position:relative;display:flex;min-width:175px;min-height:140px;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:16px 14px 13px;border:3px solid rgba(255,255,255,.85);border-radius:23px;color:#fff;text-align:center;cursor:pointer;box-shadow:0 7px 0 rgba(0,0,0,.25),0 12px 20px rgba(0,0,0,.22);transition:transform .16s ease,filter .16s ease}.mode-option:nth-child(1){background:linear-gradient(145deg,#ff7b54,#ffbf69)}.mode-option:nth-child(2){background:linear-gradient(145deg,#00a896,#55d6be)}.mode-option:nth-child(3){background:linear-gradient(145deg,#7952cc,#e15aa8)}.mode-option:hover{transform:translateY(-4px);filter:brightness(1.08)}.mode-option:has(input:checked){outline:4px solid #ffe264;outline-offset:3px;transform:translateY(-3px) scale(1.02)}.mode-option input{position:absolute;top:11px;left:11px;width:18px;height:18px;accent-color:#174390}.mode-emoji{font-size:34px;line-height:1}.mode-option strong{font-size:18px}.mode-option small{font-weight:800}.mode-note{margin:0 0 15px;color:rgba(255,255,255,.8);font-size:13px}
         .action-button{min-height:46px;padding:10px 22px;border:2px solid rgba(255,255,255,.78);border-radius:15px;background:linear-gradient(135deg,#ff745a,#f34e67);box-shadow:0 5px 0 #a83b58,0 9px 16px rgba(0,0,0,.2);color:#fff;cursor:pointer;font-size:16px;font-weight:1000;transition:transform .15s ease,filter .15s ease}.action-button:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.07)}.action-button:disabled{cursor:default;filter:grayscale(.35);opacity:.72}.secondary-button{background:linear-gradient(135deg,#13b8a6,#0787a5);box-shadow:0 5px 0 #086775,0 9px 16px rgba(0,0,0,.2)}.mode-button{background:linear-gradient(135deg,#8060d5,#b659ad);box-shadow:0 5px 0 #62418e,0 9px 16px rgba(0,0,0,.2)}
         .play-panel{padding:12px}.game-topline{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:0 0 10px}.counter{display:inline-flex;min-height:32px;align-items:center;gap:7px;padding:5px 13px;border:1px solid rgba(255,255,255,.34);border-radius:999px;background:rgba(3,30,46,.68);font-size:14px;font-weight:900}.counter strong{color:var(--gold);font-size:17px}.arena{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(350px,.92fr);align-items:center;gap:clamp(18px,3vw,42px)}
         .house-side,.wheel-side{min-width:0;text-align:center}.section-title{margin:0 0 9px;font-size:clamp(19px,2vw,27px)}.wall-frame{position:relative;padding:clamp(12px,1.7vw,22px);border:10px solid #6c3c20;border-radius:24px;background:linear-gradient(145deg,#d19a5c,#a65d2e 62%,#7c4426);box-shadow:inset 0 0 0 3px #f3d08c,0 8px 0 #432616,0 13px 22px rgba(0,0,0,.3)}.wall-frame:before{position:absolute;inset:9px;border:1px solid rgba(255,238,194,.55);border-radius:12px;content:"";pointer-events:none}.window-grid{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1.1vw,14px)}
-        .shape-window{position:relative;display:flex;min-width:0;min-height:clamp(100px,16vh,150px);flex-direction:column;align-items:center;justify-content:center;gap:5px;overflow:hidden;padding:8px 6px;border:3px solid #f7d18a;border-radius:16px;background:linear-gradient(145deg,#70432f,#38291f);color:#fff;cursor:pointer;box-shadow:0 5px 0 rgba(57,31,17,.62),inset 0 0 0 2px rgba(255,255,255,.12);transition:transform .16s ease,filter .16s ease}.shape-window:hover{transform:translateY(-3px);filter:brightness(1.12)}.shape-window:disabled{cursor:default;opacity:.72}.window-title{position:relative;z-index:1;font-size:clamp(12px,1.1vw,15px);font-weight:1000;text-shadow:0 2px 3px #21140e}.window-aperture{position:relative;display:grid;width:clamp(58px,7vw,86px);height:clamp(54px,7vh,72px);place-items:center;overflow:hidden;border:3px solid #263d4b;border-radius:10px;background:linear-gradient(145deg,#0e2531,#1c3440);box-shadow:inset 0 0 12px rgba(0,0,0,.7)}.window-shape{width:64%;height:72%;fill:#ffd166;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}.grill{position:absolute;inset:0;display:flex;justify-content:space-evenly;transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .4s ease;transform-origin:top center}.grill span{width:5px;height:100%;border-right:1px solid rgba(255,255,255,.45);border-left:1px solid rgba(0,0,0,.42);background:linear-gradient(90deg,#303b3e,#839093 45%,#303b3e);box-shadow:0 0 3px #000}.shape-window.open .grill{transform:translateY(-105%) rotateX(68deg);opacity:.15}.shape-window.just-opened{animation:window-pop .5s ease}.window-glow{position:absolute;inset:0;border-radius:8px;box-shadow:inset 0 0 0 3px transparent;transition:box-shadow .2s}.shape-window.correct-target .window-glow{box-shadow:inset 0 0 0 3px #79f4be,0 0 16px #79f4be}.shape-window.wrong-target .window-glow{box-shadow:inset 0 0 0 3px #ff685d,0 0 14px #ff685d}.escape-ghost{position:absolute;z-index:4;width:42px;height:42px;animation:escape-left .8s ease-in forwards;pointer-events:none}
-        .wheel-wrap{position:relative;display:grid;width:min(100%,min(56vh,500px));aspect-ratio:1;place-items:center;margin:2px auto 9px}.wheel-pointer{position:absolute;z-index:5;top:-2px;left:50%;width:0;height:0;transform:translateX(-50%);border-right:18px solid transparent;border-left:18px solid transparent;border-top:31px solid #ff7159;filter:drop-shadow(0 3px 2px rgba(0,0,0,.38))}.wheel-disk{position:absolute;inset:4%;overflow:hidden;border:9px solid #eff8ff;border-radius:50%;background:#4aa9db;box-shadow:0 8px 0 #17384d,0 13px 20px rgba(0,0,0,.3),inset 0 0 0 5px rgba(255,255,255,.35);transition:transform 4.2s cubic-bezier(.1,.75,.12,1)}.wheel-disk:before{position:absolute;z-index:1;inset:7px;border:2px solid rgba(255,255,255,.42);border-radius:50%;content:"";pointer-events:none}.wheel-labels{position:absolute;inset:0}.wheel-label{position:absolute;display:grid;min-width:48px;justify-items:center;transform:translate(-50%,-50%);pointer-events:none}.label-content{display:flex;min-width:43px;min-height:48px;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:2px 3px;border:2px solid rgba(255,255,255,.8);border-radius:12px;background:rgba(255,255,255,.92);color:#17384d;box-shadow:0 3px 6px rgba(0,0,0,.22);font-size:10px;font-weight:1000;line-height:1;transition:transform 4.2s cubic-bezier(.1,.75,.12,1)}.shape-svg{display:block;width:34px;height:30px;overflow:visible}.label-content .shape-svg{width:29px;height:26px}.label-content small{max-width:60px;overflow:hidden;color:#17384d;font-size:8px;text-overflow:ellipsis;white-space:nowrap}.wheel-label.active .label-content{border-color:#ffcf48;background:#fff2a4;box-shadow:0 0 0 4px rgba(255,209,102,.34),0 0 18px #ffd166;transform:scale(1.12)!important}.wheel-label.removed{opacity:.12;filter:grayscale(1)}.wheel-hub{position:relative;z-index:4;display:grid;width:25%;aspect-ratio:1;place-items:center;border:5px solid #fff1c4;border-radius:50%;background:radial-gradient(circle at 34% 28%,#fff78b,#ffb43b 46%,#f56755 76%);box-shadow:0 7px 0 #a83b58,0 10px 19px rgba(0,0,0,.32),inset 0 3px 6px rgba(255,255,255,.82);color:white;cursor:pointer;font-size:clamp(15px,2vw,22px);font-weight:1000;text-shadow:0 2px 4px rgba(80,40,30,.48)}.wheel-hub:disabled{cursor:default;filter:grayscale(.3)}.active-shape{display:flex;min-height:65px;align-items:center;justify-content:center;gap:10px;margin:5px 0;padding:8px 14px;border:1px solid rgba(255,255,255,.28);border-radius:15px;background:rgba(3,30,46,.56);font-size:clamp(16px,1.7vw,21px);font-weight:1000}.active-shape strong{color:var(--gold)}.active-shape .shape-svg{width:46px;height:42px}.game-status{min-height:24px;margin:7px 0;color:rgba(255,255,255,.9);font-size:14px;font-weight:800}
-        .voice-button{min-height:38px;padding:7px 13px;border:2px solid #fff;border-radius:13px;background:linear-gradient(180deg,#ffd768,#ffb43b);box-shadow:0 4px 0 #b85c25;color:#17384d;cursor:pointer;font:inherit;font-size:13px;font-weight:1000}.voice-button:hover{filter:brightness(1.06);transform:translateY(-1px)}.voice-button:focus-visible{outline:4px solid #8ce8ff;outline-offset:3px}.game-controls{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:14px}.game-footer{align-self:flex-end;margin:8px max(10px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom));color:rgba(255,255,255,.86);font-size:10px;line-height:1.2;text-align:right;text-shadow:0 1px 4px rgba(0,0,0,.8);pointer-events:none}.dialog-backdrop{position:fixed;z-index:50;inset:0;display:grid;place-items:center;overflow-y:auto;padding:16px;background:rgba(2,27,40,.79);backdrop-filter:blur(7px)}.dialog-backdrop[hidden]{display:none}.dialog-card{width:min(610px,100%);padding:clamp(22px,4vw,36px);border:3px solid #fff;border-radius:27px;background:linear-gradient(145deg,#fffaf0,#e6f9f4);color:#17384d;text-align:center;box-shadow:0 22px 70px rgba(0,0,0,.48);animation:banner-pop .45s cubic-bezier(.2,1.5,.4,1)}.dialog-card.win{background:linear-gradient(145deg,#fff8d6,#c8fff0)}.dialog-card.loss{background:linear-gradient(145deg,#fff1eb,#ffe0a8)}.dialog-emoji{font-size:clamp(42px,8vw,70px)}.dialog-card h2{margin:3px 0 10px;color:#0a5464;font-size:clamp(26px,5vw,42px)}.dialog-card p{margin:8px 0;line-height:1.5}.dialog-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:20px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.confetti{position:fixed;z-index:55;top:-20px;width:10px;height:17px;animation:confetti-fall var(--fall-time,2.8s) linear forwards;pointer-events:none}
-        @keyframes escape-left{to{transform:translate(-115vw,-20px) rotate(-35deg) scale(.55);opacity:0}}@keyframes window-pop{50%{transform:scale(1.06)}}@keyframes banner-pop{0%{transform:scale(.75);opacity:0}100%{transform:scale(1);opacity:1}}@keyframes confetti-fall{to{transform:translate3d(var(--drift,40px),110vh,0) rotate(750deg);opacity:.9}}@keyframes wiggle{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}.wrong-wiggle{animation:wiggle .28s ease 2}.sr-only-focusable:focus{position:static;width:auto;height:auto;clip:auto}
+        .shape-window{position:relative;display:flex;min-width:0;min-height:clamp(100px,16vh,150px);flex-direction:column;align-items:center;justify-content:center;gap:5px;overflow:hidden;padding:8px 6px;border:3px solid #f7d18a;border-radius:16px;background:linear-gradient(145deg,#70432f,#38291f);color:#fff;cursor:pointer;box-shadow:0 5px 0 rgba(57,31,17,.62),inset 0 0 0 2px rgba(255,255,255,.12);transition:transform .16s ease,filter .16s ease}.shape-window:hover{transform:translateY(-3px);filter:brightness(1.12)}.shape-window:disabled{cursor:default;opacity:.72}.window-aperture{position:relative;display:grid;width:clamp(58px,7vw,86px);height:clamp(54px,7vh,72px);place-items:center;overflow:hidden;border:3px solid #263d4b;border-radius:10px;background:linear-gradient(145deg,#0e2531,#1c3440);box-shadow:inset 0 0 12px rgba(0,0,0,.7)}.grill{position:absolute;inset:0;display:flex;justify-content:space-evenly;transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .4s ease;transform-origin:top center}.grill span{width:5px;height:100%;border-right:1px solid rgba(255,255,255,.45);border-left:1px solid rgba(0,0,0,.42);background:linear-gradient(90deg,#303b3e,#839093 45%,#303b3e);box-shadow:0 0 3px #000}.shape-window.open .grill{transform:translateY(-105%) rotateX(68deg);opacity:.15}.shape-window.just-opened{animation:window-pop .5s ease}.window-glow{position:absolute;inset:0;border-radius:8px;box-shadow:inset 0 0 0 3px transparent;transition:box-shadow .2s}.shape-window.correct-target .window-glow{box-shadow:inset 0 0 0 3px #79f4be,0 0 16px #79f4be}.shape-window.wrong-target .window-glow{box-shadow:inset 0 0 0 3px #ff685d,0 0 14px #ff685d}.escape-ghost{position:absolute;z-index:4;width:42px;height:42px;animation:escape-left .8s ease-in forwards;pointer-events:none}
+        .wheel-wrap{position:relative;display:grid;width:min(100%,min(56vh,500px));aspect-ratio:1;place-items:center;margin:2px auto 9px}.wheel-pointer{position:absolute;z-index:5;top:-2px;left:50%;width:0;height:0;transform:translateX(-50%);border-right:18px solid transparent;border-left:18px solid transparent;border-top:31px solid #ff7159;filter:drop-shadow(0 3px 2px rgba(0,0,0,.38))}.wheel-disk{position:absolute;inset:4%;overflow:hidden;border:9px solid #eff8ff;border-radius:50%;background:#4aa9db;box-shadow:0 8px 0 #17384d,0 13px 20px rgba(0,0,0,.3),inset 0 0 0 5px rgba(255,255,255,.35);transition:transform 4.2s cubic-bezier(.1,.75,.12,1)}.wheel-disk:before{position:absolute;z-index:1;inset:7px;border:2px solid rgba(255,255,255,.42);border-radius:50%;content:"";pointer-events:none}.wheel-labels{position:absolute;inset:0}.wheel-label{--label-size:50px;--icon-size:29px;--selection-rotation:none;position:absolute;display:grid;min-width:48px;justify-items:center;transform:translate(-50%,-50%);pointer-events:none}.label-content{display:flex;min-width:43px;min-height:48px;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:2px 3px;border:2px solid rgba(255,255,255,.8);border-radius:12px;background:rgba(255,255,255,.92);color:#17384d;box-shadow:0 3px 6px rgba(0,0,0,.22);font-size:10px;font-weight:1000;line-height:1;transition:transform 4.2s cubic-bezier(.1,.75,.12,1)}.shape-svg{display:block;width:34px;height:30px;overflow:visible}.label-content .shape-svg{width:29px;height:26px}.label-content small{max-width:60px;overflow:hidden;color:#17384d;font-size:8px;text-overflow:ellipsis;white-space:nowrap}.wheel-label.active .label-content{border-color:#ffcf48;background:#fff2a4;box-shadow:0 0 0 4px rgba(255,209,102,.34),0 0 18px #ffd166;transform:scale(1.12)!important}.wheel-label.removed{opacity:.12;filter:grayscale(1)}.wheel-hub{position:relative;z-index:4;display:grid;width:25%;aspect-ratio:1;place-items:center;border:5px solid #fff1c4;border-radius:50%;background:radial-gradient(circle at 34% 28%,#fff78b,#ffb43b 46%,#f56755 76%);box-shadow:0 7px 0 #a83b58,0 10px 19px rgba(0,0,0,.32),inset 0 3px 6px rgba(255,255,255,.82);color:white;cursor:pointer;font-size:clamp(15px,2vw,22px);font-weight:1000;text-shadow:0 2px 4px rgba(80,40,30,.48)}.wheel-hub:disabled{cursor:default;filter:grayscale(.3)}.active-shape{display:flex;min-height:65px;align-items:center;justify-content:center;gap:10px;margin:5px 0;padding:8px 14px;border:1px solid rgba(255,255,255,.28);border-radius:15px;background:rgba(3,30,46,.56);font-size:clamp(16px,1.7vw,21px);font-weight:1000}.active-shape strong{color:var(--gold)}.active-shape .shape-svg{width:46px;height:42px}.game-status{min-height:24px;margin:7px 0;color:rgba(255,255,255,.9);font-size:14px;font-weight:800}
+        .voice-button{min-height:38px;padding:7px 13px;border:2px solid #fff;border-radius:13px;background:linear-gradient(180deg,#ffd768,#ffb43b);box-shadow:0 4px 0 #b85c25;color:#17384d;cursor:pointer;font:inherit;font-size:13px;font-weight:1000}.voice-button:hover{filter:brightness(1.06);transform:translateY(-1px)}.voice-button:focus-visible{outline:4px solid #8ce8ff;outline-offset:3px}.game-controls{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:14px}.game-footer{align-self:flex-end;margin:8px max(10px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom));color:rgba(255,255,255,.86);font-size:10px;line-height:1.2;text-align:right;text-shadow:0 1px 4px rgba(0,0,0,.8);pointer-events:none}.dialog-backdrop{position:fixed;z-index:50;inset:0;display:grid;place-items:center;overflow-y:auto;padding:16px;background:rgba(2,27,40,.79);backdrop-filter:blur(7px)}.dialog-backdrop[hidden]{display:none}.dialog-card{width:min(610px,100%);padding:clamp(22px,4vw,36px);border:3px solid #fff;border-radius:27px;background:linear-gradient(145deg,#fffaf0,#e6f9f4);color:#17384d;text-align:center;box-shadow:0 22px 70px rgba(0,0,0,.48);animation:banner-pop .45s cubic-bezier(.2,1.5,.4,1)}.dialog-card.win{background:linear-gradient(145deg,#fff8d6,#c8fff0)}.dialog-card.loss{background:linear-gradient(145deg,#fff1eb,#ffe0a8)}.dialog-emoji{font-size:clamp(42px,8vw,70px)}.dialog-card h2{margin:3px 0 10px;color:#0a5464;font-size:clamp(26px,5vw,42px)}.dialog-card p{margin:8px 0;line-height:1.5}.dialog-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:20px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.confetti{--fall-time:2.8s;--drift:0px;position:fixed;z-index:55;top:-20px;width:10px;height:17px;animation:confetti-fall var(--fall-time,2.8s) linear forwards;pointer-events:none}
+        @keyframes escape-left{to{transform:translate(-115vw,-20px) rotate(-35deg) scale(.55);opacity:0}}@keyframes window-pop{50%{transform:scale(1.06)}}@keyframes banner-pop{0%{transform:scale(.75);opacity:0}100%{transform:scale(1);opacity:1}}@keyframes confetti-fall{to{transform:translate3d(var(--drift,40px),110vh,0) rotate(750deg);opacity:.9}}@keyframes wiggle{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}.wrong-wiggle{animation:wiggle .28s ease 2}
         @media(max-width:900px){.global-header{position:relative}.arena{grid-template-columns:minmax(0,1fr) minmax(300px,.9fr);gap:14px}.wheel-wrap{width:min(100%,min(48vh,430px))}.shape-window{min-height:115px}}
-        @media(max-width:650px){main{width:calc(100% - 18px);padding:8px 0 14px}.global-header{min-height:64px;padding:8px 12px}.main-nav{gap:5px}.main-nav a,.how-to-play-trigger{padding:9px 10px;font-size:12px}.arena{grid-template-columns:minmax(0,1fr);gap:16px}.wheel-side{grid-row:1}.house-side{grid-row:2}.wheel-wrap{width:min(82vw,390px)}.section-title{margin-bottom:7px}.wall-frame{padding:10px;border-width:8px;border-radius:18px}.window-grid{gap:7px}.shape-window{min-height:clamp(94px,19vw,125px);padding:6px 3px;border-width:2px}.window-title{font-size:12px}.window-aperture{width:58px;height:49px}.label-content{min-width:36px;min-height:40px;padding:1px}.label-content .shape-svg{width:24px;height:22px}.label-content small{max-width:47px;font-size:7px}.wheel-pointer{border-right-width:14px;border-left-width:14px;border-top-width:24px}.wheel-disk{border-width:6px}.active-shape{min-height:54px;margin:3px 0;padding:6px 9px;font-size:16px}.active-shape .shape-svg{width:38px;height:36px}.game-topline{gap:6px}.counter{min-height:29px;padding:4px 9px;font-size:12px}.counter strong{font-size:14px}.game-controls{margin-top:10px}.action-button{min-height:43px;padding:9px 16px;font-size:14px}}
-        @media(max-width:380px){.brand{font-size:16px}.main-nav a,.how-to-play-trigger{padding:8px;font-size:11px}.wheel-wrap{width:min(86vw,330px)}.wall-frame{padding:7px}.shape-window{min-height:90px}.window-title{font-size:11px}}
+        @media(max-width:650px){main{width:calc(100% - 18px);padding:8px 0 14px}.global-header{min-height:64px;padding:8px 12px}.main-nav{gap:5px}.main-nav a,.how-to-play-trigger{padding:9px 10px;font-size:12px}.arena{grid-template-columns:minmax(0,1fr);gap:16px}.wheel-side{grid-row:1}.house-side{grid-row:2}.wheel-wrap{width:min(82vw,390px)}.section-title{margin-bottom:7px}.wall-frame{padding:10px;border-width:8px;border-radius:18px}.window-grid{gap:7px}.shape-window{min-height:clamp(94px,19vw,125px);padding:6px 3px;border-width:2px}.window-aperture{width:58px;height:49px}.label-content{min-width:36px;min-height:40px;padding:1px}.label-content .shape-svg{width:24px;height:22px}.label-content small{max-width:47px;font-size:7px}.wheel-pointer{border-right-width:14px;border-left-width:14px;border-top-width:24px}.wheel-disk{border-width:6px}.active-shape{min-height:54px;margin:3px 0;padding:6px 9px;font-size:16px}.active-shape .shape-svg{width:38px;height:36px}.game-topline{gap:6px}.counter{min-height:29px;padding:4px 9px;font-size:12px}.counter strong{font-size:14px}.game-controls{margin-top:10px}.action-button{min-height:43px;padding:9px 16px;font-size:14px}}
+        @media(max-width:380px){.brand{font-size:16px}.main-nav a,.how-to-play-trigger{padding:8px;font-size:11px}.wheel-wrap{width:min(86vw,330px)}.wall-frame{padding:7px}.shape-window{min-height:90px}}
         @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-        .house-roof{position:relative;z-index:2;width:calc(100% + 44px);height:clamp(48px,7vh,76px);margin:0 -22px -4px;background:repeating-linear-gradient(0deg,transparent 0 13px,rgba(255,218,164,.22) 14px 16px),repeating-linear-gradient(90deg,transparent 0 35px,rgba(92,38,31,.24) 36px 39px),linear-gradient(145deg,#d7684e,#a63d37 62%,#793433);clip-path:polygon(50% 0,100% 100%,0 100%);filter:drop-shadow(0 8px 0 rgba(56,32,25,.72))}
-        .house-roof:after{position:absolute;right:6%;bottom:2px;left:6%;height:8px;border-radius:4px;background:linear-gradient(#f2cf91,#b66f48);content:""}
+
         .wall-frame{min-height:clamp(430px,54vh,610px);padding:clamp(24px,3vw,38px);border:12px solid #8e452f;border-radius:5px;background:#a64d31;box-shadow:inset 0 0 0 4px #d36a42,0 11px 0 #4b2e22,0 17px 24px rgba(0,0,0,.32)}
         .wall-frame:before{display:none}
-        .brick-wall{position:absolute;z-index:0;inset:0;display:grid;grid-template-rows:repeat(8,minmax(0,1fr));overflow:hidden;padding:7px;background:#a94c30}
-        .brick-row{display:flex;min-width:108%;gap:4px;margin-left:-4%;overflow:hidden}
-        .brick-row:nth-child(even){transform:translateX(-6%)}
-        .brick{position:relative;flex:0 0 11.8%;height:100%;min-height:34px;border:2px solid #a74a2e;border-radius:7px;background:linear-gradient(145deg,#fb8653 0%,#ec7043 56%,#d65b37 100%);box-shadow:inset 0 2px 1px rgba(255,200,154,.34),inset 0 -2px 1px rgba(117,45,28,.19)}
-        .brick:after{position:absolute;top:24%;left:18%;width:4px;height:3px;border-radius:50%;background:rgba(153,59,36,.28);box-shadow:12px 7px 0 rgba(153,59,36,.18),30px -3px 0 rgba(255,196,145,.22);content:""}
+
         .window-grid{z-index:1}
         .shape-window{min-height:clamp(165px,23vh,230px)}
         .window-aperture{padding:8px;background:#f8eddf;filter:drop-shadow(0 7px 0 rgba(57,31,17,.62)) drop-shadow(0 9px 9px rgba(0,0,0,.25))}
@@ -40,13 +38,13 @@
         .grill span{width:clamp(6px,.8vw,10px);border-right:1px solid rgba(222,245,255,.72);border-left:1px solid rgba(3,38,66,.86);background:linear-gradient(90deg,#102d48,#3d7191 38%,#183751 65%,#0b243a);box-shadow:0 0 4px rgba(0,0,0,.8)}
         .label-content{min-width:var(--label-size,50px);min-height:var(--label-size,52px)}
         .label-content .shape-svg{width:var(--icon-size,36px);height:var(--icon-size,33px)}
-        @media(max-width:650px){.wall-frame{min-height:clamp(400px,55vh,550px);padding:17px 11px;border-width:9px}.brick-wall{grid-template-rows:repeat(8,minmax(0,1fr));padding:5px}.brick-row{gap:3px}.brick{min-height:30px;border-width:1.5px;border-radius:5px}.shape-window{min-height:clamp(145px,34vw,195px)}.window-aperture{padding:6px}.grill span{width:5px}}
+        @media(max-width:650px){.wall-frame{min-height:clamp(400px,55vh,550px);padding:17px 11px;border-width:9px}.shape-window{min-height:clamp(145px,34vw,195px)}.window-aperture{padding:6px}.grill span{width:5px}}
         .arena{grid-template-columns:minmax(0,1.2fr) minmax(350px,.8fr)}
         .wall-frame{padding:clamp(18px,2.4vw,30px)}
         .window-grid{gap:clamp(10px,1.5vw,20px)}
         .shape-window{min-height:clamp(155px,22vh,220px);padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
         .shape-window:hover{filter:none}
-        .window-title{display:none}
+
         .window-aperture{position:absolute;inset:5px;display:block;width:auto;height:auto;padding:7px;border:0;border-radius:0;background:#f3d08c;box-shadow:none;filter:drop-shadow(0 6px 0 rgba(57,31,17,.58)) drop-shadow(0 8px 9px rgba(0,0,0,.24))}
         .aperture-interior{position:relative;display:block;width:100%;height:100%;overflow:hidden;background:linear-gradient(145deg,#102937,#1c3c49);box-shadow:inset 0 0 13px rgba(0,0,0,.72)}
         .window-aperture[data-window="triangle"],.aperture-interior[data-window="triangle"],.grill[data-window="triangle"],.window-glow[data-window="triangle"]{clip-path:polygon(50% 2%,98% 97%,2% 97%)}
@@ -79,7 +77,7 @@
             body.game-active .game-topline{margin-bottom:5px}
             body.game-active .arena{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(10px,1.5vw,24px)}
             body.game-active .section-title{margin-bottom:4px;font-size:clamp(18px,2.6vh,25px)}
-            body.game-active .house-roof{width:calc(100% + 24px);height:clamp(50px,8vh,82px);margin-right:-12px;margin-left:-12px}
+
             body.game-active .wall-frame{width:min(100%,720px);min-height:0;padding:clamp(8px,1.1vh,12px) clamp(10px,1.3vw,18px);border-width:9px}
             body.game-active .window-grid{gap:clamp(6px,.8vw,11px)}
             body.game-active .shape-window{min-height:clamp(112px,15vh,138px)}
@@ -97,7 +95,7 @@
             body.game-active main{padding-top:4px;padding-bottom:6px}
             body.game-active .play-panel{padding:6px}
             body.game-active .game-topline{margin-bottom:4px}
-            body.game-active .house-roof{height:clamp(30px,5vh,42px)}
+
             body.game-active .wall-frame{min-height:0;padding:8px 6px;border-width:7px}
             body.game-active .window-grid{gap:5px}
             body.game-active .shape-window{min-height:clamp(84px,12vh,102px)}
@@ -110,6 +108,124 @@
             body.game-active .game-controls{gap:7px;margin-top:6px}
             body.game-active .game-controls .action-button{min-height:38px;padding:6px 10px;font-size:12px}
             body.game-active .game-footer{margin-top:5px}
+        }
+        body.game-active .woodland-scene{container-type:inline-size;position:relative;width:min(100%,calc(62dvh * 715 / 595));aspect-ratio:715/595;min-height:0;margin:auto;padding:0;border:0;border-radius:16px;background:#435935;overflow:hidden}
+        .arena{
+            --scene-art:url("woodland-clearing.jpg");
+            --facade-width:50%;
+            --facade-ratio:1;
+            --wheel-left:60.05%;
+            --wheel-top:15.05%;
+            --wheel-width:30%;
+            --prompt-top:118%;
+            --grain-position:84.5% 40%;
+            --grain-size:365% 183%;
+        }
+        .arena[data-theme="castle"]{
+            --scene-art:url("moonlit-castle.jpg");--facade-width:64%;--facade-ratio:1.28;
+            --wheel-left:67.43%;--wheel-top:17.55%;--wheel-width:28.4%;--prompt-top:117%;
+            --grain-position:93% 42%;--grain-size:382% 191%;
+        }
+        .arena[data-theme="circus"]{
+            --scene-art:url("circus-booth.jpg");--facade-width:60%;--facade-ratio:1.2;
+            --wheel-left:62.23%;--wheel-top:9.8%;--wheel-width:34.2%;--prompt-top:132%;
+            --grain-position:93% 34%;--grain-size:318% 159%;
+        }
+        .theme-picker{margin:14px auto 0;padding:8px;border:1px solid #ffffff70;border-radius:12px}
+        .theme-picker legend{padding:0 6px;font-weight:900}
+        .theme-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+        .theme-option{display:grid;align-content:start;gap:6px;min-width:0;padding:4px;border:1px solid #ffffff55;border-radius:9px;cursor:pointer;font-size:clamp(10px,2.5vw,13px)}
+        .theme-option img{display:block;width:100%;aspect-ratio:2;object-fit:cover;border-radius:5px}
+        .theme-option span{display:flex;align-items:center;justify-content:center;gap:4px;line-height:1.2}
+        .theme-option input{flex:none;margin:0;accent-color:#ffd166}
+        .theme-option:has(input:checked){border-color:#ffd166;background:#ffd16624}
+        .theme-option:focus-within{outline:2px solid #fff1ae;outline-offset:2px}
+        .woodland-scene .window-grid{position:absolute;inset:0;display:block}
+        body.game-active .woodland-scene .shape-window{position:absolute;min-height:0;--landing:39cqw}
+        /* Window interiors measured against the left 887 × 887 half of the artwork. */
+        .woodland-scene .shape-window[data-window="triangle"]{left:25.35%;top:26.72%;width:19.28%;height:13.87%}
+        .woodland-scene .shape-window[data-window="circle"]{left:48.14%;top:27.28%;width:15.33%;height:14.54%}
+        .woodland-scene .shape-window[data-window="square"]{left:69.11%;top:27.85%;width:14.77%;height:13.19%}
+        .woodland-scene .shape-window[data-window="rectangle"]{left:24.35%;top:49.61%;width:19.50%;height:11.16%}
+        .woodland-scene .shape-window[data-window="hexagon"]{left:48.14%;top:47.24%;width:16.12%;height:14.21%}
+        .woodland-scene .shape-window[data-window="pentagon"]{left:69.22%;top:46.45%;width:16.57%;height:15.22%}
+        [data-theme="castle"] .woodland-scene .shape-window[data-window="triangle"]{left:22.20%;top:20.97%;width:20.88%;height:21.31%}
+        [data-theme="castle"] .woodland-scene .shape-window[data-window="circle"]{left:47.22%;top:20.97%;width:17.53%;height:22.44%}
+        [data-theme="castle"] .woodland-scene .shape-window[data-window="square"]{left:70.66%;top:23.56%;width:16.04%;height:19.50%}
+        [data-theme="castle"] .woodland-scene .shape-window[data-window="rectangle"]{left:19.74%;top:54.57%;width:23.88%;height:18.49%}
+        [data-theme="castle"] .woodland-scene .shape-window[data-window="hexagon"]{left:48.46%;top:50.39%;width:20.62%;height:22.10%}
+        [data-theme="castle"] .woodland-scene .shape-window[data-window="pentagon"]{left:72.60%;top:50.51%;width:17.44%;height:21.98%}
+        [data-theme="circus"] .woodland-scene .shape-window[data-window="triangle"]{left:14.57%;top:26.27%;width:25.09%;height:23.11%}
+        [data-theme="circus"] .woodland-scene .shape-window[data-window="circle"]{left:41.73%;top:27.85%;width:19.83%;height:22.77%}
+        [data-theme="circus"] .woodland-scene .shape-window[data-window="square"]{left:67.58%;top:29.65%;width:18.70%;height:19.73%}
+        [data-theme="circus"] .woodland-scene .shape-window[data-window="rectangle"]{left:16.26%;top:58.29%;width:22.27%;height:16.35%}
+        [data-theme="circus"] .woodland-scene .shape-window[data-window="hexagon"]{left:42.58%;top:54.79%;width:21.05%;height:20.18%}
+        [data-theme="circus"] .woodland-scene .shape-window[data-window="pentagon"]{left:67.58%;top:53.66%;width:19.64%;height:21.31%}
+        body.game-active .woodland-scene .shape-window:nth-child(n + 4){--landing:21cqw}
+        body.game-active .woodland-scene .shape-window[data-window] .window-aperture{inset:0;width:auto;height:auto;aspect-ratio:auto;transform:none;padding:0;background:none;clip-path:none;filter:none}
+        .woodland-scene .aperture-interior{background:transparent;box-shadow:none}
+        .woodland-scene [data-window="rectangle"] .aperture-interior,.woodland-scene [data-window="rectangle"] .grill,.woodland-scene [data-window="rectangle"] .window-glow{clip-path:inset(1% round 3%)}
+        .woodland-scene .grill span{width:6%;max-width:7px}
+        .shape-resident{position:absolute;inset:20% 15% 0;display:grid;place-items:center;pointer-events:none}
+        .shape-resident .shape-svg{width:76%;height:76%}
+        .woodland-scene .open .shape-resident{visibility:hidden}
+        .woodland-scene .escape-ghost{inset:50% auto auto 50%;display:block;width:50%;height:52%;animation:woodland-hop .8s ease-in forwards}
+        .woodland-scene .escape-ghost .shape-svg{width:100%;height:100%}
+        @keyframes woodland-hop{
+            0%{transform:translate(-50%,-50%)}
+            30%{transform:translate(-25%,-100%) rotate(10deg)}
+            85%{opacity:1}
+            100%{transform:translate(20%,var(--landing)) rotate(20deg) scale(.7);opacity:0}
+        }
+        .shape-tilted{transform:rotate(22deg)}
+        .wheel-label.active{outline:3px solid #fff58a;outline-offset:2px}
+        body.game-active .wheel-side .section-title,body.game-active .game-status{display:none}
+        .shape-prompt-row{display:flex;align-items:center;justify-content:center;gap:7px}
+        body.game-active .shape-prompt-row .active-shape{width:auto;min-width:0;margin:0}
+        .shape-prompt-row .voice-button{flex:none;margin:0}
+        @media(max-width:650px){
+            body.game-active .arena{gap:5px}
+            body.game-active .wheel-side{grid-row:1}
+            body.game-active .section-title{display:none}
+            body.game-active .woodland-scene{
+                width:min(100%,calc(34dvh * var(--facade-ratio)));aspect-ratio:var(--facade-ratio);
+                background:var(--scene-art) left top / calc(200% / var(--facade-ratio)) 100% no-repeat;
+            }
+            body.game-active .wheel-wrap{width:min(62vw,25dvh,210px)}
+            body.game-active .game-topline{font-size:11px}
+        }
+        @media(prefers-reduced-motion:reduce){.woodland-scene .escape-ghost{animation:none;visibility:hidden}}
+        .wheel-disk{border-color:#aa6227;box-shadow:0 4px 0 #653616,inset 0 0 0 3px #f0b96e}
+        .wheel-disk::before{
+            inset:0;border:0;
+            background:var(--scene-art) var(--grain-position) / var(--grain-size);
+            mix-blend-mode:soft-light;opacity:.75;
+        }
+        .wheel-labels{z-index:2}
+        .wheel-label{min-width:0}
+        .wheel-label .label-content{background:#fae4b7;border-color:#c38a49;box-shadow:0 3px 5px #4c280d88}
+        .wheel-label.active .label-content{transform:var(--selection-rotation,none)!important;scale:1.12}
+        .wheel-hub{
+            border-color:#f2be72;
+            background:repeating-radial-gradient(ellipse at 40% 35%,#fff0 0 3px,#77350f30 4px 5px),linear-gradient(145deg,#eeb465,#b96c29);
+            color:#3d200d;text-shadow:0 1px #ffdb9d;box-shadow:0 5px 0 #713c1a,inset 0 2px 3px #fff6;
+        }
+        .wheel-pointer{border-top-color:#ecc071}
+        @media(min-width:651px){
+            body.game-active .arena{
+                position:relative;display:block;width:min(100%,calc((100dvh - 157px) * 2));
+                aspect-ratio:2;margin:auto;border-radius:16px;
+                background:var(--scene-art) center / 100% 100% no-repeat;
+            }
+            body.game-active .house-side{position:absolute;inset:0 auto 0 0;width:var(--facade-width)}
+            body.game-active .house-side .section-title{display:none}
+            body.game-active .woodland-scene{width:100%;height:100%;background:none;box-shadow:none;overflow:visible}
+            body.game-active .wheel-side{position:absolute;left:var(--wheel-left);top:var(--wheel-top);width:var(--wheel-width);height:60%}
+            body.game-active .wheel-wrap{width:100%;margin:0}
+            .wheel-disk{border-width:2px;border-color:#784314;box-shadow:inset 0 0 0 2px #aa6d32}
+            .wheel-pointer{top:4%;border-right-width:clamp(7px,1vw,15px);border-left-width:clamp(7px,1vw,15px);border-top-width:clamp(10px,2vw,26px)}
+            .shape-prompt-row{position:absolute;top:var(--prompt-top);left:50%;width:max-content;max-width:125%;transform:translateX(-50%)}
+            body.game-active .shape-prompt-row .active-shape{min-height:34px;font-size:clamp(11px,1.1vw,16px)}
         }
     </style>
 </head>
@@ -127,22 +243,41 @@
             <label class="mode-option"><input type="radio" name="mode" value="moderate"><span class="mode-emoji" aria-hidden="true">🧩</span><strong>Moderate</strong><small>10 shapes · 2D + 3D</small></label>
             <label class="mode-option"><input type="radio" name="mode" value="difficult"><span class="mode-emoji" aria-hidden="true">🚀</span><strong>Difficult</strong><small>13 shapes · All shapes</small></label>
         </div>
+        <fieldset class="theme-picker">
+            <legend>Choose a theme</legend>
+            <div class="theme-options">
+                <label class="theme-option">
+                    <img src="woodland-preview.jpg" alt="" width="480" height="240">
+                    <span><input type="radio" name="theme" value="woodland" checked>Woodland Treehouse</span>
+                </label>
+                <label class="theme-option">
+                    <img src="castle-preview.jpg" alt="" width="480" height="240">
+                    <span><input type="radio" name="theme" value="castle">Moonlit Castle</span>
+                </label>
+                <label class="theme-option">
+                    <img src="circus-preview.jpg" alt="" width="480" height="240">
+                    <span><input type="radio" name="theme" value="circus">Circus Rescue Booth</span>
+                </label>
+            </div>
+        </fieldset>
         <p class="mode-note">Spin for a shape, then find a window it can fit through. Three mistakes in a row end the game.</p>
         <button type="button" class="action-button" id="startButton">Let’s Go!</button>
     </section>
     <section class="play-panel" id="playPanel" hidden aria-label="Shape Escape game">
         <div class="game-topline" aria-live="polite"><span class="counter">Shapes left <strong id="remainingCount">0</strong></span><span class="counter">Consecutive mistakes <strong id="mistakeCount">0/3</strong></span></div>
-        <div class="arena">
+        <div class="arena" id="shapeArena" data-theme="woodland">
             <section class="house-side" aria-labelledby="houseTitle">
                 <h2 class="section-title" id="houseTitle">Help the shapes escape!</h2>
-                <div class="house-roof" aria-hidden="true"></div><div class="wall-frame"><div class="brick-wall" id="brickWall" aria-hidden="true"></div><div class="window-grid" id="windowGrid"></div></div>
+                <div class="wall-frame woodland-scene"><div class="window-grid" id="windowGrid"></div></div>
             </section>
             <section class="wheel-side" aria-labelledby="wheelTitle">
                 <h2 class="section-title" id="wheelTitle">Spin to free a shape</h2>
                 <div class="wheel-wrap"><span class="wheel-pointer" aria-hidden="true"></span><div class="wheel-disk" id="wheelDisk"><div class="wheel-labels" id="wheelLabels"></div></div><button class="wheel-hub" type="button" id="spinButton">SPIN</button></div>
-                <div class="active-shape" id="activeShape" aria-live="polite"><span>Ready to spin!</span></div>
+                <div class="shape-prompt-row">
+                    <div class="active-shape" id="activeShape" aria-live="polite"><span>Ready to spin!</span></div>
+                    <button type="button" class="voice-button" id="replayVoiceButton" aria-label="Replay the spoken instruction">🔊 Hear Again</button>
+                </div>
                 <p class="game-status" id="gameStatus" role="status" aria-live="polite">Choose a window after the wheel stops.</p>
-                <button type="button" class="voice-button" id="replayVoiceButton" aria-label="Replay the spoken instruction">🔊 Hear Again</button>
                 <p class="sr-only" id="voiceInstruction" aria-live="polite"></p>
             </section>
         </div>
@@ -173,9 +308,14 @@
     ];
     const MODES = {easy:SHAPES.filter(shape=>shape.kind==="2D").map(shape=>shape.id),moderate:SHAPES.filter(shape=>shape.kind==="2D"||["sphere","cube","cylinder","cone"].includes(shape.id)).map(shape=>shape.id),difficult:SHAPES.map(shape=>shape.id)};
     const WINDOWS = [{id:"triangle",name:"Triangle"},{id:"circle",name:"Circle"},{id:"square",name:"Square"},{id:"rectangle",name:"Rectangle"},{id:"hexagon",name:"Hexagon"},{id:"pentagon",name:"Pentagon"}];
-    const COLORS = ["#ff7159","#36abf6","#f1b63e","#56c9a5","#a979ea","#ed65aa","#47cfe4","#ff9c4a","#80cb57","#ff6d6d","#b9dc45","#47a9ea","#ad82ef"];
+    const COLORS = ["#b85e37","#557c88","#c28b39","#6e8244","#81617d","#975453","#477879","#b17b4e","#85974b","#a96950","#ac984f","#526989","#866460"];
+    const themeWheelColors = {
+        woodland: COLORS,
+        castle: ["#735695","#d5a336","#3c78aa","#a05870","#a84738","#4b793c"],
+        circus: ["#bf423a","#d5792b","#d8a537","#789536","#3b8790","#8253a1"]
+    };
     const byId = id => SHAPES.find(shape=>shape.id===id);
-    const modePanel=document.getElementById("modePanel"),playPanel=document.getElementById("playPanel"),windowGrid=document.getElementById("windowGrid"),brickWall=document.getElementById("brickWall"),wheelWrap=document.querySelector(".wheel-wrap"),wheelDisk=document.getElementById("wheelDisk"),wheelLabels=document.getElementById("wheelLabels"),spinButton=document.getElementById("spinButton"),activeShape=document.getElementById("activeShape"),gameStatus=document.getElementById("gameStatus"),endDialog=document.getElementById("endDialog"),endCard=document.getElementById("endCard"),voiceInstruction=document.getElementById("voiceInstruction"),replayVoiceButton=document.getElementById("replayVoiceButton");
+    const modePanel=document.getElementById("modePanel"),playPanel=document.getElementById("playPanel"),windowGrid=document.getElementById("windowGrid"),wheelWrap=document.querySelector(".wheel-wrap"),wheelDisk=document.getElementById("wheelDisk"),wheelLabels=document.getElementById("wheelLabels"),spinButton=document.getElementById("spinButton"),activeShape=document.getElementById("activeShape"),gameStatus=document.getElementById("gameStatus"),endDialog=document.getElementById("endDialog"),endCard=document.getElementById("endCard"),voiceInstruction=document.getElementById("voiceInstruction"),replayVoiceButton=document.getElementById("replayVoiceButton");
     let mode="easy",remaining=[],active=null,mistakes=0,phase="mode",rotation=0,spinTimeout=null,flashTimeout=null,currentVoiceInstruction="";
     const reducedMotion=()=>window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -186,7 +326,18 @@
         stopSpeech();const utterance=new SpeechSynthesisUtterance(message);utterance.rate=.84;utterance.pitch=1.08;window.speechSynthesis.speak(utterance);
     }
 
-    function svgShape(id, fill="#ffd166", extraClass="") {
+    const sides={triangle:3,square:4,rectangle:4,pentagon:5,hexagon:6};
+    const facts={
+        circle:"A circle is round and has no corners.",sphere:"A sphere is round like a ball.",
+        cube:"A cube has six square faces.",cylinder:"A cylinder has two circular ends.",
+        cone:"A cone has a circular base and a pointed tip.",tennis:"A tennis ball is shaped like a sphere.",
+        phone:"The front of a phone is shaped like a rectangle.",laptop:"This laptop has a square face."
+    };
+    function shapeFact(shape){
+        return facts[shape.id]||`A ${shape.name.toLowerCase()} has ${sides[shape.id]} sides.`;
+    }
+
+    function svgShape(id, fill="#ffd166", extraClass="", face=false) {
         const common=`class="shape-svg ${extraClass}" viewBox="0 0 36 36" role="img" aria-label="${byId(id)?.name||"shape"}"`;
         const svg={
             triangle:`<polygon points="18,3 34,32 2,32" fill="${fill}" stroke="#17384d" stroke-width="1.5"/>`,
@@ -203,32 +354,33 @@
             phone:`<rect x="7" y="1" width="22" height="34" rx="4" fill="#26343e" stroke="#102532" stroke-width="1.5"/><rect x="9" y="4" width="18" height="26" rx="1.5" fill="#8edcf1"/><path d="M16.2 13.3c-1.6 0-2.8 1.2-2.8 2.8 0 2.2 2.7 5.2 4.4 5.2 1.8 0 4.7-3.4 4.7-5.5 0-1.5-1.1-2.5-2.5-2.5-.9 0-1.6.4-2.2.9-.5-.5-1-.9-1.6-.9zm1.1-1.3c.1-1.5 1.2-2.7 2.7-2.8-.1 1.4-1.2 2.6-2.7 2.8z" fill="#fff"/><circle cx="18" cy="33" r="1.2" fill="#e8f6fb"/><rect x="14" y="2.2" width="8" height=".9" rx=".45" fill="#b4c7d1"/>`,
             laptop:`<rect x="6" y="3" width="24" height="23" rx="2" fill="${fill}" stroke="#17384d" stroke-width="1.7"/><rect x="9" y="6" width="18" height="16" fill="#d9f7ff"/><path d="M2 29h32l-3 4H5z" fill="#d1dbe5" stroke="#17384d" stroke-width="1.5"/>`
         }[id]||"";
-        return `<svg ${common}>${svg}</svg>`;
+        const expression=face?'<g fill="#17384d"><circle cx="15" cy="18" r="1.5"/><circle cx="22" cy="18" r="1.5"/><path d="M16 22q2.5 4 5 0" fill="none" stroke="#17384d" stroke-width="1.3" stroke-linecap="round"/></g>':"";
+        return `<svg ${common}>${svg}${expression}</svg>`;
     }
 
     function renderWindows(){
         windowGrid.replaceChildren();
         for(const item of WINDOWS){
             const button=document.createElement("button");button.type="button";button.className="shape-window";button.dataset.window=item.id;button.setAttribute("aria-label",`${item.name} window`);
-            button.innerHTML=`<span class="window-aperture" data-window="${item.id}" aria-hidden="true"><span class="aperture-interior" data-window="${item.id}"><span class="grill" data-window="${item.id}"><span></span><span></span><span></span><span></span></span><span class="window-glow" data-window="${item.id}"></span></span></span>`;
+            button.disabled=true;
+            button.innerHTML=`<span class="window-aperture" data-window="${item.id}" aria-hidden="true"><span class="aperture-interior" data-window="${item.id}"><span class="shape-resident"></span><span class="grill" data-window="${item.id}"><span></span><span></span><span></span><span></span></span><span class="window-glow" data-window="${item.id}"></span></span></span>`;
             button.addEventListener("click",()=>tryWindow(item.id,button));windowGrid.appendChild(button);
         }
+        updateResidents();
     }
 
-    function renderBrickWall(){
-        brickWall.replaceChildren();
-        for(let rowIndex=0;rowIndex<8;rowIndex++){
-            const row=document.createElement("span");row.className="brick-row";
-            for(let brickIndex=0;brickIndex<11;brickIndex++){
-                const brick=document.createElement("span");brick.className="brick";row.appendChild(brick);
-            }
-            brickWall.appendChild(row);
+    function updateResidents(){
+        for(const button of windowGrid.querySelectorAll(".shape-window")){
+            const shape=remaining.map(byId).find(item=>item.windows.includes(button.dataset.window));
+            button.classList.toggle("open",!shape);
+            button.querySelector(".shape-resident").innerHTML=shape?svgShape(shape.id,shape.color,"",true):"";
         }
     }
 
     function renderWheel(){
         const step=360/remaining.length;
-        const stops=remaining.map((id,index)=>`${COLORS[index%COLORS.length]} ${index*step}deg ${(index+1)*step}deg`);
+        const palette=themeWheelColors[document.getElementById("shapeArena").dataset.theme]||COLORS;
+        const stops=remaining.map((_,index)=>`${palette[index%palette.length]} ${index*step}deg ${(index+1)*step}deg`);
         wheelDisk.style.background=`conic-gradient(${stops.join(",")})`;
         wheelLabels.replaceChildren();
         remaining.forEach((id,index)=>{
@@ -236,21 +388,24 @@
             const label=document.createElement("span");label.className="wheel-label";label.dataset.shape=id;
             label.style.left=`${50+Math.sin(angle)*39}%`;label.style.top=`${50-Math.cos(angle)*39}%`;
             const iconSize=Math.min(66,Math.max(15,wheelWrap.clientWidth*(.055+(13-remaining.length)*.008)));label.style.setProperty("--icon-size",`${iconSize}px`);label.style.setProperty("--label-size",`${iconSize+12}px`);
-            label.innerHTML=`<span class="label-content">${svgShape(id,shape.color)}</span>`;wheelLabels.appendChild(label);
+            label.innerHTML=`<span class="label-content">${svgShape(id,shape.color,shapeTilt(shape))}</span>`;wheelLabels.appendChild(label);
         });
         wheelDisk.style.transition="none";wheelDisk.style.transform="rotate(0deg)";rotation=0;
         wheelLabels.querySelectorAll(".label-content").forEach(label=>{label.style.transition="none";label.style.transform="rotate(0deg)";});
     }
 
     function setStatus(message){gameStatus.textContent=message;document.getElementById("liveAnnouncer").textContent=message;}
+    function shapeTilt(shape){return mode!=="easy"&&sides[shape.id]?"shape-tilted":"";}
     function updateCounters(){document.getElementById("remainingCount").textContent=String(remaining.length);document.getElementById("mistakeCount").textContent=`${mistakes}/3`;}
     function announceActive(){
         const shape=byId(active);
-        activeShape.innerHTML=`<span>Active shape:</span>${svgShape(shape.id,shape.color)}<strong>${shape.name}</strong>`;
-        wheelLabels.querySelector(`[data-shape="${active}"]`)?.classList.add("active");
+        activeShape.innerHTML=`${svgShape(shape.id,shape.color,shapeTilt(shape))}<strong>Find the ${shape.name.toLowerCase()}.</strong>`;
+        const selectedLabel=wheelLabels.querySelector(`[data-shape="${active}"]`);
+        selectedLabel?.style.setProperty("--selection-rotation",`rotate(${-rotation}deg)`);
+        selectedLabel?.classList.add("active");
         const choices=shape.windows.map(id=>WINDOWS.find(w=>w.id===id).name).join(" or ");
         setStatus(`Help the ${shape.name.toLowerCase()} escape through a ${choices.toLowerCase()} window.`);
-        speakInstruction(`The shape is ${shape.name}. Tap the ${choices.toLowerCase()} window${shape.windows.length>1?"s":""}.`);
+        speakInstruction(`Find the ${shape.name.toLowerCase()}.`);
         spinButton.disabled=true;
         for(const button of windowGrid.querySelectorAll(".shape-window"))button.disabled=false;
     }
@@ -275,23 +430,30 @@
         const shape=byId(active);
         if(shape.windows.includes(windowId)){
             phase="escaping";mistakes=0;updateCounters();playTone(true);button.classList.add("open","just-opened");button.classList.add("correct-target");
-            const ghost=document.createElement("span");ghost.className="escape-ghost";ghost.innerHTML=svgShape(shape.id,shape.color);button.querySelector(".window-aperture").appendChild(ghost);
+            const ghost=document.createElement("span");ghost.className="escape-ghost";ghost.innerHTML=svgShape(shape.id,shape.color,"",true);button.querySelector(".window-aperture").appendChild(ghost);
             wheelLabels.querySelector(`[data-shape="${active}"]`)?.classList.add("removed");
             setStatus(`Yay! The ${shape.name.toLowerCase()} escaped!`);document.getElementById("liveAnnouncer").textContent=`The ${shape.name} is free!`;
-            speakInstruction(`Great! The ${shape.name} escaped. Spin again for the next shape.`);
+            activeShape.textContent=shapeFact(shape);
+            speakInstruction(shapeFact(shape));
             for(const item of windowGrid.querySelectorAll(".shape-window"))item.disabled=true;
             flashTimeout=window.setTimeout(()=>{
-                flashTimeout=null;remaining=remaining.filter(id=>id!==active);active=null;renderWheel();updateCounters();
-                if(remaining.length===0){finish(true);return;}
-                for(const item of windowGrid.querySelectorAll(".shape-window")){item.classList.remove("open","just-opened","correct-target","wrong-target");item.disabled=true;}
-                phase="ready";spinButton.disabled=false;activeShape.innerHTML="<span>All clear! Spin for the next shape.</span>";setStatus("Spin again and help another shape escape.");
+                flashTimeout=null;remaining=remaining.filter(id=>id!==active);active=null;updateCounters();ghost.remove();updateResidents();
+                for(const item of windowGrid.querySelectorAll(".shape-window")){item.classList.remove("just-opened","correct-target","wrong-target");item.disabled=true;}
+                if(remaining.length===0){flashTimeout=window.setTimeout(()=>finish(true),2200);return;}
+                renderWheel();
+                phase="ready";spinButton.disabled=false;setStatus("Spin again and help another shape escape.");
             },reducedMotion()?25:850);
             return;
         }
         mistakes+=1;updateCounters();playTone(false);button.classList.remove("wrong-wiggle");void button.offsetWidth;button.classList.add("wrong-wiggle","wrong-target");
         setStatus(`That window is too small or the wrong shape. Try another window! ${3-mistakes} ${3-mistakes===1?"mistake":"mistakes"} left.`);
         window.setTimeout(()=>button.classList.remove("wrong-target","wrong-wiggle"),700);
-        if(mistakes>=3)finish(false);else speakInstruction(`That window does not fit. Try another window. ${3-mistakes} ${3-mistakes===1?"mistake":"mistakes"} remaining.`);
+        if(mistakes>=3)finish(false);
+        else {
+            const clue=sides[shape.id]?`Look for a window with ${sides[shape.id]} sides.`:"Try a different window.";
+            activeShape.querySelector("strong").textContent=clue;
+            speakInstruction(clue);
+        }
     }
 
     function showConfetti(){
@@ -312,11 +474,11 @@
     function startGame(){
         clearTimeout(spinTimeout);clearTimeout(flashTimeout);stopSpeech();mode=document.querySelector('input[name="mode"]:checked')?.value||"easy";remaining=[...MODES[mode]];active=null;mistakes=0;phase="ready";
         document.body.classList.add("game-active");
+        document.getElementById("shapeArena").dataset.theme=document.querySelector('input[name="theme"]:checked')?.value||"woodland";
         modePanel.hidden=true;endDialog.hidden=true;playPanel.hidden=false;renderWindows();renderWheel();updateCounters();spinButton.disabled=false;activeShape.innerHTML="<span>Spin to choose a shape!</span>";setStatus("Spin the wheel, then tap a matching window.");requestAnimationFrame(()=>speakInstruction("Press Spin to choose a shape. Then tap a window it can fit through."));
     }
     function returnToModes(){clearTimeout(spinTimeout);clearTimeout(flashTimeout);stopSpeech();phase="mode";remaining=[];active=null;document.body.classList.remove("game-active");playPanel.hidden=true;modePanel.hidden=false;endDialog.hidden=true;}
 
-    renderBrickWall();
     document.getElementById("startButton").addEventListener("click",startGame);document.getElementById("resetButton").addEventListener("click",startGame);document.getElementById("playAgainButton").addEventListener("click",startGame);document.getElementById("changeModeButton").addEventListener("click",returnToModes);document.getElementById("endModeButton").addEventListener("click",returnToModes);spinButton.addEventListener("click",spin);replayVoiceButton.addEventListener("click",()=>{if(currentVoiceInstruction)speakInstruction(currentVoiceInstruction);});
     const instructions=document.getElementById("instructionsDialog"),openInstructions=document.getElementById("openInstructions"),closeInstructions=document.getElementById("closeInstructions");
     openInstructions.addEventListener("click",()=>{instructions.hidden=false;closeInstructions.focus();});closeInstructions.addEventListener("click",()=>{instructions.hidden=true;openInstructions.focus();});instructions.addEventListener("click",event=>{if(event.target===instructions){instructions.hidden=true;openInstructions.focus();}});endDialog.addEventListener("click",event=>{if(event.target===endDialog)returnToModes();});

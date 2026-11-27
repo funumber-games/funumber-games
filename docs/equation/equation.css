@@ -48,3 +48,9 @@
     .equation-game { gap: 20px; }
 }
 
+.equation-page .match-celebration {
+    width: max-content;
+    max-width: 92vw;
+    text-align: center;
+    white-space: normal;
+}

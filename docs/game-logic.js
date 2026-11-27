@@ -167,6 +167,7 @@
         const validPairs = [];
         for (let first = 1; first <= 9; first++) {
             for (let second = 1; second <= 9; second++) {
+                if (operator === "-" && first <= second) continue;
                 const result = calculateOperationResult(operator, first, second);
                 if (result !== null && result >= 1 && result <= maxAnswer) validPairs.push({ first, second });
             }

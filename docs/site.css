@@ -8,9 +8,12 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body.site-page {
-    display: flex; min-height: 100vh; min-height: 100dvh; flex-direction: column; margin: 0; padding: 0; color: #fff;
+    display: flex; min-height: 100vh; flex-direction: column; margin: 0; padding: 0; color: #fff;
     background: linear-gradient(135deg, rgba(3,43,62,.78), rgba(2,111,126,.55) 54%, rgba(246,163,75,.32)), url("beach-background.jpg") center / cover fixed no-repeat;
     font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+}
+@supports (min-height: 100dvh) {
+    body.site-page { min-height: 100dvh; }
 }
 .global-header {
     position: sticky; top: 0; z-index: 100; display: flex; min-height: 82px; align-items: center; justify-content: space-between; gap: 24px;
@@ -69,7 +72,10 @@ body.site-page {
 .feature-card p { margin: 0; color: #40566a; font-size: 15px; line-height: 1.6; }
 .feature-link { display: inline-block; margin-top: 14px; color: #4c3b9b; font-size: 14px; font-weight: 900; text-underline-offset: 4px; }
 .game-list { display: grid; gap: 10px; max-width: none; margin: 0; }
-.game-list-card { position:relative; isolation:isolate; display: grid; grid-template-columns: 52px minmax(0,1fr) auto; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid rgba(255,255,255,.64); border-radius: 18px; color: #183a4d; box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+.game-list-card { position:relative; isolation:isolate; display: grid; grid-template-columns: 52px minmax(0,1fr) auto; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid rgba(255,255,255,.64); border-radius: 18px; color: #183a4d; text-decoration: none; touch-action: manipulation; box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+.game-list-card:hover { filter: brightness(1.05); }
+.game-list-card:focus-visible { outline: 3px solid #ffd166; outline-offset: 3px; }
+.game-tile-arrow { font-size: 1.25em; font-weight: 900; }
 .game-list-coral { background: linear-gradient(115deg,#fff8ee,#ffd7bd); }
 .game-list-violet { background: linear-gradient(115deg,#fbf5ff,#dac8ff); }
 .game-list-teal { background: linear-gradient(115deg,#effff9,#b6f0df); }
@@ -78,9 +84,6 @@ body.site-page {
 .game-list-copy h3 { margin: 1px 0 3px; font-size: 19px; }
 .game-list-copy p:last-child { margin: 0; color: #40566a; font-size: 12px; line-height: 1.35; }
 .game-kicker { margin: 0; color: #775389; font-size: 9px; font-weight: 1000; letter-spacing: .11em; }
-.game-launch { position:relative; z-index:2; display: inline-flex; min-width: 100px; min-height: 40px; align-items: center; justify-content: center; gap: 8px; padding: 0 12px; border: 2px solid rgba(255,255,255,.65); border-radius: 13px; background: linear-gradient(135deg,#ff745a,#f34e67); box-shadow: 0 4px 0 #a83b58,0 7px 12px rgba(0,0,0,.16); color: white; font-size: 13px; font-weight: 1000; text-decoration: none; touch-action:manipulation; pointer-events:auto; transition: transform .16s ease,filter .16s ease; }
-.game-launch:hover { transform: translateY(-2px); filter: brightness(1.06); }
-.game-launch span { font-size: 20px; }
 .home-bottom { display: flex; align-items: center; justify-content: center; gap: 24px; margin-bottom: 58px; padding: 27px; border: 1px solid rgba(255,255,255,.38); border-radius: 23px; background: rgba(4,52,69,.6); }
 .home-bottom p { margin: 0; font-size: 23px; font-weight: 900; }
 .cta-light { min-height: 46px; padding-inline: 19px; font-size: 15px; }
@@ -146,7 +149,6 @@ body.site-page {
     .game-list-icon { width: 42px; border-radius: 14px; font-size: 23px; }
     .game-list-copy h3 { font-size: 17px; }
     .game-list-copy p:last-child { font-size: 11px; }
-    .game-launch { min-width: 82px; min-height: 38px; gap: 4px; padding-inline: 8px; font-size: 11px; }
     .home-bottom { flex-direction: column; gap: 15px; text-align: center; }
     .program-page { padding: 0 8px !important; }
     .program-page.playing { padding-bottom: 24px !important; }
@@ -166,7 +168,6 @@ body.site-page {
     .feature-grid { grid-template-columns: repeat(2,1fr); }
     .game-list-card { grid-template-columns: 44px minmax(0,1fr) auto; gap: 8px; padding: 10px; }
     .game-list-icon { width: 42px; font-size: 23px; }
-    .game-launch { min-width: 82px; padding-inline: 8px; font-size: 11px; }
 }
 
 .home-page .hero { gap:clamp(18px,3vw,36px); padding-block:10px 14px; }
@@ -182,7 +183,6 @@ body.site-page {
 .home-page .game-list-icon { width:38px; font-size:21px; }
 .home-page .game-kicker,.home-page .game-list-copy p:last-child { display:none; }
 .home-page .game-list-copy h3 { margin:0; font-size:clamp(14px,1.45vw,17px); }
-.home-page .game-launch { min-height:34px; min-width:84px; padding-inline:8px; font-size:11px; }
 /* Compact home layout keeps the game choices visible on the first screen. */
 @media (max-width:760px) {
     .home-page > main { min-height:0; }
@@ -206,8 +206,6 @@ body.site-page {
     .home-page .game-list-icon { width:29px; border-width:1px; border-radius:9px; font-size:17px; }
     .home-page .game-kicker,.home-page .game-list-copy p:last-child { display:none; }
     .home-page .game-list-copy h3 { margin:0; font-size:clamp(11px,2.4vw,15px); line-height:1.1; }
-    .home-page .game-launch { min-width:62px; min-height:29px; gap:3px; padding:0 5px; border-radius:9px; font-size:9px; }
-    .home-page .game-launch span { font-size:14px; }
     .home-page .home-bottom { display:none; }
     .home-page .site-footer { margin-top:4px; }
 }
@@ -221,7 +219,6 @@ body.site-page {
     .home-page .game-list-card { grid-template-columns:27px minmax(0,1fr) auto; gap:4px; min-height:35px; padding:4px 5px; }
     .home-page .game-list-icon { width:25px; font-size:15px; }
     .home-page .game-list-copy h3 { font-size:11px; }
-    .home-page .game-launch { min-width:54px; min-height:26px; padding-inline:4px; font-size:8px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *,*::before,*::after { transition-duration: .01ms !important; } }
 
@@ -248,7 +245,6 @@ body.site-page {
 .home-page .game-list-card { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 9px; min-height: 66px; padding: 9px 11px; border-radius: 17px; }
 .home-page .game-list-icon { width: 40px; font-size: 22px; }
 .home-page .game-list-copy h3 { font-size: clamp(14px, 1.45vw, 19px); line-height: 1.1; }
-.home-page .game-launch { min-width: 92px; min-height: 38px; padding-inline: 9px; font-size: 12px; }
 .home-page .home-bottom { width: min(1120px, calc(100% - 40px)); margin: 12px auto 8px; padding: 13px 20px; border-radius: 18px; }
 .home-page .home-bottom p { font-size: 18px; }
 @media (max-width: 760px) {
@@ -261,10 +257,9 @@ body.site-page {
     .home-page .games-section { width: min(calc(100% - 28px), 640px); }
     .home-page .games-section .section-heading { margin-left: 2px; }
     .home-page .game-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
-    .home-page .game-list-card { grid-template-columns: 34px minmax(0, 1fr); min-height: 55px; gap: 7px; padding: 7px; }
+    .home-page .game-list-card { grid-template-columns: 34px minmax(0, 1fr) auto; min-height: 55px; gap: 7px; padding: 7px; }
     .home-page .game-list-icon { width: 32px; font-size: 18px; }
     .home-page .game-list-copy h3 { font-size: clamp(12px, 2.6vw, 16px); }
-    .home-page .game-launch { grid-column: 2; justify-self: start; min-height: 26px; min-width: 74px; margin-top: -2px; font-size: 10px; }
     .home-page .home-bottom { display: flex; width: min(calc(100% - 28px), 640px); flex-direction: row; gap: 10px; margin-top: 9px; padding: 10px; }
     .home-page .home-bottom p { font-size: 14px; }
 }
@@ -278,15 +273,13 @@ body.site-page {
     .home-page .float-bubble { width: 26px; border-width: 2px; font-size: 13px; }
     .home-page .games-section { width: calc(100% - 24px); }
     .home-page .game-list { gap: 6px; }
-    .home-page .game-list-card { grid-template-columns: 27px minmax(0, 1fr); min-height: 49px; gap: 5px; padding: 6px; border-radius: 12px; }
+    .home-page .game-list-card { grid-template-columns: 27px minmax(0, 1fr) auto; min-height: 49px; gap: 5px; padding: 6px; border-radius: 12px; }
     .home-page .game-list-icon { width: 26px; border-radius: 9px; font-size: 15px; }
     .home-page .game-list-copy h3 { font-size: 11px; }
-    .home-page .game-launch { min-width: 64px; min-height: 24px; padding-inline: 5px; font-size: 9px; }
 }
 @media (max-width: 340px) {
     .home-page .game-list { grid-template-columns: 1fr; }
     .home-page .game-list-card { grid-template-columns: 34px minmax(0, 1fr) auto; min-height: 45px; }
-    .home-page .game-launch { grid-column: auto; align-self: center; margin-top: 0; }
 }
 /* Match the reference's broad, full-width game chooser. */
 @media (min-width: 761px) {
@@ -298,7 +291,6 @@ body.site-page {
     .home-page .game-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .home-page .game-list-card { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 7px; }
     .home-page .game-list-icon { width: 37px; }
-    .home-page .game-launch { min-width: 82px; padding-inline: 7px; font-size: 11px; }
 }
 
 /* Compact search-friendly summary of the learning covered by the games. */

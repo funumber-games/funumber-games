@@ -43,12 +43,13 @@ describe("home page game navigation", () => {
     expect(existsSync(resolve(projectRoot, "docs/bundle-delivery/index.html"))).toBe(true);
   });
 
-  it("keeps every local game launch destination available", () => {
-    const hrefs = [...homeMarkup.matchAll(/class="[^"]*game-launch[^"]*"[^>]*href="([^"]+)"/g)]
-      .map(match => match[1]);
-
-    expect(hrefs.length).toBeGreaterThan(0);
-    hrefs.forEach(href => {
+  it("makes every game tile one link to a playable page", () => {
+    const tiles = [...homeMarkup.matchAll(/<a class="game-list-card[^"]*" href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)];
+    expect(tiles).toHaveLength(15);
+    expect(homeMarkup).not.toContain("game-launch");
+    tiles.forEach(([, href, content]) => {
+      expect(content).toContain("<h3>");
+      expect(content).not.toMatch(/<a\b|<button\b|Let’s Go!/);
       expect(existsSync(resolve(projectRoot, "docs", href))).toBe(true);
     });
   });
