@@ -48,42 +48,44 @@
             <span class="status-pill">Tests tried <strong id="testsTried">0</strong></span>
         </div>
 
-        <div class="circus-stage" id="circusStage">
-            <div class="prompt-plaque" id="promptText" aria-live="polite">Meet the beach ball!</div>
+        <div class="workshop-scene">
+            <div class="circus-stage" id="circusStage">
+                <div class="prompt-plaque" id="promptText" aria-live="polite">Meet the beach ball!</div>
 
-            <div class="hoop-rig" id="hoopRig" aria-hidden="true">
-                <div class="pivot"></div>
-                <div class="single-rope"></div>
-                <div class="aerial-hoop"></div>
-                <div class="toy-holder"></div>
-                <div class="active-toy" id="activeToy">
-                    <span class="toy-emoji" id="toyEmoji">🏖️</span>
-                    <span class="toy-shape" id="toyShape">●</span>
+                <div class="hoop-rig" id="hoopRig" aria-hidden="true">
+                    <div class="pivot"></div>
+                    <div class="single-rope"></div>
+                    <div class="aerial-hoop"></div>
+                    <div class="toy-holder"></div>
+                    <div class="active-toy" id="activeToy">
+                        <img class="toy-emoji" id="toyEmoji" src="toys/beach-ball.png" alt="">
+                        <span class="toy-shape" id="toyShape">●</span>
+                    </div>
                 </div>
+
+                <button type="button" class="station-button roll-button" id="rollButton" aria-label="Test this toy on the slide"><span aria-hidden="true">↻</span> Roll</button>
+                <button type="button" class="station-button stack-button" id="stackButton" aria-label="Test this toy on the stacking block"><span aria-hidden="true">▦</span> Stack</button>
+                <button type="button" class="turn-button hidden" id="turnButton"><span aria-hidden="true">⟳</span> Turn</button>
+                <div class="orientation-card" id="orientationCard"><span>Position</span><strong id="orientationText">round side</strong></div>
+                <div class="flying-toy hidden" id="flyingToy" aria-hidden="true"><img id="flyingEmoji" src="toys/beach-ball.png" alt=""></div>
+                <div class="result-burst hidden" id="resultBurst" aria-hidden="true">✨</div>
             </div>
 
-            <button type="button" class="station-button roll-button" id="rollButton" aria-label="Test this toy on the slide"><span aria-hidden="true">↻</span> Roll</button>
-            <button type="button" class="station-button stack-button" id="stackButton" aria-label="Test this toy on the stacking block"><span aria-hidden="true">▦</span> Stack</button>
-            <button type="button" class="turn-button hidden" id="turnButton"><span aria-hidden="true">⟳</span> Turn</button>
-            <div class="orientation-card" id="orientationCard"><span>Position</span><strong id="orientationText">round side</strong></div>
-            <div class="flying-toy hidden" id="flyingToy" aria-hidden="true"><span id="flyingEmoji"></span></div>
-            <div class="result-burst hidden" id="resultBurst" aria-hidden="true">✨</div>
+            <section class="feedback-card" aria-live="polite">
+                <div>
+                    <p class="toy-name" id="toyName">Beach ball</p>
+                    <p class="feedback-text" id="feedbackText">Choose Roll or Stack to test the toy.</p>
+                </div>
+                <div class="feedback-actions">
+                    <button type="button" class="voice-button" id="voiceButton">🔊 Hear again</button>
+                    <button type="button" class="next-button" id="nextButton" disabled>Next toy →</button>
+                </div>
+            </section>
         </div>
 
-        <section class="feedback-card" aria-live="polite">
-            <div>
-                <p class="toy-name" id="toyName">Beach ball</p>
-                <p class="feedback-text" id="feedbackText">Choose Roll or Stack to test the toy.</p>
-            </div>
-            <div class="feedback-actions">
-                <button type="button" class="voice-button" id="voiceButton">🔊 Hear again</button>
-                <button type="button" class="next-button" id="nextButton" disabled>Next toy →</button>
-            </div>
-        </section>
-
         <div class="game-actions">
-            <button type="button" class="reset-button" id="resetButton">Start / Reset</button>
-            <button type="button" class="change-mode-button" id="changeModeButton">Change Mode</button>
+            <button type="button" class="reset-button" id="resetButton">Start / Restart</button>
+            <button type="button" class="change-mode-button" id="changeModeButton">Choose Mode</button>
         </div>
     </section>
 </main>
@@ -101,7 +103,7 @@
         <div class="completion-stars" aria-hidden="true">⭐ 🎪 ⭐</div>
         <h2 id="completionTitle">Wonderful discovering!</h2>
         <p>You tested every toy in this mode. Shapes can roll, slide, tumble, rock, tip, and stack!</p>
-        <div class="completion-actions"><button type="button" id="playAgainButton" class="start-button">Play again</button><button type="button" id="completionModeButton" class="change-mode-button">Change Mode</button></div>
+        <div class="completion-actions"><button type="button" id="playAgainButton" class="start-button">Play again</button><button type="button" id="completionModeButton" class="change-mode-button">Choose Mode</button></div>
     </section>
 </div>
 

@@ -48,3 +48,156 @@
 @media(max-width:520px){.roll-stack-main{padding-top:4px}.status-row{gap:4px}.status-pill{padding:5px 8px;font-size:11px}.circus-stage{border-width:3px;border-radius:15px}.prompt-plaque{top:12.5%;width:54%;min-height:8%;padding:2px 7px;border-width:2px;font-size:10px}.aerial-hoop{border-width:5px}.station-button{bottom:4%;min-width:27%;min-height:12%;font-size:12px}.turn-button{bottom:3%;font-size:10px}.orientation-card{bottom:17%;right:32%;left:32%}.feedback-card{margin-top:7px;padding:7px}.feedback-text{font-size:12px}.voice-button,.next-button{font-size:11px}.game-actions button{min-width:0;flex:1}.prediction-options{grid-template-columns:1fr}.prediction-option{min-height:54px}}
 @media(orientation:landscape) and (max-height:760px) and (min-width:760px){.global-header{min-height:56px}.roll-stack-main{padding-top:3px}.page-heading{display:none}.circus-stage{width:min(100%,calc((100dvh - 210px)*1.777))}.status-row{margin-bottom:4px}.feedback-card{margin-top:7px;min-height:48px}.game-actions{margin-top:8px}.game-actions button{min-height:39px;padding-block:6px}.site-footer{margin-top:2px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.flying-toy{border-width:5px}.result-burst{display:block!important}}
+.circus-stage {
+    container-type: inline-size;
+    aspect-ratio: 2;
+    background: url("workshop.jpg") center / 100% 100% no-repeat;
+}
+.circus-stage::after { background: none; }
+.circus-stage .prompt-plaque { top: 3%; width: min(65%, 460px); }
+.circus-stage .hoop-rig { top: 24.5%; width: 21%; height: 46%; }
+.circus-stage .pivot { width: 2.2cqw; border-width: 2px; }
+.circus-stage .single-rope {
+    width: 1.1cqw; height: 17%;
+    background: linear-gradient(90deg,#a26313,#ffe087,#c18325);
+}
+.circus-stage .aerial-hoop {
+    top: 14%; width: 93%; border: clamp(3px,.65cqw,9px) solid #f4bc42;
+    box-shadow: inset 0 0 0 1px #9d571b,0 0 0 1px #9d571b;
+}
+.circus-stage .toy-holder { bottom: 7%; width: 34%; height: 6%; border-width: 2px; }
+.circus-stage .active-toy {
+    display: block; bottom: 13%; width: 0; height: 0;
+    transform: none; filter: none;
+}
+.circus-stage .active-toy.turning { animation: workshop-turn .62s ease-in-out; }
+@keyframes workshop-turn { 50% { transform: scaleX(.12); } }
+.circus-stage .toy-shape { display: none; }
+.circus-stage .toy-emoji,.circus-stage .flying-toy img {
+    position: absolute; left: 0; width: auto; height: auto;
+    max-width: 7.2cqw; max-height: 6.2cqw;
+    filter: drop-shadow(0 2px 2px #091c3055);
+}
+.circus-stage .toy-emoji { bottom: 0; translate: -50% 0; }
+.circus-stage .flying-toy img { top: 0; translate: -50% -50%; }
+.circus-stage img.inverted { rotate: 180deg; }
+.circus-stage .flying-toy { display: block; width: 0; height: 0; transform: none; border: 0; }
+.circus-stage .orientation-card { bottom: 14%; }
+.circus-stage .station-button { min-height: 9%; }
+.circus-stage .hoop-rig.swing-roll { animation-name: workshop-swing-left; }
+.circus-stage .hoop-rig.swing-stack { animation-name: workshop-swing-right; }
+@keyframes workshop-swing-left {
+    0% { transform: translateX(-50%) rotate(0); }
+    65% { transform: translateX(-50%) rotate(31deg); }
+    100% { transform: translateX(-50%) rotate(25deg); }
+}
+@keyframes workshop-swing-right {
+    0% { transform: translateX(-50%) rotate(0); }
+    65% { transform: translateX(-50%) rotate(-31deg); }
+    100% { transform: translateX(-50%) rotate(-25deg); }
+}
+.flying-toy.can-rolling::after {
+    content: "SOUP";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 3.6cqw;
+    padding: .15em;
+    border-radius: .3em;
+    background: #ffe3a4;
+    color: #782c19;
+    text-align: center;
+    font: 900 1cqw system-ui,sans-serif;
+    opacity: 0;
+    animation: can-label-roll .27s .52s linear 4;
+}
+@keyframes can-label-roll {
+    0% { opacity: 0; transform: translate(-58%,-170%) scaleY(.25); }
+    40%,60% { opacity: 1; }
+    50% { transform: translate(-58%,-50%) scaleY(1); }
+    100% { opacity: 0; transform: translate(-58%,65%) scaleY(.25); }
+}
+@media (max-width: 520px) {
+    .circus-stage .prompt-plaque { font-size: clamp(9px, 2.8vw, 12px); }
+    .circus-stage .station-button { min-height: 28px; padding: 2px 5px; }
+    .circus-stage .orientation-card { bottom: 20%; }
+}
+
+.workshop-scene {
+    width: min(100%, calc((100dvh - 260px) * 2));
+    min-width: min(100%, 620px);
+    margin-inline: auto;
+    border: 4px solid #e2aa5a;
+    border-radius: 22px;
+    background: #75421f;
+    box-shadow: 0 5px 0 #4c2918;
+}
+
+.workshop-scene .circus-stage {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    border-radius: 18px 18px 0 0;
+    box-shadow: none;
+}
+
+.workshop-scene .feedback-card {
+    width: 100%;
+    min-height: 0;
+    margin: 0;
+    border: 0;
+    border-top: 2px solid #efbf74;
+    border-radius: 0 0 18px 18px;
+    background: linear-gradient(#99582f, #693719);
+    box-shadow: inset 0 3px 6px #59301366;
+}
+
+.workshop-scene .feedback-actions {
+    flex-wrap: wrap;
+}
+
+.workshop-scene .feedback-actions button,
+.game-actions button {
+    border: 2px solid #f6ce80;
+    border-radius: 12px;
+    color: #fff4d6;
+    background: linear-gradient(#a66436, #733a1d);
+    box-shadow: inset 0 1px #fff5, 0 3px #472615;
+    font-weight: 900;
+}
+
+.workshop-scene .feedback-actions .next-button,
+.game-actions .reset-button {
+    background: linear-gradient(#39796a, #25584f);
+}
+
+
+.workshop-scene .feedback-actions button:disabled {
+    opacity: .58;
+}
+
+@media (max-width: 800px) {
+    .workshop-scene {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    .workshop-scene {
+        border-width: 3px;
+        border-radius: 15px;
+    }
+
+    .workshop-scene .feedback-card {
+        border-radius: 0 0 12px 12px;
+    }
+
+    .workshop-scene .feedback-actions {
+        gap: 5px;
+    }
+
+    .workshop-scene .feedback-actions button {
+        padding-inline: 7px;
+        font-size: 11px;
+    }
+}

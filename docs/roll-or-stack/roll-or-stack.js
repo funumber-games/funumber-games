@@ -8,7 +8,7 @@
     const ui = {
         modePanel: $("modePanel"), gamePanel: $("gamePanel"), startButton: $("startButton"),
         toyCount: $("toyCount"), modeName: $("modeName"), testsTried: $("testsTried"),
-        promptText: $("promptText"), hoopRig: $("hoopRig"), activeToy: $("activeToy"),
+        promptText: $("promptText"), stage: $("circusStage"), hoopRig: $("hoopRig"), activeToy: $("activeToy"),
         toyEmoji: $("toyEmoji"), toyShape: $("toyShape"), flyingToy: $("flyingToy"),
         flyingEmoji: $("flyingEmoji"), rollButton: $("rollButton"), stackButton: $("stackButton"),
         turnButton: $("turnButton"), orientationText: $("orientationText"), resultBurst: $("resultBurst"),
@@ -68,20 +68,22 @@
         ui.modeName.textContent = rules.MODES[state.mode].label;
         ui.testsTried.textContent = String(state.tests);
         ui.toyName.textContent = toy.name;
-        const hasSprite = Boolean(toy.sprite);
-        const spriteImage = hasSprite ? `url("${toy.sprite}")` : "";
-        ui.toyEmoji.textContent = hasSprite ? "" : toy.emoji;
-        ui.toyEmoji.classList.toggle("has-sprite", hasSprite);
-        ui.toyEmoji.style.backgroundImage = spriteImage;
-        ui.toyShape.textContent = orientation.glyph;
-        ui.flyingEmoji.textContent = hasSprite ? "" : toy.emoji;
-        ui.flyingEmoji.classList.toggle("has-sprite", hasSprite);
-        ui.flyingEmoji.style.backgroundImage = spriteImage;
-        ui.orientationText.textContent = orientation.label;
-        ui.promptText.textContent = `Choose a test for the ${toy.name.toLowerCase()}!`;
+        renderOrientation(toy, orientation);
+        ui.promptText.textContent = `Test the ${toy.name.toLowerCase()}`;
         ui.turnButton.classList.toggle("hidden", !rules.supportsTurn(state.mode, toy));
         ui.nextButton.disabled = true;
         setMessage(`Meet the ${toy.name.toLowerCase()}. Choose Roll or Stack.`, true);
+    }
+
+    function renderOrientation(toy, orientation) {
+        const pose = toy.orientations.length > 1 ? `-${orientation.id}` : "";
+        const source = `toys/${toy.id}${pose}.png`;
+        for (const image of [ui.toyEmoji, ui.flyingEmoji]) {
+            image.src = source;
+            image.classList.toggle("inverted", toy.id === "half-ball" && orientation.id === "round");
+        }
+        ui.orientationText.textContent = orientation.label;
+        ui.orientationText.parentElement.classList.toggle("hidden", !rules.supportsTurn(state.mode, toy));
     }
 
     function startGame(mode = state.mode) {
@@ -112,6 +114,7 @@
     }
 
     function resetAnimationClasses() {
+        ui.flyingToy.getAnimations?.().forEach(animation => animation.cancel());
         ui.hoopRig.className = "hoop-rig";
         ui.hoopRig.style.removeProperty("--return-angle");
         ui.activeToy.classList.remove("turning");
@@ -123,13 +126,15 @@
         const toy = currentToy();
         if (state.busy || !rules.supportsTurn(state.mode, toy)) return;
         state.busy = true;
+        const runId = state.runId;
         setControls(false);
         ui.activeToy.classList.add("turning");
         await delay(300);
+        if (runId !== state.runId) return;
         state.orientationIndex = rules.nextOrientation(state.mode, toy, state.orientationIndex);
-        ui.toyShape.textContent = currentOrientation().glyph;
-        ui.orientationText.textContent = currentOrientation().label;
+        renderOrientation(toy, currentOrientation());
         await delay(340);
+        if (runId !== state.runId) return;
         ui.activeToy.classList.remove("turning");
         state.busy = false;
         setControls(true);
@@ -160,6 +165,47 @@
         else runTest(station, "");
     }
 
+    const chute = [[25.7,42.2],[28.2,44.4],[30.1,49.2],[32,56.5],[34.4,63.2],[37.5,68.4],[40.2,70.7]];
+    const stackContact = [74.5,49.7];
+
+    function toyMotion(station, kind, toy) {
+        const stage = ui.stage.getBoundingClientRect();
+        const resting = ui.toyEmoji.getBoundingClientRect();
+        const sprite = ui.flyingEmoji.getBoundingClientRect();
+        const start = [
+            100 * (resting.left + resting.width / 2 - stage.left - ui.stage.clientLeft) / ui.stage.clientWidth,
+            100 * (resting.bottom - stage.top - ui.stage.clientTop) / ui.stage.clientHeight
+        ];
+        const rollsInPlane = /^(beach-ball|tennis-ball|orange|toy-wheel|toy-egg)$/.test(toy.id);
+        const contact = station === "roll" ? chute[0] : stackContact;
+        const points = [
+            [...start,0,0],
+            [(start[0]+contact[0])/2,Math.min(start[1],contact[1])-6,0,.12],
+            [...contact,0,.29]
+        ];
+        if (station === "roll") {
+            chute.slice(1).forEach(([x,y], index) => {
+                const step = index+1;
+                const angle = kind === "tumble" ? step*58
+                    : kind === "slide" ? 0
+                    : kind === "roll" && rollsInPlane ? step*54
+                    : kind === "wobble" || kind === "rock" || kind === "uneven-roll" ? (step%2?12:-12)
+                    : kind === "curve" ? step*8 : 0;
+                points.push([x,y,angle,.29+.71*step/(chute.length-1)]);
+            });
+        } else if (kind === "stay") points.push([...stackContact,0,1]);
+        else if (kind === "rock") points.push([74.2,49.7,-13,.52],[74.8,49.7,13,.73],[...stackContact,0,1]);
+        else {
+            const angle = kind === "tip" ? 85 : 155;
+            points.push([78.1,56.5,angle*.5,.56],[84.4,58.7,angle*.8,.77],[86,76,angle,1]);
+        }
+        return points.map(([left,top,angle,offset]) => {
+            const radians = angle*Math.PI/180;
+            const halfHeight = (Math.abs(Math.cos(radians))*sprite.height+Math.abs(Math.sin(radians))*sprite.width)/2;
+            return { left:`${left}%`, top:`calc(${top}% - ${halfHeight}px)`, transform:`rotate(${angle}deg)`, offset };
+        });
+    }
+
     async function runTest(station, prediction) {
         if (state.busy) return;
         const toy = currentToy();
@@ -172,13 +218,20 @@
         setControls(false);
         ui.promptText.textContent = station === "roll" ? "Testing on the slide…" : "Testing on the block…";
         ui.hoopRig.className = `hoop-rig swing-${station}`;
-        await delay(660);
+        await delay(680);
         if (runId !== state.runId) return;
+        ui.flyingToy.className = "flying-toy";
+        const frames = toyMotion(station, outcome.kind, toy);
         ui.hoopRig.classList.add("releasing");
-        ui.flyingToy.className = `flying-toy to-${station} kind-${outcome.kind}`;
-        await delay(1080);
+        ui.flyingToy.classList.toggle("can-rolling", station === "roll" && toy.id === "soup-can" && outcome.kind === "roll" && !reducedMotion.matches);
+        const motion = reducedMotion.matches ? undefined : ui.flyingToy.animate?.(frames, { duration:1800, fill:"forwards" });
+        if (motion) await motion.finished.catch(() => {});
+        else {
+            const { offset, ...landing } = frames.at(-1);
+            Object.assign(ui.flyingToy.style, landing);
+        }
         if (runId !== state.runId) return;
-        ui.resultBurst.style.left = station === "roll" ? "17%" : "78%";
+        ui.resultBurst.style.left = station === "roll" ? "40%" : "75%";
         ui.resultBurst.classList.remove("hidden");
         const expected = rules.predictionFor(outcome, station);
         const predictionNote = prediction ? (prediction === expected ? " Great prediction!" : ` You predicted ${prediction.toLowerCase()}, and now we discovered what really happens.`) : "";
@@ -187,8 +240,9 @@
         await delay(820);
         if (runId !== state.runId) return;
         ui.flyingToy.classList.add("hidden");
+        motion?.cancel();
         ui.resultBurst.classList.add("hidden");
-        ui.hoopRig.style.setProperty("--return-angle", station === "roll" ? "-25deg" : "25deg");
+        ui.hoopRig.style.setProperty("--return-angle", station === "roll" ? "25deg" : "-25deg");
         ui.hoopRig.className = "hoop-rig returning";
         await delay(590);
         if (runId !== state.runId) return;
